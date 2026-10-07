@@ -77,7 +77,11 @@ export const zoomLens = {
       body: 'Asks a single question about the previous answer, so you do not have to start over.',
     },
   ],
-  timingNote: 'Times are the estimates the app displays while it works.',
+  timingNote: 'Typical wait times shown by the app.',
+  timingContext: [
+    'The times (about 6 s for Describe, 12 s for Explain, and 3 s for Follow-up) are the typical waits Zoom Lens displays while it works, for example “Reading the screen. This usually takes about 6 seconds.”',
+    'They are estimates shown in the interface, not results from a formal benchmark. Explain is expected to take longer than Describe because it reasons about what the content means instead of reporting what is on screen.',
+  ],
   delivery: {
     summary:
       'Answers are routed only to the participant who asked. Other participants do not see the request or the answer, and the presenter is not notified.',
@@ -149,7 +153,7 @@ export const projects: Project[] = [
     problem:
       'Before merging a change you want to know what it can break and which tests to run. Tools that guess from name similarity give answers you cannot check. Impact analysis is only useful if each result traces back to code.',
     contribution:
-      'Built a Rust analyzer that parses repositories with tree-sitter and labels every call site resolved, ambiguous, unresolved, or external, then stores the call graph in Neo4j for change-impact queries through a GraphQL API and SvelteKit UI.',
+      'Built a Rust analyzer that labels each call site by whether it can be resolved, then answers change-impact queries from a Neo4j call graph.',
     status: 'All planned milestones complete; open source',
     outcome: 'Impact and test-selection results with an evidence chain for every step, scored against fault injection.',
     tags: ['Rust', 'tree-sitter', 'Neo4j', 'GraphQL'],

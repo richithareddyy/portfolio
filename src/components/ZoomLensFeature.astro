@@ -39,6 +39,7 @@ import ZoomLensMedia from './ZoomLensMedia.astro';
           ))
         }
       </ul>
+      <p class="timing-note">{zoomLens.timingNote}</p>
 
       <a class="arrow-link" href="/work/zoom-lens">
         Zoom Lens case study <span class="arrow" aria-hidden="true">→</span>
@@ -53,7 +54,7 @@ import ZoomLensMedia from './ZoomLensMedia.astro';
 
 <style>
   .zl {
-    padding-block: var(--space-7);
+    padding-block: var(--space-6) var(--space-7);
     background: var(--color-surface);
     border-top: var(--border-hairline);
     border-bottom: var(--border-hairline);
@@ -138,6 +139,12 @@ import ZoomLensMedia from './ZoomLensMedia.astro';
   }
 
   .mode-what {
+    color: var(--color-muted);
+  }
+
+  .timing-note {
+    margin-top: calc(var(--space-2) * -1);
+    font-size: var(--text-xs);
     color: var(--color-muted);
   }
 
