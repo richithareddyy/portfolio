@@ -1,0 +1,125 @@
+---
+import { zoomLens } from '../data/projects';
+const { status } = zoomLens;
+---
+
+<div class="status">
+  <section class="col built" aria-labelledby="status-built">
+    <h4 id="status-built"><span class="dot" aria-hidden="true"></span>Working today</h4>
+    <ul>
+      {status.built.map((item) => <li>{item}</li>)}
+    </ul>
+  </section>
+
+  <section class="col caveat" aria-labelledby="status-caveat">
+    <h4 id="status-caveat"><span class="dot" aria-hidden="true"></span>Not yet</h4>
+    <p class="caveat-title">{status.caveat.title}</p>
+    <p>{status.caveat.body}</p>
+  </section>
+
+  <section class="col exploring" aria-labelledby="status-exploring">
+    <h4 id="status-exploring"><span class="dot" aria-hidden="true"></span>Exploring next</h4>
+    <ul>
+      {status.exploring.map((item) => <li>{item}</li>)}
+    </ul>
+    <p class="fine">Directions under exploration, not completed features.</p>
+  </section>
+</div>
+
+<style>
+  .status {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-5);
+  }
+
+  @media (min-width: 56rem) {
+    .status {
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--space-6);
+    }
+  }
+
+  .col {
+    padding-top: var(--space-3);
+    border-top: 2px solid var(--tone);
+    font-size: var(--text-sm);
+  }
+
+  .built {
+    --tone: var(--color-positive);
+  }
+
+  .caveat {
+    --tone: var(--color-pending);
+  }
+
+  .exploring {
+    --tone: var(--color-rule-strong);
+  }
+
+  h4 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--tone);
+  }
+
+  .exploring .dot {
+    background: transparent;
+    border: 1.5px solid var(--color-faint);
+  }
+
+  ul {
+    display: grid;
+    gap: var(--space-2);
+    list-style: none;
+  }
+
+  li {
+    position: relative;
+    padding-left: var(--space-4);
+    color: var(--color-ink-soft);
+  }
+
+  li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.7em;
+    width: 6px;
+    height: 1px;
+    background: var(--color-faint);
+  }
+
+  .caveat-title {
+    font-weight: 500;
+    margin-bottom: var(--space-1);
+  }
+
+  .caveat p:not(.caveat-title) {
+    color: var(--color-ink-soft);
+  }
+
+  .exploring li {
+    color: var(--color-muted);
+  }
+
+  .fine {
+    margin-top: var(--space-3);
+    font-size: var(--text-xs);
+    color: var(--color-faint);
+  }
+</style>

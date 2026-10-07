@@ -1,0 +1,163 @@
+---
+const stages = ['Ingest', 'Module tree', 'Parse', 'Extract', 'Resolve', 'Neo4j graph', 'Impact', 'GraphQL', 'SvelteKit'];
+const classes = [
+  { name: 'resolved', note: 'one definition → CALLS edge', tone: 'solid' },
+  { name: 'ambiguous', note: 'candidates + reason kept', tone: 'dashed' },
+  { name: 'unresolved', note: 'reason recorded', tone: 'dotted' },
+  { name: 'external', note: 'outside the repository', tone: 'faint' },
+];
+---
+
+<figure class="ca">
+  <div class="panel">
+    <p class="label">Pipeline</p>
+    <ol class="stages">
+      {stages.map((s) => <li>{s}</li>)}
+    </ol>
+  </div>
+
+  <div class="panel">
+    <p class="label">Every call site gets a label</p>
+    <ul class="classes">
+      {
+        classes.map((c) => (
+          <li class={c.tone}>
+            <span class="edge" aria-hidden="true" />
+            <code>{c.name}</code>
+            <span class="note">{c.note}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <div class="panel evidence">
+    <p class="label">Impact, with evidence</p>
+    <pre><code><span class="t">test_checkout</span> calls checkout        <span class="loc">tests/payment_tests.rs:16</span>
+checkout calls <span class="t">authorize</span>            <span class="loc">src/checkout.rs:5</span>
+authorize calls <span class="hl">validate_amount</span>     <span class="loc">src/payments.rs:13</span></code></pre>
+  </div>
+  <figcaption>Diagram of the analysis pipeline and call-site labels. The evidence chain is from the project's change-impact fixture.</figcaption>
+</figure>
+
+<style>
+  .ca {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+    min-width: 0;
+    margin: 0;
+  }
+
+  .panel {
+    min-width: 0;
+    padding: var(--space-4);
+    background: var(--color-surface);
+    border: var(--border-hairline);
+    border-radius: var(--radius-sm);
+  }
+
+  .panel .label {
+    margin-bottom: var(--space-3);
+  }
+
+  .stages {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) 0;
+    list-style: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+  }
+
+  .stages li {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .stages li:not(:last-child)::after {
+    content: '→';
+    margin: 0 var(--space-2);
+    color: var(--color-faint);
+  }
+
+  .classes {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2);
+    list-style: none;
+    font-size: var(--text-sm);
+  }
+
+  @media (min-width: 30rem) {
+    .classes {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .classes li {
+    display: grid;
+    grid-template-columns: 1.75rem auto;
+    align-items: center;
+    column-gap: var(--space-2);
+  }
+
+  .edge {
+    grid-row: span 2;
+    height: 0;
+    border-top: 2px solid var(--color-ink);
+  }
+
+  .dashed .edge {
+    border-top-style: dashed;
+    border-color: var(--color-accent);
+  }
+
+  .dotted .edge {
+    border-top-style: dotted;
+    border-color: var(--color-muted);
+  }
+
+  .faint .edge {
+    border-color: var(--color-rule-strong);
+  }
+
+  .classes code {
+    font-size: var(--text-xs);
+    font-weight: 500;
+  }
+
+  .classes .note {
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+
+  pre {
+    margin: 0;
+    overflow-x: auto;
+    font-size: var(--text-xs);
+    line-height: 1.8;
+  }
+
+  pre code {
+    font-size: inherit;
+  }
+
+  .loc {
+    color: var(--color-faint);
+  }
+
+  .t {
+    font-weight: 500;
+  }
+
+  .hl {
+    color: var(--color-accent-ink);
+    font-weight: 500;
+  }
+
+  figcaption {
+    font-size: var(--text-xs);
+    color: var(--color-faint);
+  }
+</style>

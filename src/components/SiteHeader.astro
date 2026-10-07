@@ -1,0 +1,357 @@
+---
+import { profile } from '../data/profile';
+
+interface Props {
+  isHome?: boolean;
+}
+
+const { isHome = false } = Astro.props;
+const base = isHome ? '' : '/';
+
+const nav = [
+  { id: 'work', label: 'Work' },
+  { id: 'experience', label: 'Experience' },
+  { id: 'skills', label: 'Skills' },
+  { id: 'about', label: 'About' },
+  { id: 'contact', label: 'Contact' },
+];
+---
+
+<header class="site-header" data-header>
+  <div class="wrap bar">
+    <a class="wordmark" href={isHome ? '#top' : '/'} aria-label={`${profile.name}, home`}>
+      <span class="mark" aria-hidden="true">RR</span>
+      <span class="name">{profile.name}</span>
+    </a>
+
+    <nav class="nav" aria-label="Primary">
+      <button
+        class="menu-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="primary-menu"
+        data-menu-toggle
+      >
+        <span class="menu-icon" aria-hidden="true"><span></span><span></span></span>
+        <span class="menu-label">Menu</span>
+      </button>
+
+      <ul id="primary-menu" class="menu" data-menu>
+        {
+          nav.map((item) => (
+            <li>
+              <a href={`${base}#${item.id}`} data-nav-link={item.id}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+        <li class="menu-resume">
+          <a href={profile.links.resume} target="_blank" rel="noopener">
+            Résumé<span class="visually-hidden"> (PDF, opens in a new tab)</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<script>
+  // Document-level listeners are registered once; they look up the current
+  // header on each event because page navigations replace it.
+  const getHeader = () => document.querySelector<HTMLElement>('[data-header]');
+  const getToggle = () => document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+
+  function setOpen(open: boolean) {
+    getToggle()?.setAttribute('aria-expanded', String(open));
+    getHeader()?.classList.toggle('is-open', open);
+  }
+
+  document.addEventListener('click', (event) => {
+    const target = event.target as HTMLElement;
+    const header = getHeader();
+    if (!header) return;
+    if (target.closest('[data-menu-toggle]')) {
+      setOpen(!header.classList.contains('is-open'));
+    } else if (target.closest('[data-menu] a') || !header.contains(target)) {
+      setOpen(false);
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && getHeader()?.classList.contains('is-open')) {
+      setOpen(false);
+      getToggle()?.focus();
+    }
+  });
+
+  window.matchMedia('(min-width: 48rem)').addEventListener('change', (e) => {
+    if (e.matches) setOpen(false);
+  });
+
+  const onScroll = () => getHeader()?.classList.toggle('is-scrolled', window.scrollY > 8);
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Active section highlighting. On the home page the link for the section
+  // in view is marked; on case-study pages "Work" stays marked.
+  let sectionObserver: IntersectionObserver | undefined;
+
+  function setupActiveNav() {
+    sectionObserver?.disconnect();
+    const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]'));
+    const setActive = (id: string | null) => {
+      links.forEach((link) => {
+        if (link.dataset.navLink === id) link.setAttribute('aria-current', 'true');
+        else link.removeAttribute('aria-current');
+      });
+    };
+
+    const page = document.querySelector<HTMLElement>('[data-page]')?.dataset.page;
+    if (page !== 'home') {
+      setActive(page === 'project' ? 'work' : null);
+      return;
+    }
+
+    const sections = links
+      .map((link) => document.getElementById(link.dataset.navLink ?? ''))
+      .filter((el): el is HTMLElement => Boolean(el));
+    const visible = new Map<string, number>();
+
+    sectionObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) visible.set(entry.target.id, entry.intersectionRatio);
+          else visible.delete(entry.target.id);
+        }
+        // The topmost section that is intersecting the band wins.
+        const current = sections.find((section) => visible.has(section.id));
+        setActive(current ? current.id : null);
+      },
+      { rootMargin: '-35% 0px -55% 0px', threshold: [0, 0.01] },
+    );
+    sections.forEach((section) => sectionObserver?.observe(section));
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    onScroll();
+    setupActiveNav();
+  });
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--color-bg) 92%, transparent);
+    backdrop-filter: saturate(1.2) blur(8px);
+    -webkit-backdrop-filter: saturate(1.2) blur(8px);
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--duration-base) var(--ease-out);
+  }
+
+  .site-header.is-scrolled,
+  .site-header.is-open {
+    border-bottom-color: var(--color-rule);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--header-height);
+  }
+
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: var(--text-sm);
+    letter-spacing: 0.01em;
+  }
+
+  .mark {
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: var(--border-ink);
+    border-radius: var(--radius-xs);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    transition: background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
+  }
+
+  .wordmark:hover .mark {
+    background: var(--color-ink);
+    color: var(--color-bg);
+  }
+
+  .menu {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    list-style: none;
+  }
+
+  .menu a {
+    position: relative;
+    display: block;
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+    text-decoration: none;
+    border-radius: var(--radius-xs);
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .menu a:hover,
+  .menu a[aria-current] {
+    color: var(--color-ink);
+  }
+
+  .menu a[data-nav-link]::after {
+    content: '';
+    position: absolute;
+    left: var(--space-3);
+    right: var(--space-3);
+    bottom: 2px;
+    height: 1px;
+    background: var(--color-accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .menu a[aria-current]::after {
+    transform: scaleX(1);
+  }
+
+  .menu-resume {
+    margin-left: var(--space-2);
+  }
+
+  .menu-resume a {
+    color: var(--color-ink);
+    border: var(--border-strong);
+    padding: var(--space-1) var(--space-3);
+    transition: border-color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out);
+  }
+
+  .menu-resume a:hover {
+    border-color: var(--color-ink);
+    background: var(--color-surface);
+  }
+
+  .menu-toggle {
+    display: none;
+  }
+
+  @media (max-width: 47.99rem) {
+    .wordmark .name {
+      font-size: var(--text-sm);
+    }
+
+    .menu-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      min-height: 2.75rem;
+      padding: 0 var(--space-3);
+      margin-right: calc(var(--space-3) * -1);
+      background: none;
+      border: 0;
+      cursor: pointer;
+      font-size: var(--text-sm);
+    }
+
+    .menu-icon {
+      position: relative;
+      width: 1rem;
+      height: 0.625rem;
+    }
+
+    .menu-icon span {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 1.5px;
+      background: currentColor;
+      transition: transform var(--duration-base) var(--ease-out), top var(--duration-base) var(--ease-out);
+    }
+
+    .menu-icon span:first-child {
+      top: 0;
+    }
+
+    .menu-icon span:last-child {
+      top: calc(100% - 1.5px);
+    }
+
+    .is-open .menu-icon span:first-child {
+      top: calc(50% - 0.75px);
+      transform: rotate(45deg);
+    }
+
+    .is-open .menu-icon span:last-child {
+      top: calc(50% - 0.75px);
+      transform: rotate(-45deg);
+    }
+
+    .menu {
+      position: absolute;
+      top: var(--header-height);
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      padding: var(--space-2) var(--gutter) var(--space-5);
+      background: var(--color-bg);
+      border-bottom: var(--border-hairline);
+      box-shadow: var(--shadow-md);
+      visibility: hidden;
+      opacity: 0;
+      transform: translateY(-6px);
+      transition: opacity var(--duration-base) var(--ease-out), transform var(--duration-base) var(--ease-out),
+        visibility 0s linear var(--duration-base);
+    }
+
+    .is-open .menu {
+      visibility: visible;
+      opacity: 1;
+      transform: none;
+      transition: opacity var(--duration-base) var(--ease-out), transform var(--duration-base) var(--ease-out);
+    }
+
+    .menu a {
+      padding: var(--space-3) 0;
+      font-size: var(--text-md);
+      color: var(--color-ink);
+      border-bottom: var(--border-hairline);
+      border-radius: 0;
+    }
+
+    .menu a[data-nav-link]::after {
+      display: none;
+    }
+
+    .menu a[aria-current] {
+      color: var(--color-accent-ink);
+    }
+
+    .menu-resume {
+      margin: var(--space-4) 0 0;
+    }
+
+    .menu-resume a {
+      display: inline-block;
+      padding: var(--space-2) var(--space-4);
+      border: var(--border-strong);
+    }
+  }
+</style>

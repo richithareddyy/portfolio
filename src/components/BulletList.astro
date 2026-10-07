@@ -1,0 +1,33 @@
+---
+interface Props {
+  items: readonly string[];
+}
+const { items } = Astro.props;
+---
+
+<ul class="bullets">
+  {items.map((item) => <li>{item}</li>)}
+</ul>
+
+<style>
+  .bullets {
+    display: grid;
+    gap: var(--space-2);
+    list-style: none;
+  }
+
+  li {
+    position: relative;
+    padding-left: var(--space-5);
+  }
+
+  li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.8em;
+    width: 10px;
+    height: 1px;
+    background: var(--color-accent);
+  }
+</style>

@@ -1,0 +1,70 @@
+---
+import SectionHeading from './SectionHeading.astro';
+---
+
+<section class="wrap section" id="about" aria-labelledby="about-title">
+  <SectionHeading index="04" title="About" id="about">A little more context</SectionHeading>
+
+  <div class="cols" data-reveal>
+    <div class="prose">
+      <p>
+        I studied Artificial Intelligence and Machine Learning as an undergraduate at Anurag University in Hyderabad, where I also
+        worked as a research assistant keeping departmental datasets and records consistent. I'm now in the M.S. program in Data
+        Science, Analytics and Engineering at Arizona State University.
+      </p>
+      <p>
+        Most of what I build sits where data, models, and ordinary software meet. Lately that has meant a Zoom-sponsored
+        fellowship building an in-meeting assistant, a static analyzer for Rust, and data and ML systems that are tested and
+        measured rather than assumed to work. Each project's write-up documents its limitations next to its results.
+      </p>
+      <p>
+        Before the fellowship I spent the summer as a full-time deskside support intern at ASU's MIX Center, resolving hardware,
+        software, network, and account issues across classrooms and offices.
+      </p>
+    </div>
+    <aside class="aside">
+      <p class="label">Looking for</p>
+      <p>
+        New grad and internship roles in software engineering, applied AI, and AI/ML or machine learning engineering.
+      </p>
+    </aside>
+  </div>
+</section>
+
+<style>
+  .section {
+    padding-top: var(--section-gap);
+  }
+
+  .cols {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-7);
+  }
+
+  @media (min-width: 56rem) {
+    .cols {
+      grid-template-columns: minmax(0, 1fr) 18rem;
+      gap: var(--space-9);
+    }
+  }
+
+  .prose {
+    display: grid;
+    gap: var(--space-4);
+    max-width: var(--width-prose);
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    line-height: 1.6;
+    color: var(--color-ink-soft);
+  }
+
+  .aside {
+    align-self: start;
+    display: grid;
+    gap: var(--space-2);
+    padding-top: var(--space-3);
+    border-top: var(--border-ink);
+    font-size: var(--text-sm);
+  }
+</style>

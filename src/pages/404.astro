@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Page not found">
+  <section class="wrap nf" data-page="404">
+    <p class="label">404</p>
+    <h1>That page doesn't exist.</h1>
+    <p>The link may be out of date.</p>
+    <a class="arrow-link" href="/">Back to the home page <span class="arrow" aria-hidden="true">→</span></a>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+    padding-block: var(--space-10);
+  }
+
+  h1 {
+    font-size: var(--text-3xl);
+  }
+
+  p:not(.label) {
+    color: var(--color-muted);
+  }
+</style>

@@ -1,0 +1,54 @@
+---
+interface Props {
+  title: string;
+  id?: string;
+}
+const { title, id } = Astro.props;
+---
+
+<section class="case-section" aria-labelledby={id} data-reveal>
+  <h2 id={id}>{title}</h2>
+  <div class="content">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .case-section {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4) var(--space-8);
+    padding-block: var(--space-7);
+    border-top: var(--border-hairline);
+  }
+
+  @media (min-width: 60rem) {
+    .case-section {
+      grid-template-columns: 14rem minmax(0, 1fr);
+    }
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+  }
+
+  .content {
+    display: grid;
+    gap: var(--space-4);
+    min-width: 0;
+    color: var(--color-ink-soft);
+  }
+
+  .content > :global(p),
+  .content > :global(.bullets) {
+    max-width: var(--width-prose);
+  }
+
+  .content :global(h3) {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--color-ink);
+  }
+</style>

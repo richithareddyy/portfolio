@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import ZoomLensFeature from '../components/ZoomLensFeature.astro';
+import ProjectFeature from '../components/ProjectFeature.astro';
+import CodeAtlasFigure from '../components/CodeAtlasFigure.astro';
+import PipelineFigure from '../components/PipelineFigure.astro';
+import OtherWork from '../components/OtherWork.astro';
+import Experience from '../components/Experience.astro';
+import Skills from '../components/Skills.astro';
+import About from '../components/About.astro';
+import Contact from '../components/Contact.astro';
+import { projects } from '../data/projects';
+
+const bySlug = Object.fromEntries(projects.map((p) => [p.slug, p]));
+const codeatlas = bySlug['codeatlas']!;
+const pipeline = bySlug['reddit-data-pipeline']!;
+const streambox = bySlug['streambox']!;
+const triage = bySlug['ticket-triage']!;
+---
+
+<BaseLayout isHome>
+  <div data-page="home">
+    <Hero />
+
+    <section id="work" aria-labelledby="work-title">
+      <div class="wrap">
+        <SectionHeading
+          index="01"
+          title="Selected work"
+          id="work"
+          lede="Zoom Lens first, since it's what I'm building now. The rest are ordered by technical depth; each links to a longer case study."
+        >
+          Projects
+        </SectionHeading>
+      </div>
+
+      <ZoomLensFeature />
+
+      <div class="wrap">
+        <ProjectFeature project={codeatlas} number="02">
+          <CodeAtlasFigure slot="figure" />
+        </ProjectFeature>
+
+        <ProjectFeature project={pipeline} number="03">
+          <PipelineFigure slot="figure" />
+        </ProjectFeature>
+
+        <div class="pair">
+          <ProjectFeature project={streambox} number="04" variant="compact" />
+          <ProjectFeature project={triage} number="05" variant="compact" />
+        </div>
+
+        <OtherWork />
+      </div>
+    </section>
+
+    <Experience />
+    <Skills />
+    <About />
+    <Contact />
+  </div>
+</BaseLayout>
+
+<style>
+  .pair {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  @media (min-width: 60rem) {
+    .pair {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--space-8);
+    }
+  }
+</style>

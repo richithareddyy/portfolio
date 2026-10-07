@@ -1,0 +1,124 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CaseHeader from '../../components/CaseHeader.astro';
+import CaseSection from '../../components/CaseSection.astro';
+import NextProject from '../../components/NextProject.astro';
+import ZoomLensDemo from '../../components/ZoomLensDemo.astro';
+import ZoomLensModes from '../../components/ZoomLensModes.astro';
+import ZoomLensPrivacy from '../../components/ZoomLensPrivacy.astro';
+import ZoomLensStatus from '../../components/ZoomLensStatus.astro';
+import { zoomLens } from '../../data/projects';
+---
+
+<BaseLayout title={zoomLens.title} description={zoomLens.oneLiner}>
+  <div data-page="project">
+    <CaseHeader
+      slug={zoomLens.slug}
+      kicker={zoomLens.kicker}
+      title={zoomLens.title}
+      summary={zoomLens.oneLiner}
+      meta={[
+        { label: 'Role', value: 'Zoom Fellow, ASU Next Lab' },
+        { label: 'Timeline', value: zoomLens.year },
+        { label: 'Status', value: 'Working prototype' },
+      ]}
+      stack={zoomLens.stack}
+    />
+
+    <div class="wrap">
+      <div class="hero-figure" data-reveal>
+        <ZoomLensDemo />
+      </div>
+
+      <CaseSection title="The problem" id="problem">
+        {zoomLens.problem.map((p) => <p>{p}</p>)}
+      </CaseSection>
+
+      <CaseSection title="How it works" id="how">
+        <p>{zoomLens.howItWorks}</p>
+        <ZoomLensModes />
+      </CaseSection>
+
+      <CaseSection title="Privacy model" id="privacy">
+        <ZoomLensPrivacy />
+      </CaseSection>
+
+      <CaseSection title="Engineering" id="engineering">
+        <ul class="eng">
+          {
+            zoomLens.engineering.map((e) => (
+              <li>
+                <h3>{e.title}</h3>
+                <p>{e.body}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </CaseSection>
+
+      <CaseSection title="Current status" id="status">
+        <ZoomLensStatus />
+      </CaseSection>
+
+      <CaseSection title="The tradeoff" id="tradeoff">
+        <div class="tradeoff">
+          {zoomLens.ethics.map((p, i) => <p class:list={{ first: i === 0 }}>{p}</p>)}
+        </div>
+      </CaseSection>
+    </div>
+
+    <NextProject slug={zoomLens.slug} />
+  </div>
+</BaseLayout>
+
+<style>
+  .hero-figure {
+    max-width: 52rem;
+    padding-bottom: var(--space-7);
+  }
+
+  .eng {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    list-style: none;
+    border-top: var(--border-hairline);
+  }
+
+  @media (min-width: 48rem) {
+    .eng {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--space-7);
+    }
+  }
+
+  .eng li {
+    display: grid;
+    gap: var(--space-1);
+    align-content: start;
+    padding-block: var(--space-4);
+    border-bottom: var(--border-hairline);
+  }
+
+  .eng p {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+
+  .tradeoff {
+    display: grid;
+    gap: var(--space-4);
+    max-width: var(--width-prose);
+    padding-left: var(--space-5);
+    border-left: 2px solid var(--color-pending);
+  }
+
+  .tradeoff p {
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    line-height: 1.55;
+  }
+
+  .tradeoff .first {
+    color: var(--color-ink);
+  }
+</style>

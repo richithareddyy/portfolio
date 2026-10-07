@@ -1,0 +1,151 @@
+---
+const stages = [
+  { name: 'Extract', note: 'stream plain, gzip, zstd' },
+  { name: 'Validate', note: 'types, formats, ranges' },
+  { name: 'Stage', note: 'COPY → unlogged tables' },
+  { name: 'Merge', note: 'dedupe, orphans, upsert' },
+  { name: 'Check', note: '13 quality checks' },
+];
+const total = 18_897_027;
+const outcomes = [
+  { label: 'Loaded', value: 18_710_000, tone: 'ok' },
+  { label: 'Invalid', value: 111_408, tone: 'bad' },
+  { label: 'Orphaned', value: 53_793, tone: 'bad' },
+  { label: 'Duplicate', value: 21_826, tone: 'bad' },
+];
+const fmt = (n: number) => n.toLocaleString('en-US');
+---
+
+<figure class="pf">
+  <ol class="stages">
+    {
+      stages.map((s, i) => (
+        <li>
+          <span class="i">{i + 1}</span>
+          <strong>{s.name}</strong>
+          <span class="note">{s.note}</span>
+        </li>
+      ))
+    }
+  </ol>
+
+  <div class="ledger">
+    <p class="label">Every line accounted for · {fmt(total)} read</p>
+    <ul>
+      {
+        outcomes.map((o) => (
+          <li class={o.tone}>
+            <span class="name">{o.label}</span>
+            <span class="track" aria-hidden="true">
+              <span class="fill" style={`--w:${Math.max((o.value / total) * 100, 0.6)}%`} />
+            </span>
+            <span class="val">{fmt(o.value)}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+  <figcaption>Counts from the full-scale benchmark on generated data with injected defects.</figcaption>
+</figure>
+
+<style>
+  .pf {
+    display: grid;
+    gap: var(--space-4);
+    margin: 0;
+  }
+
+  .stages {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    list-style: none;
+    border: var(--border-hairline);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+  }
+
+  .stages li {
+    display: grid;
+    gap: 2px;
+    align-content: start;
+    padding: var(--space-3);
+    font-size: var(--text-xs);
+  }
+
+  .stages li + li {
+    border-left: var(--border-hairline);
+  }
+
+  .i {
+    font-family: var(--font-mono);
+    color: var(--color-accent);
+  }
+
+  .stages strong {
+    font-size: var(--text-sm);
+    font-weight: 500;
+  }
+
+  .note {
+    color: var(--color-muted);
+  }
+
+  @media (max-width: 40rem) {
+    .stages {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .stages li {
+      grid-template-columns: 1.5rem 6rem minmax(0, 1fr);
+      align-items: baseline;
+    }
+    .stages li + li {
+      border-left: 0;
+      border-top: var(--border-hairline);
+    }
+  }
+
+  .ledger ul {
+    display: grid;
+    gap: var(--space-2);
+    list-style: none;
+    margin-top: var(--space-3);
+  }
+
+  .ledger li {
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr) 6.5rem;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-sm);
+  }
+
+  .track {
+    height: 6px;
+    background: var(--color-surface-sunken);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+
+  .fill {
+    display: block;
+    width: var(--w);
+    height: 100%;
+    background: var(--color-ink);
+  }
+
+  .bad .fill {
+    background: var(--color-accent);
+  }
+
+  .val {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  figcaption {
+    font-size: var(--text-xs);
+    color: var(--color-faint);
+  }
+</style>

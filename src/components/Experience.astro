@@ -1,0 +1,190 @@
+---
+import { experience } from '../data/experience';
+import { education } from '../data/profile';
+import SectionHeading from './SectionHeading.astro';
+---
+
+<section class="wrap section" id="experience" aria-labelledby="experience-title">
+  <SectionHeading index="02" title="Experience" id="experience">Where I've worked</SectionHeading>
+
+  <ol class="timeline">
+    {
+      experience.map((role) => (
+        <li class:list={['role', { current: role.current }]} data-reveal>
+          <div class="when">
+            <p class="dates">{role.dates}</p>
+            <p class="place">{role.place}</p>
+          </div>
+          <div class="what">
+            <h3>
+              {role.title}
+              <span class="org">
+                {role.org}
+                {role.orgDetail && <span class="detail">, {role.orgDetail}</span>}
+              </span>
+            </h3>
+            <ul class="points">
+              {role.points.map((p) => <li>{p}</li>)}
+            </ul>
+            {role.current && (
+              <a class="arrow-link more" href="/work/zoom-lens">
+                Zoom Lens case study <span class="arrow" aria-hidden="true">→</span>
+              </a>
+            )}
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+
+  <div class="edu" data-reveal>
+    <h3 class="label">Education</h3>
+    <ul>
+      {
+        education.map((e) => (
+          <li>
+            <p class="degree">{e.degree}</p>
+            <p class="meta">
+              {e.school}, {e.place} · {e.dates} · GPA {e.gpa}
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .section {
+    padding-top: var(--section-gap);
+  }
+
+  .timeline {
+    list-style: none;
+  }
+
+  .role {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2) var(--space-7);
+    padding-block: var(--space-6);
+    border-bottom: var(--border-hairline);
+  }
+
+  .role:first-child {
+    padding-top: 0;
+  }
+
+  @media (min-width: 48rem) {
+    .role {
+      grid-template-columns: 12rem minmax(0, 1fr);
+    }
+  }
+
+  .dates {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+
+  .current .dates::before {
+    content: '';
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-right: var(--space-2);
+    border-radius: 50%;
+    background: var(--color-accent);
+    vertical-align: 1px;
+  }
+
+  .place {
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+
+  h3 {
+    display: grid;
+    gap: 2px;
+    font-size: var(--text-xl);
+  }
+
+  .org {
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--color-ink-soft);
+  }
+
+  .detail {
+    font-weight: 400;
+    color: var(--color-muted);
+  }
+
+  .points {
+    display: grid;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+    max-width: 44rem;
+    list-style: none;
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
+  }
+
+  .points li {
+    position: relative;
+    padding-left: var(--space-4);
+  }
+
+  .points li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.75em;
+    width: 6px;
+    height: 1px;
+    background: var(--color-faint);
+  }
+
+  .more {
+    margin-top: var(--space-4);
+    font-size: var(--text-sm);
+  }
+
+  .edu {
+    margin-top: var(--space-7);
+  }
+
+  .edu ul {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+    margin-top: var(--space-3);
+    list-style: none;
+  }
+
+  @media (min-width: 48rem) {
+    .edu ul {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-6);
+    }
+  }
+
+  .edu li {
+    padding-top: var(--space-3);
+    border-top: var(--border-hairline);
+  }
+
+  .degree {
+    font-weight: 500;
+    font-size: var(--text-sm);
+  }
+
+  .meta {
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+</style>

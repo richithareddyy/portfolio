@@ -1,0 +1,51 @@
+---
+import { profile } from '../data/profile';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="wrap row">
+    <p>© {year} {profile.name}</p>
+    <ul>
+      <li><a href={`mailto:${profile.email}`}>Email</a></li>
+      <li><a href={profile.links.github} rel="me noopener" target="_blank">GitHub</a></li>
+      <li><a href={profile.links.linkedin} rel="me noopener" target="_blank">LinkedIn</a></li>
+      <li><a href={profile.links.resume} target="_blank" rel="noopener">Résumé</a></li>
+    </ul>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: var(--border-hairline);
+    padding-block: var(--space-6);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-6);
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-5);
+    list-style: none;
+  }
+
+  a {
+    color: var(--color-muted);
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  a:hover {
+    color: var(--color-ink);
+    text-decoration: underline;
+  }
+</style>

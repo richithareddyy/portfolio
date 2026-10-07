@@ -1,0 +1,41 @@
+---
+interface Props {
+  index: string;
+  title: string;
+  id: string;
+  lede?: string;
+}
+
+const { index, title, id, lede } = Astro.props;
+---
+
+<header class="section-heading" data-reveal>
+  <p class="label"><span class="index">{index}</span> {title}</p>
+  <h2 id={`${id}-title`}><slot /></h2>
+  {lede && <p class="lede">{lede}</p>}
+</header>
+
+<style>
+  .section-heading {
+    display: grid;
+    gap: var(--space-3);
+    padding-top: var(--space-5);
+    border-top: var(--border-ink);
+    margin-bottom: var(--space-7);
+  }
+
+  .index {
+    color: var(--color-accent);
+  }
+
+  h2 {
+    font-size: var(--text-2xl);
+    max-width: 22ch;
+  }
+
+  .lede {
+    max-width: var(--width-prose);
+    color: var(--color-muted);
+    font-size: var(--text-md);
+  }
+</style>

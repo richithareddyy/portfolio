@@ -1,0 +1,21 @@
+{
+  "name": "richitha-rekula-portfolio",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "author": "Richitha Rekula",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@fontsource-variable/newsreader": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/ibm-plex-sans": "^5.3.0",
+    "astro": "^7.3.6",
+    "typescript": "^6.0.3"
+  }
+}

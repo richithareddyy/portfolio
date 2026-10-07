@@ -1,0 +1,200 @@
+---
+import type { Project } from '../data/projects';
+import Metrics from './Metrics.astro';
+
+interface Props {
+  project: Project;
+  number: string;
+  variant?: 'wide' | 'compact';
+}
+
+const { project, number, variant = 'wide' } = Astro.props;
+const hasFigure = Astro.slots.has('figure');
+const href = `/work/${project.slug}`;
+---
+
+<article class:list={['feature', variant, { 'has-figure': hasFigure }]} aria-labelledby={`${project.slug}-title`} data-reveal>
+  <header class="head">
+    <p class="label"><span class="num">{number}</span> {project.kicker} · {project.year}</p>
+    <h3 id={`${project.slug}-title`}>
+      <a href={href} transition:name={`title-${project.slug}`}>{project.title}</a>
+    </h3>
+    <p class="summary">{project.summary}</p>
+  </header>
+
+  <div class="body">
+    <div class="text">
+      <div>
+        <h4 class="label">Problem</h4>
+        <p>{project.problem}</p>
+      </div>
+      {
+        variant === 'wide' && (
+          <div>
+            <h4 class="label">What I built</h4>
+            <ul class="built">
+              {project.built.slice(0, 2).map((item) => <li>{item}</li>)}
+            </ul>
+          </div>
+        )
+      }
+      <div>
+        <h4 class="label">Why it's interesting</h4>
+        <p>{project.interesting}</p>
+      </div>
+    </div>
+    {
+      hasFigure && (
+        <div class="figure">
+          <slot name="figure" />
+        </div>
+      )
+    }
+  </div>
+
+  {project.metrics && <Metrics metrics={project.metrics} note={project.metricsNote} columns={variant === 'wide' ? 4 : 2} />}
+
+  <footer class="foot">
+    <ul class="stack" aria-label="Stack">
+      {project.stack.map((s) => <li>{s}</li>)}
+    </ul>
+    <ul class="links">
+      <li>
+        <a class="arrow-link" href={href}>
+          Case study<span class="visually-hidden">: {project.title}</span> <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </li>
+      {
+        project.links.map((link) => (
+          <li>
+            <a class="text-link" href={link.href} target="_blank" rel="noopener">
+              {link.label}
+              <span class="visually-hidden"> for {project.title} (opens in a new tab)</span>
+              <span aria-hidden="true"> ↗</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </footer>
+</article>
+
+<style>
+  .feature {
+    display: grid;
+    gap: var(--space-5);
+    padding-block: var(--space-7);
+    border-bottom: var(--border-hairline);
+  }
+
+  .head {
+    display: grid;
+    gap: var(--space-2);
+    max-width: 44rem;
+  }
+
+  .num {
+    color: var(--color-accent);
+  }
+
+  h3 {
+    font-size: var(--text-2xl);
+  }
+
+  .compact h3 {
+    font-size: var(--text-xl);
+  }
+
+  h3 a {
+    text-decoration: none;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0 1px;
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    transition: background-size var(--duration-base) var(--ease-out), color var(--duration-fast) var(--ease-out);
+  }
+
+  h3 a:hover {
+    background-size: 100% 1px;
+    color: var(--color-accent-ink);
+  }
+
+  .summary {
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
+    color: var(--color-ink-soft);
+  }
+
+  .body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+  }
+
+  .text {
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
+  }
+
+  .text h4 {
+    margin-bottom: var(--space-1);
+  }
+
+  .built {
+    display: grid;
+    gap: var(--space-2);
+    list-style: none;
+  }
+
+  .built li {
+    position: relative;
+    padding-left: var(--space-4);
+  }
+
+  .built li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.75em;
+    width: 6px;
+    height: 1px;
+    background: var(--color-accent);
+  }
+
+  @media (min-width: 56rem) {
+    .wide.has-figure .body {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      gap: var(--space-8);
+    }
+
+    .wide:not(.has-figure) .text {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-6);
+    }
+  }
+
+  .figure {
+    min-width: 0;
+  }
+
+  .foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-5);
+    list-style: none;
+    font-size: var(--text-sm);
+  }
+</style>

@@ -1,0 +1,72 @@
+---
+import { skills } from '../data/skills';
+import SectionHeading from './SectionHeading.astro';
+---
+
+<section class="wrap section" id="skills" aria-labelledby="skills-title">
+  <SectionHeading index="03" title="Technical skills" id="skills">Tools I've built with</SectionHeading>
+
+  <dl class="grid" data-reveal>
+    {
+      skills.map((group) => (
+        <div class="group">
+          <dt class="label">{group.name}</dt>
+          <dd>
+            <ul>
+              {group.items.map((item) => <li>{item}</li>)}
+            </ul>
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+</section>
+
+<style>
+  .section {
+    padding-top: var(--section-gap);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    margin: 0;
+    border-top: var(--border-hairline);
+  }
+
+  .group {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2) var(--space-6);
+    padding-block: var(--space-4);
+    border-bottom: var(--border-hairline);
+  }
+
+  @media (min-width: 48rem) {
+    .group {
+      grid-template-columns: 12rem minmax(0, 1fr);
+      align-items: baseline;
+    }
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) 0;
+    list-style: none;
+  }
+
+  li {
+    font-size: var(--text-md);
+  }
+
+  li:not(:last-child)::after {
+    content: '/';
+    margin-inline: var(--space-3);
+    color: var(--color-rule-strong);
+  }
+</style>

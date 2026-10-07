@@ -1,0 +1,98 @@
+---
+import { profile } from '../data/profile';
+import SectionHeading from './SectionHeading.astro';
+
+const items = [
+  { label: 'Email', value: profile.email, href: `mailto:${profile.email}`, external: false },
+  { label: 'LinkedIn', value: 'linkedin.com/in/richitha-rekula', href: profile.links.linkedin, external: true },
+  { label: 'GitHub', value: 'github.com/richithareddyy', href: profile.links.github, external: true },
+];
+---
+
+<section class="wrap section" id="contact" aria-labelledby="contact-title">
+  <SectionHeading index="05" title="Contact" id="contact">Get in touch</SectionHeading>
+
+  <ul class="list" data-reveal>
+    {
+      items.map((item) => (
+        <li>
+          <span class="label">{item.label}</span>
+          <a
+            href={item.href}
+            {...(item.external ? { target: '_blank', rel: 'me noopener' } : {})}
+          >
+            <span class="value">{item.value}</span>
+            <span class="arrow" aria-hidden="true">{item.external ? '↗' : '→'}</span>
+            {item.external && <span class="visually-hidden"> (opens in a new tab)</span>}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .section {
+    padding-top: var(--section-gap);
+    padding-bottom: var(--section-gap);
+  }
+
+  .list {
+    list-style: none;
+    border-top: var(--border-hairline);
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-1) var(--space-6);
+    padding-block: var(--space-4);
+    border-bottom: var(--border-hairline);
+  }
+
+  @media (min-width: 48rem) {
+    li {
+      grid-template-columns: 12rem minmax(0, 1fr);
+      align-items: baseline;
+    }
+  }
+
+  a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    justify-self: start;
+    max-width: 100%;
+    font-family: var(--font-serif);
+    font-size: var(--text-xl);
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .value {
+    overflow-wrap: anywhere;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0 1px;
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    transition: background-size var(--duration-base) var(--ease-out);
+  }
+
+  a:hover {
+    color: var(--color-accent-ink);
+  }
+
+  a:hover .value {
+    background-size: 100% 1px;
+  }
+
+  .arrow {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  a:hover .arrow {
+    transform: translate(2px, -2px);
+  }
+</style>
