@@ -47,7 +47,8 @@ const sections = [
         {zoomLens.problem.map((p) => <p>{p}</p>)}
         <p>{zoomLens.howItWorks}</p>
         <ZoomLensModes />
-        <p class="fine">{zoomLens.timingNote}</p>
+        <h3>About the response times</h3>
+        {zoomLens.timingContext.map((p) => <p>{p}</p>)}
       </CaseSection>
 
       <CaseSection title="Response delivery" id="delivery">
@@ -83,11 +84,6 @@ const sections = [
   .hero-figure {
     max-width: 52rem;
     padding-bottom: var(--space-6);
-  }
-
-  .fine {
-    font-size: var(--text-sm);
-    color: var(--color-muted);
   }
 
   .tradeoff {
