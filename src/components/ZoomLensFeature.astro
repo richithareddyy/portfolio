@@ -1,6 +1,6 @@
 ---
 import { zoomLens } from '../data/projects';
-import ZoomLensDemo from './ZoomLensDemo.astro';
+import ZoomLensMedia from './ZoomLensMedia.astro';
 import ZoomLensModes from './ZoomLensModes.astro';
 import ZoomLensPrivacy from './ZoomLensPrivacy.astro';
 import ZoomLensStatus from './ZoomLensStatus.astro';
@@ -9,10 +9,7 @@ import ZoomLensStatus from './ZoomLensStatus.astro';
 <article class="zl" id="zoom-lens" aria-labelledby="zl-title">
   <div class="wrap">
     <header class="top" data-reveal>
-      <p class="label">
-        <span class="flag">Featured</span>
-        {zoomLens.kicker} · {zoomLens.year}
-      </p>
+      <p class="label">Current project · {zoomLens.kicker} · {zoomLens.year}</p>
       <h3 id="zl-title" transition:name="title-zoom-lens">{zoomLens.title}</h3>
       <p class="one-liner">{zoomLens.oneLiner}</p>
     </header>
@@ -28,7 +25,7 @@ import ZoomLensStatus from './ZoomLensStatus.astro';
         </ul>
       </div>
       <div class="figure" data-reveal>
-        <ZoomLensDemo />
+        <ZoomLensMedia />
       </div>
     </div>
 
@@ -69,15 +66,6 @@ import ZoomLensStatus from './ZoomLensStatus.astro';
     display: grid;
     gap: var(--space-3);
     max-width: 46rem;
-  }
-
-  .flag {
-    display: inline-block;
-    margin-right: var(--space-2);
-    padding: 1px var(--space-2);
-    background: var(--color-accent);
-    color: var(--color-surface);
-    border-radius: var(--radius-xs);
   }
 
   h3 {

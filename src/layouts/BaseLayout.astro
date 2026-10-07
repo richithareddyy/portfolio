@@ -40,7 +40,12 @@ const pageTitle = title ? `${title} · ${profile.name}` : `${profile.name} · So
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <ClientRouter fallback="swap" />
     <script is:inline>
+      // Hide reveal targets only while JS is working. If the reveal script has not
+      // started within 2.5 s (blocked or failed), show everything.
       document.documentElement.classList.add('js-reveal');
+      setTimeout(function () {
+        if (!window.__revealReady) document.documentElement.classList.remove('js-reveal');
+      }, 2500);
     </script>
   </head>
   <body>
@@ -62,6 +67,12 @@ const pageTitle = title ? `${title} · ${profile.name}` : `${profile.name} · So
           return;
         }
         root.classList.add('js-reveal');
+        // Anything already in the viewport shows immediately.
+        const pending: HTMLElement[] = [];
+        items.forEach((el) => {
+          if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add('is-visible');
+          else pending.push(el);
+        });
         const observer = new IntersectionObserver(
           (entries) => {
             for (const entry of entries) {
@@ -73,9 +84,11 @@ const pageTitle = title ? `${title} · ${profile.name}` : `${profile.name} · So
           },
           { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
         );
-        items.forEach((el) => observer.observe(el));
+        pending.forEach((el) => observer.observe(el));
       }
+      (window as unknown as { __revealReady?: boolean }).__revealReady = true;
       document.addEventListener('astro:page-load', setupReveal);
+      setupReveal();
     </script>
   </body>
 </html>

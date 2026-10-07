@@ -4,18 +4,17 @@ import Metrics from './Metrics.astro';
 
 interface Props {
   project: Project;
-  number: string;
   variant?: 'wide' | 'compact';
 }
 
-const { project, number, variant = 'wide' } = Astro.props;
+const { project, variant = 'wide' } = Astro.props;
 const hasFigure = Astro.slots.has('figure');
 const href = `/work/${project.slug}`;
 ---
 
 <article class:list={['feature', variant, { 'has-figure': hasFigure }]} aria-labelledby={`${project.slug}-title`} data-reveal>
   <header class="head">
-    <p class="label"><span class="num">{number}</span> {project.kicker} · {project.year}</p>
+    <p class="label">{project.kicker} · {project.year}</p>
     <h3 id={`${project.slug}-title`}>
       <a href={href} transition:name={`title-${project.slug}`}>{project.title}</a>
     </h3>
@@ -91,10 +90,6 @@ const href = `/work/${project.slug}`;
     display: grid;
     gap: var(--space-2);
     max-width: 44rem;
-  }
-
-  .num {
-    color: var(--color-accent);
   }
 
   h3 {
