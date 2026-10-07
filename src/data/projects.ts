@@ -27,6 +27,9 @@ export const zoomLens = {
   title: 'Zoom Lens',
   kicker: 'Zoom Fellowship · ASU Next Lab',
   year: '2026 – present',
+  /** Demo recording. Put the file in public/ and set the path, e.g. '/zoom-lens-demo.mp4'. */
+  demoVideo: null as string | null,
+  demoPoster: null as string | null,
   oneLiner:
     'An AI assistant inside Zoom that privately helps participants understand what is being shared on screen.',
   summary:
@@ -48,14 +51,14 @@ export const zoomLens = {
     {
       id: 'explain',
       name: 'Explain',
-      timing: '≈ 10 s',
+      timing: '≈ 12 s',
       what: 'What the content means.',
       body: 'Explains what the shape of a chart implies, why a diagram is laid out the way it is, or what a piece of code is for. It takes longer because it reasons further about the content.',
     },
     {
       id: 'follow-up',
       name: 'Follow-up',
-      timing: 'one question',
+      timing: '≈ 3 s',
       what: 'Ask about the answer.',
       body: 'Ask one question about the answer you just got, so if something is still unclear you do not have to start over.',
     },
@@ -110,11 +113,11 @@ export const zoomLens = {
     },
     {
       title: 'Shared-screen understanding',
-      body: 'Turns arbitrary shared content — charts, spreadsheets, slides, papers, code — into a specific answer, not a generic caption.',
+      body: 'Turns arbitrary shared content (charts, spreadsheets, slides, papers, code) into a specific answer, not a generic caption.',
     },
     {
       title: 'Two response modes',
-      body: 'Describe and Explain trade latency for depth (about 6 s vs. about 10 s) because they answer different questions.',
+      body: 'Describe and Explain trade latency for depth (about 6 s vs. about 12 s) because they answer different questions. A follow-up returns in about 3 s.',
     },
     {
       title: 'Participant-specific responses',
@@ -160,7 +163,7 @@ export const projects: Project[] = [
       {
         heading: 'Evidence on every result',
         body: [
-          'An impact result is a chain of facts — test_checkout calls checkout (line 16), which calls authorize (line 5) — so a reviewer can verify each hop.',
+          'An impact result is a chain of facts, such as: test_checkout calls checkout (line 16), which calls authorize (line 5). A reviewer can verify each hop.',
         ],
       },
       {
@@ -185,7 +188,7 @@ export const projects: Project[] = [
     metricsNote:
       'Precision and recall are measured with fault injection on small fixture projects. On ripgrep, macro-generated tests and generic dispatch limit recall; the README documents this.',
     interesting:
-      'It is honest about what static analysis cannot see. Benchmarking tokio also exposed a resolver bug — glob-import cycles recomputed exponentially — which was fixed to run in polynomial time.',
+      'It is honest about what static analysis cannot see. Benchmarking tokio also exposed a resolver bug where glob-import cycles were recomputed exponentially; it now runs in polynomial time.',
     limitations: [
       'Only Rust is analyzed; macro_rules! bodies and #[cfg] are not expanded.',
       'No general type inference, so calls on some receivers are reported as ambiguous.',
@@ -217,7 +220,7 @@ export const projects: Project[] = [
       {
         heading: 'Narrow merge',
         body: [
-          'One window-function pass over narrow columns finds only the rows that must not load — superseded duplicates and orphans — and the upsert anti-joins against that small set.',
+          'One window-function pass over narrow columns finds only the rows that must not load (superseded duplicates and orphans), and the upsert anti-joins against that small set.',
         ],
       },
       {
@@ -275,7 +278,7 @@ export const projects: Project[] = [
     ],
     metricsNote: 'Load test run on a development laptop with MongoDB in Docker; results depend on hardware.',
     interesting:
-      'Each race condition has a specific mechanism — indexes, atomic updates, timestamps, version checks — and a test that would catch it regressing.',
+      'Each race condition is handled by a specific mechanism (unique indexes, atomic updates, timestamps, or version checks) and has a test that would catch it regressing.',
   },
   {
     slug: 'ticket-triage',

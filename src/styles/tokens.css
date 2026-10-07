@@ -23,24 +23,6 @@
   --color-focus: #1f5fbf;
   --color-selection: #f0d7c8;
 
-  /* Illustration palette: the Zoom Lens meeting mockup is always dark */
-  --illus-frame: #22221e;
-  --illus-frame-edge: #000;
-  --illus-panel: #1a1a17;
-  --illus-line: #2f2e29;
-  --illus-control: #3a3933;
-  --illus-control-hover: #6b695f;
-  --illus-ink: #ece9e1;
-  --illus-ink-muted: #a3a093;
-  --illus-ink-faint: #8b887e;
-  --illus-dot: #4a4840;
-  --illus-screen: #fbfaf7;
-  --illus-screen-ink: #191915;
-  --illus-screen-muted: #64625a;
-  --illus-screen-rule: #b9b4a7;
-  --illus-bar: #3d3c36;
-  --illus-focus: #7fb0ff;
-
   /* Typography */
   --font-serif: 'Newsreader Variable', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
   --font-sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
