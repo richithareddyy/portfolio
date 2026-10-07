@@ -3,9 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import ZoomLensFeature from '../components/ZoomLensFeature.astro';
-import ProjectFeature from '../components/ProjectFeature.astro';
-import CodeAtlasFigure from '../components/CodeAtlasFigure.astro';
-import PipelineFigure from '../components/PipelineFigure.astro';
+import ProjectPreview from '../components/ProjectPreview.astro';
 import OtherWork from '../components/OtherWork.astro';
 import Experience from '../components/Experience.astro';
 import Skills from '../components/Skills.astro';
@@ -14,10 +12,8 @@ import Contact from '../components/Contact.astro';
 import { projects } from '../data/projects';
 
 const bySlug = Object.fromEntries(projects.map((p) => [p.slug, p]));
-const codeatlas = bySlug['codeatlas']!;
-const pipeline = bySlug['reddit-data-pipeline']!;
-const streambox = bySlug['streambox']!;
-const triage = bySlug['ticket-triage']!;
+const main = ['codeatlas', 'reddit-data-pipeline'].map((s) => bySlug[s]!);
+const compact = ['streambox', 'ticket-triage'].map((s) => bySlug[s]!);
 ---
 
 <BaseLayout isHome>
@@ -26,25 +22,14 @@ const triage = bySlug['ticket-triage']!;
 
     <section id="work" aria-labelledby="work-title">
       <div class="wrap">
-        <SectionHeading id="work">Projects</SectionHeading>
+        <SectionHeading id="work">Selected projects</SectionHeading>
       </div>
 
       <ZoomLensFeature />
 
       <div class="wrap">
-        <ProjectFeature project={codeatlas} >
-          <CodeAtlasFigure slot="figure" />
-        </ProjectFeature>
-
-        <ProjectFeature project={pipeline} >
-          <PipelineFigure slot="figure" />
-        </ProjectFeature>
-
-        <div class="pair">
-          <ProjectFeature project={streambox} variant="compact" />
-          <ProjectFeature project={triage} variant="compact" />
-        </div>
-
+        {main.map((p) => <ProjectPreview project={p} />)}
+        {compact.map((p) => <ProjectPreview project={p} size="compact" />)}
         <OtherWork />
       </div>
     </section>
@@ -55,17 +40,3 @@ const triage = bySlug['ticket-triage']!;
     <Contact />
   </div>
 </BaseLayout>
-
-<style>
-  .pair {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  @media (min-width: 60rem) {
-    .pair {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      column-gap: var(--space-8);
-    }
-  }
-</style>

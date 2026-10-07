@@ -1,5 +1,4 @@
 ---
-const stages = ['Ingest', 'Module tree', 'Parse', 'Extract', 'Resolve', 'Neo4j graph', 'Impact', 'GraphQL', 'SvelteKit'];
 const classes = [
   { name: 'resolved', note: 'one definition → CALLS edge', tone: 'solid' },
   { name: 'ambiguous', note: 'candidates + reason kept', tone: 'dashed' },
@@ -9,13 +8,6 @@ const classes = [
 ---
 
 <figure class="ca">
-  <div class="panel">
-    <p class="label">Pipeline</p>
-    <ol class="stages">
-      {stages.map((s) => <li>{s}</li>)}
-    </ol>
-  </div>
-
   <div class="panel">
     <p class="label">Every call site gets a label</p>
     <ul class="classes">
@@ -37,7 +29,7 @@ const classes = [
 checkout calls <span class="t">authorize</span>            <span class="loc">src/checkout.rs:5</span>
 authorize calls <span class="hl">validate_amount</span>     <span class="loc">src/payments.rs:13</span></code></pre>
   </div>
-  <figcaption>Diagram of the analysis pipeline and call-site labels. The evidence chain is from the project's change-impact fixture.</figcaption>
+  <figcaption>Call-site labels and an impact evidence chain from the project's change-impact fixture.</figcaption>
 </figure>
 
 <style>
@@ -59,26 +51,6 @@ authorize calls <span class="hl">validate_amount</span>     <span class="loc">sr
 
   .panel .label {
     margin-bottom: var(--space-3);
-  }
-
-  .stages {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2) 0;
-    list-style: none;
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
-  }
-
-  .stages li {
-    display: inline-flex;
-    align-items: center;
-  }
-
-  .stages li:not(:last-child)::after {
-    content: '→';
-    margin: 0 var(--space-2);
-    color: var(--color-faint);
   }
 
   .classes {
@@ -144,7 +116,7 @@ authorize calls <span class="hl">validate_amount</span>     <span class="loc">sr
   }
 
   .loc {
-    color: var(--color-faint);
+    color: var(--color-muted);
   }
 
   .t {
@@ -158,6 +130,6 @@ authorize calls <span class="hl">validate_amount</span>     <span class="loc">sr
 
   figcaption {
     font-size: var(--text-xs);
-    color: var(--color-faint);
+    color: var(--color-muted);
   }
 </style>

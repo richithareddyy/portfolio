@@ -5,65 +5,73 @@ import CaseSection from '../../components/CaseSection.astro';
 import NextProject from '../../components/NextProject.astro';
 import ZoomLensMedia from '../../components/ZoomLensMedia.astro';
 import ZoomLensModes from '../../components/ZoomLensModes.astro';
-import ZoomLensPrivacy from '../../components/ZoomLensPrivacy.astro';
+import ZoomLensDelivery from '../../components/ZoomLensDelivery.astro';
 import ZoomLensStatus from '../../components/ZoomLensStatus.astro';
+import DecisionList from '../../components/DecisionList.astro';
 import { zoomLens } from '../../data/projects';
+
+const sections = [
+  { id: 'how', label: 'How it works' },
+  { id: 'delivery', label: 'Response delivery' },
+  { id: 'decisions', label: 'Key decisions' },
+  { id: 'limitations', label: 'Limitations' },
+  { id: 'tradeoff', label: 'Tradeoff' },
+  { id: 'status', label: 'Status and next steps' },
+];
 ---
 
 <BaseLayout title={zoomLens.title} description={zoomLens.oneLiner}>
   <div data-page="project">
     <CaseHeader
       slug={zoomLens.slug}
-      kicker={zoomLens.kicker}
+      kicker={`${zoomLens.kicker} · ${zoomLens.year}`}
       title={zoomLens.title}
       summary={zoomLens.oneLiner}
-      meta={[
-        { label: 'Role', value: 'Zoom Fellow, ASU Next Lab' },
-        { label: 'Timeline', value: zoomLens.year },
-        { label: 'Status', value: 'Working prototype' },
+      facts={[
+        { label: 'Problem', value: zoomLens.problemShort },
+        { label: 'Role', value: zoomLens.role },
+        { label: 'What I built', value: zoomLens.contribution },
+        { label: 'Status', value: `${zoomLens.status}. Reads the participant’s display; meeting-feed capture is not yet enabled.` },
+        { label: 'Outcome', value: zoomLens.outcome },
       ]}
-      stack={zoomLens.stack}
+      stack={zoomLens.tags}
+      sections={sections}
     />
 
     <div class="wrap">
-      <div class="hero-figure" data-reveal>
+      <div class="hero-figure">
         <ZoomLensMedia />
       </div>
 
-      <CaseSection title="The problem" id="problem">
-        {zoomLens.problem.map((p) => <p>{p}</p>)}
-      </CaseSection>
-
       <CaseSection title="How it works" id="how">
+        {zoomLens.problem.map((p) => <p>{p}</p>)}
         <p>{zoomLens.howItWorks}</p>
         <ZoomLensModes />
+        <p class="fine">{zoomLens.timingNote}</p>
       </CaseSection>
 
-      <CaseSection title="Privacy model" id="privacy">
-        <ZoomLensPrivacy />
+      <CaseSection title="Response delivery" id="delivery">
+        <ZoomLensDelivery />
       </CaseSection>
 
-      <CaseSection title="Engineering" id="engineering">
-        <ul class="eng">
-          {
-            zoomLens.engineering.map((e) => (
-              <li>
-                <h3>{e.title}</h3>
-                <p>{e.body}</p>
-              </li>
-            ))
-          }
-        </ul>
+      <CaseSection title="Key decisions" id="decisions">
+        <DecisionList items={zoomLens.decisions} />
       </CaseSection>
 
-      <CaseSection title="Current status" id="status">
-        <ZoomLensStatus />
+      <CaseSection title="Limitations" id="limitations">
+        <h3>Screen capture</h3>
+        <p>{zoomLens.capture.current}</p>
+        <p>{zoomLens.capture.consequence}</p>
       </CaseSection>
 
-      <CaseSection title="The tradeoff" id="tradeoff">
+      <CaseSection title="Tradeoff" id="tradeoff">
         <div class="tradeoff">
-          {zoomLens.ethics.map((p, i) => <p class:list={{ first: i === 0 }}>{p}</p>)}
+          {zoomLens.tradeoff.map((p) => <p>{p}</p>)}
         </div>
+      </CaseSection>
+
+      <CaseSection title="Status and next steps" id="status">
+        <ZoomLensStatus />
       </CaseSection>
     </div>
 
@@ -74,32 +82,10 @@ import { zoomLens } from '../../data/projects';
 <style>
   .hero-figure {
     max-width: 52rem;
-    padding-bottom: var(--space-7);
+    padding-bottom: var(--space-6);
   }
 
-  .eng {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    list-style: none;
-    border-top: var(--border-hairline);
-  }
-
-  @media (min-width: 48rem) {
-    .eng {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      column-gap: var(--space-7);
-    }
-  }
-
-  .eng li {
-    display: grid;
-    gap: var(--space-1);
-    align-content: start;
-    padding-block: var(--space-4);
-    border-bottom: var(--border-hairline);
-  }
-
-  .eng p {
+  .fine {
     font-size: var(--text-sm);
     color: var(--color-muted);
   }
@@ -116,9 +102,5 @@ import { zoomLens } from '../../data/projects';
     font-family: var(--font-serif);
     font-size: var(--text-lg);
     line-height: 1.55;
-  }
-
-  .tradeoff .first {
-    color: var(--color-ink);
   }
 </style>

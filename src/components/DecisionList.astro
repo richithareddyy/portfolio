@@ -1,0 +1,51 @@
+---
+import type { Decision } from '../data/projects';
+interface Props {
+  items: readonly Decision[];
+}
+const { items } = Astro.props;
+---
+
+<dl class="decisions">
+  {
+    items.map((d) => (
+      <div>
+        <dt>{d.heading}</dt>
+        <dd>{d.body}</dd>
+      </div>
+    ))
+  }
+</dl>
+
+<style>
+  .decisions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0 var(--space-7);
+    margin: 0;
+  }
+
+  @media (min-width: 48rem) {
+    .decisions {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .decisions > div {
+    display: grid;
+    gap: var(--space-1);
+    align-content: start;
+    padding-block: var(--space-3);
+    border-top: var(--border-hairline);
+  }
+
+  dt {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  dd {
+    margin: 0;
+    font-size: var(--text-sm);
+  }
+</style>

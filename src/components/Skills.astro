@@ -4,18 +4,14 @@ import SectionHeading from './SectionHeading.astro';
 ---
 
 <section class="wrap section" id="skills" aria-labelledby="skills-title">
-  <SectionHeading id="skills">Technical skills</SectionHeading>
+  <SectionHeading id="skills">Skills</SectionHeading>
 
-  <dl class="grid" data-reveal>
+  <dl class="grid">
     {
       skills.map((group) => (
-        <div class="group">
-          <dt class="label">{group.name}</dt>
-          <dd>
-            <ul>
-              {group.items.map((item) => <li>{item}</li>)}
-            </ul>
-          </dd>
+        <div class:list={['group', { muted: group.name === 'Also used' }]}>
+          <dt>{group.name}</dt>
+          <dd>{group.items.join(' · ')}</dd>
         </div>
       ))
     }
@@ -28,8 +24,6 @@ import SectionHeading from './SectionHeading.astro';
   }
 
   .grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
     margin: 0;
     border-top: var(--border-hairline);
   }
@@ -37,36 +31,31 @@ import SectionHeading from './SectionHeading.astro';
   .group {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-2) var(--space-6);
-    padding-block: var(--space-4);
+    gap: var(--space-1) var(--space-7);
+    padding-block: var(--space-3);
     border-bottom: var(--border-hairline);
   }
 
   @media (min-width: 48rem) {
     .group {
-      grid-template-columns: 12rem minmax(0, 1fr);
+      grid-template-columns: 11rem minmax(0, 1fr);
       align-items: baseline;
     }
   }
 
+  dt {
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+
   dd {
     margin: 0;
-  }
-
-  ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-1) 0;
-    list-style: none;
-  }
-
-  li {
     font-size: var(--text-md);
+    line-height: 1.7;
   }
 
-  li:not(:last-child)::after {
-    content: '/';
-    margin-inline: var(--space-3);
-    color: var(--color-rule-strong);
+  .muted dd {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
   }
 </style>

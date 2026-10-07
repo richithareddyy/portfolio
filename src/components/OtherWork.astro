@@ -2,8 +2,8 @@
 import { otherWork } from '../data/projects';
 ---
 
-<section class="other" aria-labelledby="other-title" data-reveal>
-  <h3 id="other-title" class="label">Smaller projects</h3>
+<section class="other" aria-labelledby="other-title">
+  <h3 id="other-title" class="title">Smaller projects</h3>
   <ul class="rows">
     {
       otherWork.map((p) => (
@@ -16,7 +16,6 @@ import { otherWork } from '../data/projects';
               <a class="text-link" href={l.href} target="_blank" rel="noopener">
                 {l.label}
                 <span class="visually-hidden"> for {p.title} (opens in a new tab)</span>
-                <span aria-hidden="true"> ↗</span>
               </a>
             ))}
           </p>
@@ -29,6 +28,10 @@ import { otherWork } from '../data/projects';
 <style>
   .other {
     padding-top: var(--space-7);
+  }
+
+  .title {
+    font-size: var(--text-lg);
   }
 
   .rows {

@@ -3,7 +3,9 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import CaseHeader from '../../components/CaseHeader.astro';
 import CaseSection from '../../components/CaseSection.astro';
 import BulletList from '../../components/BulletList.astro';
+import Stages from '../../components/Stages.astro';
 import Metrics from '../../components/Metrics.astro';
+import DecisionList from '../../components/DecisionList.astro';
 import NextProject from '../../components/NextProject.astro';
 import CodeAtlasFigure from '../../components/CodeAtlasFigure.astro';
 import PipelineFigure from '../../components/PipelineFigure.astro';
@@ -23,66 +25,58 @@ const figures: Record<string, typeof CodeAtlasFigure> = {
   'reddit-data-pipeline': PipelineFigure,
 };
 const Figure = figures[project.slug];
+
+const sections = [
+  { id: 'architecture', label: 'Architecture' },
+  { id: 'decisions', label: 'Key decisions' },
+  { id: 'evaluation', label: 'Evaluation' },
+  { id: 'limitations', label: 'Limitations' },
+  ...(project.next ? [{ id: 'next', label: 'Next steps' }] : []),
+];
 ---
 
 <BaseLayout title={project.title} description={project.summary}>
   <div data-page="project">
     <CaseHeader
       slug={project.slug}
-      kicker={project.kicker}
+      kicker={`${project.kicker} · ${project.year}`}
       title={project.title}
       summary={project.summary}
-      meta={[{ label: 'Year', value: project.year }]}
-      links={project.links}
+      facts={[
+        { label: 'Problem', value: project.problem },
+        { label: 'What I built', value: project.contribution },
+        { label: 'Status', value: project.status },
+        { label: 'Outcome', value: project.outcome },
+      ]}
       stack={project.stack}
+      links={project.links}
+      sections={sections}
     />
 
     <div class="wrap">
-      <CaseSection title="The problem" id="problem">
-        <p>{project.problem}</p>
-      </CaseSection>
-
-      <CaseSection title="What I built" id="built">
+      <CaseSection title="Architecture" id="architecture">
+        <Stages stages={project.architecture.stages} />
+        {project.architecture.note && <p>{project.architecture.note}</p>}
         <BulletList items={project.built} />
+        {Figure && <Figure />}
+      </CaseSection>
+
+      <CaseSection title="Key decisions" id="decisions">
+        <DecisionList items={project.decisions} />
+      </CaseSection>
+
+      <CaseSection title="Evaluation" id="evaluation">
+        <Metrics metrics={project.metrics} note={project.evaluationNote} />
+      </CaseSection>
+
+      <CaseSection title="Limitations" id="limitations">
+        <BulletList items={project.limitations} />
       </CaseSection>
 
       {
-        Figure && (
-          <CaseSection title="Overview" id="overview">
-            <Figure />
-          </CaseSection>
-        )
-      }
-
-      <CaseSection title="Technical approach" id="approach">
-        <div class="approach">
-          {
-            project.approach.map((a) => (
-              <div>
-                <h3>{a.heading}</h3>
-                {a.body.map((p) => <p>{p}</p>)}
-              </div>
-            ))
-          }
-        </div>
-      </CaseSection>
-
-      {
-        project.metrics && (
-          <CaseSection title="Results" id="results">
-            <Metrics metrics={project.metrics} note={project.metricsNote} columns={4} />
-          </CaseSection>
-        )
-      }
-
-      <CaseSection title="Why it's interesting" id="interesting">
-        <p>{project.interesting}</p>
-      </CaseSection>
-
-      {
-        project.limitations && (
-          <CaseSection title="Known limitations" id="limitations">
-            <BulletList items={project.limitations} />
+        project.next && (
+          <CaseSection title="Next steps" id="next">
+            <BulletList items={project.next} />
           </CaseSection>
         )
       }
@@ -91,25 +85,3 @@ const Figure = figures[project.slug];
     <NextProject slug={project.slug} />
   </div>
 </BaseLayout>
-
-<style>
-  .approach {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-5) var(--space-7);
-  }
-
-  @media (min-width: 48rem) {
-    .approach {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
-  .approach > div {
-    display: grid;
-    gap: var(--space-2);
-    align-content: start;
-    padding-top: var(--space-3);
-    border-top: var(--border-hairline);
-  }
-</style>

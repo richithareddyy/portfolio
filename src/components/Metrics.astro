@@ -2,21 +2,23 @@
 import type { Metric } from '../data/projects';
 
 interface Props {
-  metrics: Metric[];
+  metrics: readonly Metric[];
   note?: string;
-  columns?: 2 | 4;
 }
 
-const { metrics, note, columns = 4 } = Astro.props;
+const { metrics, note } = Astro.props;
 ---
 
-<div class="metrics-wrap">
-  <dl class:list={['metrics', `cols-${columns}`]}>
+<div>
+  <dl class="metrics">
     {
       metrics.map((m) => (
         <div>
-          <dt>{m.label}</dt>
           <dd>{m.value}</dd>
+          <dt>
+            {m.label}
+            {m.qualifier && <span class="qualifier">{m.qualifier}</span>}
+          </dt>
         </div>
       ))
     }
@@ -33,17 +35,16 @@ const { metrics, note, columns = 4 } = Astro.props;
   }
 
   @media (min-width: 48rem) {
-    .cols-4 {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+    .metrics {
+      grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
     }
   }
 
   .metrics > div {
-    display: flex;
-    flex-direction: column-reverse;
-    justify-content: flex-end;
-    gap: var(--space-1);
-    padding: var(--space-4) var(--space-4) var(--space-4) 0;
+    display: grid;
+    align-content: start;
+    gap: 2px;
+    padding: var(--space-3) var(--space-4) var(--space-3) 0;
     border-bottom: var(--border-hairline);
   }
 
@@ -53,19 +54,23 @@ const { metrics, note, columns = 4 } = Astro.props;
     font-size: var(--text-xl);
     font-variant-numeric: tabular-nums lining-nums;
     line-height: 1.1;
-    white-space: nowrap;
   }
 
   dt {
     font-size: var(--text-xs);
-    color: var(--color-muted);
     line-height: 1.45;
+    color: var(--color-ink-soft);
+  }
+
+  .qualifier {
+    display: block;
+    color: var(--color-muted);
   }
 
   .note {
     margin-top: var(--space-3);
-    max-width: 52rem;
-    font-size: var(--text-xs);
-    color: var(--color-faint);
+    max-width: var(--width-prose);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
   }
 </style>
