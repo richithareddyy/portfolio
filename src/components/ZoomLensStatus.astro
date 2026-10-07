@@ -1,26 +1,27 @@
 ---
 import { zoomLens } from '../data/projects';
-const { status } = zoomLens;
+const { progress } = zoomLens;
 ---
 
 <div class="status">
   <section class="col built" aria-labelledby="status-built">
-    <h4 id="status-built"><span class="dot" aria-hidden="true"></span>Working today</h4>
+    <h3 id="status-built"><span class="dot" aria-hidden="true"></span>Working today</h3>
     <ul>
-      {status.built.map((item) => <li>{item}</li>)}
+      {progress.built.map((item) => <li>{item}</li>)}
     </ul>
   </section>
 
-  <section class="col caveat" aria-labelledby="status-caveat">
-    <h4 id="status-caveat"><span class="dot" aria-hidden="true"></span>Not yet</h4>
-    <p class="caveat-title">{status.caveat.title}</p>
-    <p>{status.caveat.body}</p>
+  <section class="col pending" aria-labelledby="status-pending">
+    <h3 id="status-pending"><span class="dot" aria-hidden="true"></span>Not yet</h3>
+    <ul>
+      <li>{progress.notYet}</li>
+    </ul>
   </section>
 
   <section class="col exploring" aria-labelledby="status-exploring">
-    <h4 id="status-exploring"><span class="dot" aria-hidden="true"></span>Exploring next</h4>
+    <h3 id="status-exploring"><span class="dot" aria-hidden="true"></span>Exploring next</h3>
     <ul>
-      {status.exploring.map((item) => <li>{item}</li>)}
+      {progress.exploring.map((item) => <li>{item}</li>)}
     </ul>
     <p class="fine">Directions under exploration, not completed features.</p>
   </section>
@@ -35,7 +36,7 @@ const { status } = zoomLens;
 
   @media (min-width: 56rem) {
     .status {
-      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: var(--space-6);
     }
   }
@@ -50,7 +51,7 @@ const { status } = zoomLens;
     --tone: var(--color-positive);
   }
 
-  .caveat {
+  .pending {
     --tone: var(--color-pending);
   }
 
@@ -58,15 +59,11 @@ const { status } = zoomLens;
     --tone: var(--color-rule-strong);
   }
 
-  h4 {
+  h3 {
     display: flex;
     align-items: center;
     gap: var(--space-2);
     margin-bottom: var(--space-3);
-    font-family: var(--font-sans);
-    font-size: var(--text-sm);
-    font-weight: 600;
-    letter-spacing: 0;
   }
 
   .dot {
@@ -90,7 +87,6 @@ const { status } = zoomLens;
   li {
     position: relative;
     padding-left: var(--space-4);
-    color: var(--color-ink-soft);
   }
 
   li::before {
@@ -103,15 +99,6 @@ const { status } = zoomLens;
     background: var(--color-faint);
   }
 
-  .caveat-title {
-    font-weight: 500;
-    margin-bottom: var(--space-1);
-  }
-
-  .caveat p:not(.caveat-title) {
-    color: var(--color-ink-soft);
-  }
-
   .exploring li {
     color: var(--color-muted);
   }
@@ -119,6 +106,6 @@ const { status } = zoomLens;
   .fine {
     margin-top: var(--space-3);
     font-size: var(--text-xs);
-    color: var(--color-faint);
+    color: var(--color-muted);
   }
 </style>

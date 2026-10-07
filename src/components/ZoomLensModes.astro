@@ -4,10 +4,10 @@ import { zoomLens } from '../data/projects';
 
 <ol class="modes">
   {
-    zoomLens.modes.map((mode, i) => (
-      <li data-reveal style={`transition-delay:${i * 60}ms`}>
+    zoomLens.modes.map((mode) => (
+      <li>
         <div class="head">
-          <h4>{mode.name}</h4>
+          <h3>{mode.name}</h3>
           <span class="timing">{mode.timing}</span>
         </div>
         <p class="what">{mode.what}</p>
@@ -52,7 +52,7 @@ import { zoomLens } from '../data/projects';
     gap: var(--space-3);
   }
 
-  h4 {
+  h3 {
     font-size: var(--text-xl);
   }
 

@@ -7,7 +7,7 @@ interface Props {
 const { id, lede } = Astro.props;
 ---
 
-<header class="section-heading" data-reveal>
+<header class="section-heading">
   <h2 id={`${id}-title`}><slot /></h2>
   {lede && <p class="lede">{lede}</p>}
 </header>

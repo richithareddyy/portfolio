@@ -1,28 +1,25 @@
-export type SkillGroup = { name: string; items: string[] };
+export type SkillGroup = { name: string; items: string[]; note?: string };
 
+/** Grouped by how they were used in the projects on this site. */
 export const skills: SkillGroup[] = [
   {
-    name: 'Languages',
-    items: ['Python', 'SQL', 'Java', 'JavaScript', 'TypeScript', 'Rust', 'C++', 'C', 'R', 'MATLAB'],
+    name: 'Applied AI & ML',
+    items: ['Python', 'XGBoost', 'Scikit-learn', 'SHAP', 'NLTK', 'PySpark', 'Google Gemini API'],
   },
   {
-    name: 'ML & data libraries',
-    items: ['TensorFlow', 'Scikit-learn', 'XGBoost', 'SHAP', 'NLTK', 'VADER', 'OpenCV', 'PySpark', 'pandas', 'tree-sitter'],
+    name: 'Backend & data',
+    items: ['SQL', 'PostgreSQL', 'Neo4j', 'MongoDB', 'GraphQL', 'Flask', 'Node.js', 'Express.js'],
   },
   {
-    name: 'APIs & SDKs',
-    items: ['Google Gemini API', 'Zoom Video SDK', 'Zoom Realtime Media Streams API', 'GraphQL'],
+    name: 'Systems & tooling',
+    items: ['Rust', 'tree-sitter', 'Docker', 'GitHub Actions', 'Git'],
   },
   {
-    name: 'Databases',
-    items: ['PostgreSQL', 'MongoDB', 'Neo4j', 'SQLite'],
+    name: 'Frontend',
+    items: ['TypeScript', 'JavaScript', 'SvelteKit', 'Streamlit'],
   },
   {
-    name: 'Frameworks',
-    items: ['Flask', 'Node.js', 'Express.js', 'SvelteKit', 'Streamlit'],
-  },
-  {
-    name: 'Tools & platforms',
-    items: ['Docker', 'Git', 'GitHub Actions', 'JWT', 'ServiceNow'],
+    name: 'Also used',
+    items: ['Java', 'C++', 'C', 'R', 'MATLAB', 'TensorFlow', 'OpenCV', 'SQLite'],
   },
 ];

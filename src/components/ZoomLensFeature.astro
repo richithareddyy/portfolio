@@ -1,131 +1,150 @@
 ---
 import { zoomLens } from '../data/projects';
 import ZoomLensMedia from './ZoomLensMedia.astro';
-import ZoomLensModes from './ZoomLensModes.astro';
-import ZoomLensPrivacy from './ZoomLensPrivacy.astro';
-import ZoomLensStatus from './ZoomLensStatus.astro';
 ---
 
 <article class="zl" id="zoom-lens" aria-labelledby="zl-title">
-  <div class="wrap">
-    <header class="top" data-reveal>
-      <p class="label">Current project · {zoomLens.kicker} · {zoomLens.year}</p>
-      <h3 id="zl-title" transition:name="title-zoom-lens">{zoomLens.title}</h3>
+  <div class="wrap grid">
+    <div class="text">
+      <p class="label">{zoomLens.kicker} · {zoomLens.year}</p>
+      <h3 id="zl-title"><a href="/work/zoom-lens" transition:name="title-zoom-lens">{zoomLens.title}</a></h3>
       <p class="one-liner">{zoomLens.oneLiner}</p>
-    </header>
 
-    <div class="lead">
-      <div class="problem" data-reveal>
-        <h4 class="label">The problem</h4>
-        {zoomLens.problem.map((p) => <p>{p}</p>)}
-        <h4 class="label">How it works</h4>
-        <p>{zoomLens.howItWorks}</p>
-        <ul class="stack" aria-label="Stack">
-          {zoomLens.stack.map((s) => <li>{s}</li>)}
-        </ul>
-      </div>
-      <div class="figure" data-reveal>
-        <ZoomLensMedia />
-      </div>
+      <dl class="facts">
+        <div>
+          <dt>Problem</dt>
+          <dd>{zoomLens.problemShort}</dd>
+        </div>
+        <div>
+          <dt>My contribution</dt>
+          <dd>{zoomLens.contribution}</dd>
+        </div>
+        <div>
+          <dt>Status</dt>
+          <dd>
+            {zoomLens.status}. It reads the participant’s display for now; capture directly from the meeting feed is not yet
+            enabled.
+          </dd>
+        </div>
+      </dl>
+
+      <ul class="modes" aria-label="Interactions">
+        {
+          zoomLens.modes.map((m) => (
+            <li>
+              <span class="mode-name">{m.name}</span>
+              <span class="mode-what">{m.what}</span>
+              <span class="mode-time">{m.timing}</span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <a class="arrow-link" href="/work/zoom-lens">
+        Zoom Lens case study <span class="arrow" aria-hidden="true">→</span>
+      </a>
     </div>
 
-    <section class="block" aria-labelledby="zl-modes">
-      <h4 id="zl-modes" class="block-title">Three interactions</h4>
-      <ZoomLensModes />
-    </section>
-
-    <section class="block" aria-labelledby="zl-privacy" data-reveal>
-      <h4 id="zl-privacy" class="block-title">Private by construction</h4>
-      <ZoomLensPrivacy compact />
-    </section>
-
-    <section class="block" aria-labelledby="zl-status" data-reveal>
-      <h4 id="zl-status" class="block-title">What exists, and what doesn't yet</h4>
-      <ZoomLensStatus />
-    </section>
-
-    <footer class="cta" data-reveal>
-      <a class="arrow-link" href="/work/zoom-lens">
-        Read the full case study, including the design tradeoff around presenter notification
-        <span class="arrow" aria-hidden="true">→</span>
-      </a>
-    </footer>
+    <div class="media">
+      <ZoomLensMedia />
+    </div>
   </div>
 </article>
 
 <style>
   .zl {
-    position: relative;
-    padding-block: var(--space-8);
+    padding-block: var(--space-7);
     background: var(--color-surface);
-    border-top: var(--border-ink);
+    border-top: var(--border-hairline);
     border-bottom: var(--border-hairline);
   }
 
-  .top {
-    display: grid;
-    gap: var(--space-3);
-    max-width: 46rem;
-  }
-
-  h3 {
-    font-size: clamp(2.5rem, 1.6rem + 3.8vw, 4.5rem);
-    letter-spacing: -0.025em;
-    line-height: 1;
-  }
-
-  .one-liner {
-    font-family: var(--font-serif);
-    font-size: var(--text-xl);
-    line-height: var(--leading-snug);
-    color: var(--color-ink-soft);
-  }
-
-  .lead {
+  .grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-7);
-    margin-top: var(--space-7);
+    gap: var(--space-6);
   }
 
   @media (min-width: 60rem) {
-    .lead {
-      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    .grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap: var(--space-8);
       align-items: start;
     }
   }
 
-  .problem {
+  .text {
     display: grid;
-    gap: var(--space-3);
+    gap: var(--space-4);
+    justify-items: start;
+  }
+
+  h3 {
+    font-size: clamp(2.25rem, 1.6rem + 2.6vw, 3.5rem);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  h3 a {
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  h3 a:hover {
+    color: var(--color-accent-ink);
+  }
+
+  .one-liner {
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
     color: var(--color-ink-soft);
   }
 
-  .problem h4 + p {
-    margin-top: calc(var(--space-1) * -1);
+  .facts {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+    font-size: var(--text-sm);
   }
 
-  .problem h4:not(:first-child) {
-    margin-top: var(--space-4);
+  dt {
+    font-weight: 600;
   }
 
-  .problem .stack {
-    margin-top: var(--space-3);
+  dd {
+    margin: 0;
+    color: var(--color-ink-soft);
   }
 
-  .block {
-    margin-top: var(--space-8);
-  }
-
-  .block-title {
-    margin-bottom: var(--space-5);
-    font-size: var(--text-xl);
-  }
-
-  .cta {
-    margin-top: var(--space-7);
-    padding-top: var(--space-5);
+  .modes {
+    width: 100%;
+    list-style: none;
     border-top: var(--border-hairline);
+  }
+
+  .modes li {
+    display: grid;
+    grid-template-columns: 6rem minmax(0, 1fr) auto;
+    gap: var(--space-3);
+    align-items: baseline;
+    padding-block: var(--space-2);
+    border-bottom: var(--border-hairline);
+    font-size: var(--text-sm);
+  }
+
+  .mode-name {
+    font-weight: 500;
+  }
+
+  .mode-what {
+    color: var(--color-muted);
+  }
+
+  .mode-time {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-accent-ink);
+    white-space: nowrap;
   }
 </style>

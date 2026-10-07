@@ -168,26 +168,6 @@ button {
   white-space: nowrap;
 }
 
-/* Scroll reveal. Content is visible by default; JS adds .js-reveal to <html>. */
-.js-reveal [data-reveal] {
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity var(--duration-slow) var(--ease-out),
-    transform var(--duration-slow) var(--ease-out);
-}
-
-.js-reveal [data-reveal].is-visible {
-  opacity: 1;
-  transform: none;
-}
-
-@media print {
-  .js-reveal [data-reveal] {
-    opacity: 1;
-    transform: none;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -199,10 +179,5 @@ button {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-
-  .js-reveal [data-reveal] {
-    opacity: 1;
-    transform: none;
   }
 }
