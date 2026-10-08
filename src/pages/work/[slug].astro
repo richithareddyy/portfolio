@@ -3,16 +3,18 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import CaseHeader from '../../components/CaseHeader.astro';
 import CaseSection from '../../components/CaseSection.astro';
 import BulletList from '../../components/BulletList.astro';
-import Stages from '../../components/Stages.astro';
+import ProjectVisual from '../../components/ProjectVisual.astro';
 import Metrics from '../../components/Metrics.astro';
 import DecisionList from '../../components/DecisionList.astro';
+import EvidenceLinks from '../../components/EvidenceLinks.astro';
 import NextProject from '../../components/NextProject.astro';
-import CodeAtlasFigure from '../../components/CodeAtlasFigure.astro';
-import PipelineFigure from '../../components/PipelineFigure.astro';
-import { projects, type Project } from '../../data/projects';
+import { caseStudies, type Project } from '../../data/projects';
 
 export function getStaticPaths() {
-  return projects.map((project) => ({ params: { slug: project.slug }, props: { project } }));
+  // Zoom Lens has its own page.
+  return caseStudies
+    .filter((p) => p.slug !== 'zoom-lens')
+    .map((project) => ({ params: { slug: project.slug }, props: { project } }));
 }
 
 interface Props {
@@ -20,63 +22,76 @@ interface Props {
 }
 
 const { project } = Astro.props;
-const figures: Record<string, typeof CodeAtlasFigure> = {
-  codeatlas: CodeAtlasFigure,
-  'reddit-data-pipeline': PipelineFigure,
-};
-const Figure = figures[project.slug];
-
 const sections = [
-  { id: 'architecture', label: 'Architecture' },
-  { id: 'decisions', label: 'Key decisions' },
+  { id: 'problem', label: 'Problem' },
+  { id: 'contribution', label: 'My contribution' },
+  { id: 'decisions', label: 'Decisions' },
   { id: 'evaluation', label: 'Evaluation' },
-  { id: 'limitations', label: 'Limitations' },
-  ...(project.next ? [{ id: 'next', label: 'Next steps' }] : []),
+  { id: 'limitations', label: project.next ? 'Limitations and next steps' : 'Limitations' },
 ];
 ---
 
 <BaseLayout title={project.title} description={project.summary}>
   <div data-page="project">
-    <CaseHeader
-      slug={project.slug}
-      kicker={`${project.kicker} · ${project.year}`}
-      title={project.title}
-      summary={project.summary}
-      facts={[
-        { label: 'Problem', value: project.problem },
-        { label: 'What I built', value: project.contribution },
-        { label: 'Status', value: project.status },
-        { label: 'Outcome', value: project.outcome },
-      ]}
-      stack={project.stack}
-      links={project.links}
-      sections={sections}
-    />
+    <CaseHeader project={project} sections={sections} />
 
     <div class="wrap">
-      <CaseSection title="Architecture" id="architecture">
-        <Stages stages={project.architecture.stages} />
-        {project.architecture.note && <p>{project.architecture.note}</p>}
-        <BulletList items={project.built} />
-        {Figure && <Figure />}
+      <div class="lead-visual">
+        <ProjectVisual visual={project.visual} size="full" eager />
+      </div>
+
+      <CaseSection title="Problem and constraints" id="problem">
+        <p>{project.problem}</p>
+        {project.constraints && <BulletList items={project.constraints} />}
       </CaseSection>
 
-      <CaseSection title="Key decisions" id="decisions">
-        <DecisionList items={project.decisions} />
-      </CaseSection>
-
-      <CaseSection title="Evaluation" id="evaluation">
-        <Metrics metrics={project.metrics} note={project.evaluationNote} />
-      </CaseSection>
-
-      <CaseSection title="Limitations" id="limitations">
-        <BulletList items={project.limitations} />
+      <CaseSection title="My contribution" id="contribution">
+        <p>{project.contribution}</p>
+        {project.built && <BulletList items={project.built} />}
+        {project.stack && (
+          <ul class="stack" aria-label="Full stack">
+            {project.stack.map((s) => <li>{s}</li>)}
+          </ul>
+        )}
       </CaseSection>
 
       {
-        project.next && (
-          <CaseSection title="Next steps" id="next">
+        project.decisions && (
+          <CaseSection title="Decisions and tradeoffs" id="decisions">
+            <DecisionList items={project.decisions} />
+          </CaseSection>
+        )
+      }
+
+      {
+        project.evaluation && (
+          <CaseSection title="Evaluation" id="evaluation">
+            <h3>Method</h3>
+            <BulletList items={project.evaluation.method} />
+            <Metrics metrics={project.evaluation.metrics} />
+            <EvidenceLinks links={project.evaluation.evidence} />
+          </CaseSection>
+        )
+      }
+
+      <CaseSection title={project.next ? 'Limitations and next steps' : 'Limitations'} id="limitations">
+        {project.limitations && <BulletList items={project.limitations} />}
+        {project.next && (
+          <>
+            <h3>Next steps</h3>
             <BulletList items={project.next} />
+          </>
+        )}
+      </CaseSection>
+
+      {
+        project.gallery && (
+          <CaseSection title="More screens" id="gallery">
+            <div class="gallery">
+              {project.gallery.map((v) => (
+                <ProjectVisual visual={v} size="full" />
+              ))}
+            </div>
           </CaseSection>
         )
       }
@@ -85,3 +100,22 @@ const sections = [
     <NextProject slug={project.slug} />
   </div>
 </BaseLayout>
+
+<style>
+  .lead-visual {
+    max-width: 60rem;
+    padding-bottom: var(--space-6);
+  }
+
+  .gallery {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 60rem) {
+    .gallery {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

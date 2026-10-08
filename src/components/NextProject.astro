@@ -1,13 +1,16 @@
 ---
-import { neighbors } from '../data/order';
+import { caseStudies } from '../data/projects';
 
 interface Props {
   slug: string;
 }
-const { prev, next } = neighbors(Astro.props.slug);
+const i = caseStudies.findIndex((c) => c.slug === Astro.props.slug);
+const n = caseStudies.length;
+const prev = caseStudies[(i - 1 + n) % n]!;
+const next = caseStudies[(i + 1) % n]!;
 ---
 
-<nav class="next wrap" aria-label="More projects">
+<nav class="next wrap" aria-label="More case studies">
   <a class="prev" href={`/work/${prev.slug}`}>
     <span class="label">Previous</span>
     <span class="title"><span aria-hidden="true">← </span>{prev.title}</span>

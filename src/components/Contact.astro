@@ -6,11 +6,16 @@ const items = [
   { label: 'Email', value: profile.email, href: `mailto:${profile.email}`, external: false },
   { label: 'LinkedIn', value: 'linkedin.com/in/richitha-rekula', href: profile.links.linkedin, external: true },
   { label: 'GitHub', value: 'github.com/richithareddyy', href: profile.links.github, external: true },
+  { label: 'Résumé', value: 'Download PDF', href: profile.links.resume, external: true },
 ];
 ---
 
 <section class="wrap section" id="contact" aria-labelledby="contact-title">
   <SectionHeading id="contact">Contact</SectionHeading>
+  <p class="invite">
+    If you are hiring for early-career software engineering or applied AI roles, I would be glad to talk. You can reach me by
+    email or LinkedIn, and my résumé has the full details.
+  </p>
 
   <ul class="list">
     {
@@ -35,6 +40,13 @@ const items = [
   .section {
     padding-top: var(--section-gap);
     padding-bottom: var(--section-gap);
+  }
+
+  .invite {
+    max-width: var(--width-prose);
+    margin-bottom: var(--space-5);
+    font-size: var(--text-md);
+    color: var(--color-ink-soft);
   }
 
   .list {

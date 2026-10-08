@@ -1,0 +1,77 @@
+---
+import type { Project } from '../data/projects';
+interface Props {
+  project: Project;
+}
+const { project } = Astro.props;
+---
+
+<ul class="links" aria-label={`${project.title} links`}>
+  {
+    project.caseStudy && (
+      <li>
+        <a class="arrow-link" href={`/work/${project.slug}`}>
+          Case study<span class="visually-hidden">: {project.title}</span> <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </li>
+    )
+  }
+  {
+    project.demo && (
+      <li>
+        <a class="ext" href={project.demo} target="_blank" rel="noopener">
+          Live demo<span class="visually-hidden"> of {project.title} (opens in a new tab)</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+      </li>
+    )
+  }
+  {
+    project.github && (
+      <li>
+        <a class="ext" href={project.github} target="_blank" rel="noopener">
+          GitHub<span class="visually-hidden">: {project.title} source (opens in a new tab)</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+      </li>
+    )
+  }
+</ul>
+
+<style>
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2) var(--space-5);
+    list-style: none;
+    font-size: var(--text-sm);
+  }
+
+  .links a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.3em;
+    min-height: 1.75rem;
+    padding-block: var(--space-1);
+  }
+
+  .ext {
+    color: var(--color-ink);
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: var(--color-rule-strong);
+    text-underline-offset: 0.2em;
+    transition: color var(--duration-fast) var(--ease-out), text-decoration-color var(--duration-fast) var(--ease-out);
+  }
+
+  .ext:hover {
+    color: var(--color-accent-ink);
+    text-decoration-color: currentColor;
+  }
+
+  .ext span[aria-hidden] {
+    font-size: 0.85em;
+    color: var(--color-muted);
+  }
+</style>

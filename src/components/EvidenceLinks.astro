@@ -1,0 +1,55 @@
+---
+import type { Link } from '../data/projects';
+interface Props {
+  links: readonly Link[];
+}
+const { links } = Astro.props;
+---
+
+{
+  links.length > 0 && (
+    <div class="evidence">
+      <h3>Evidence</h3>
+      <ul>
+        {links.map((l) => (
+          <li>
+            <a href={l.href} target="_blank" rel="noopener">
+              {l.label}
+              <span class="visually-hidden"> (opens in a new tab)</span>
+              <span aria-hidden="true"> ↗</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+<style>
+  .evidence {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-5);
+    list-style: none;
+    font-size: var(--text-sm);
+  }
+
+  a {
+    display: inline-block;
+    padding-block: var(--space-1);
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--color-rule-strong);
+    text-underline-offset: 0.2em;
+  }
+
+  a:hover {
+    color: var(--color-accent-ink);
+    text-decoration-color: currentColor;
+  }
+</style>

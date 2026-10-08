@@ -23,6 +23,12 @@
   --color-focus: #1f5fbf;
   --color-selection: #f0d7c8;
 
+  /* Dark UI panels inside diagrams and sample output (same in both themes) */
+  --color-panel: #1f1f1b;
+  --color-panel-ink: #ece9e1;
+  --color-panel-muted: #a3a093;
+  --color-panel-line: #3a3933;
+
   /* Typography */
   --font-serif: 'Newsreader Variable', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
   --font-sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;

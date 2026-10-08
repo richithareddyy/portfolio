@@ -1,159 +1,20 @@
 ---
 import { zoomLens } from '../data/projects';
-const { delivery } = zoomLens;
+const { rules } = zoomLens.delivery;
 ---
 
-<div class="delivery">
-  <p>{delivery.summary}</p>
-
-  <figure class="flow">
-    <ol class="lanes">
-      <li class="node">
-        <span class="step">1 · Request</span>
-        <strong>Participant’s panel</strong>
-        <span class="note">Describe, Explain, or Follow-up</span>
-      </li>
-      <li class="node server">
-        <span class="step">2 · Server rules</span>
-        <strong>Zoom Lens server</strong>
-        <ul class="checks">
-          {delivery.rules.map((rule) => <li>{rule.title}</li>)}
-        </ul>
-      </li>
-      <li class="node">
-        <span class="step">3 · Reply</span>
-        <strong>Same participant only</strong>
-        <span class="note">Addressed to exactly one session</span>
-      </li>
-    </ol>
-    <figcaption>Recipient rules for answers. Diagram, not a screenshot.</figcaption>
-  </figure>
-
-  <dl class="rules">
-    {
-      delivery.rules.map((rule) => (
-        <div>
-          <dt>{rule.title}</dt>
-          <dd>{rule.body}</dd>
-        </div>
-      ))
-    }
-  </dl>
-
-  <p>{delivery.whyServer}</p>
-  <p class="scope">{delivery.scope}</p>
-</div>
+<dl class="rules">
+  {
+    rules.map((rule) => (
+      <div>
+        <dt>{rule.title}</dt>
+        <dd>{rule.body}</dd>
+      </div>
+    ))
+  }
+</dl>
 
 <style>
-  .delivery {
-    display: grid;
-    gap: var(--space-5);
-  }
-
-  .delivery > p {
-    max-width: var(--width-prose);
-  }
-
-  .scope {
-    padding-left: var(--space-4);
-    border-left: 2px solid var(--color-pending);
-    color: var(--color-ink);
-  }
-
-  .flow {
-    margin: 0;
-  }
-
-  .lanes {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-5);
-    list-style: none;
-  }
-
-  @media (min-width: 48rem) {
-    .lanes {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr);
-      gap: var(--space-6);
-    }
-  }
-
-  .node {
-    position: relative;
-    display: grid;
-    align-content: start;
-    gap: var(--space-1);
-    padding: var(--space-4);
-    background: var(--color-bg);
-    border: var(--border-strong);
-    border-radius: var(--radius-sm);
-    font-size: var(--text-sm);
-  }
-
-  .server {
-    border-color: var(--color-ink);
-    background: var(--color-surface);
-  }
-
-  .step {
-    font-size: var(--text-xs);
-    color: var(--color-muted);
-  }
-
-  strong {
-    font-weight: 600;
-    color: var(--color-ink);
-  }
-
-  .note {
-    color: var(--color-muted);
-  }
-
-  .checks {
-    display: grid;
-    gap: 2px;
-    margin-top: var(--space-1);
-    list-style: none;
-  }
-
-  .checks li::before {
-    content: '✓';
-    display: inline-block;
-    width: 1.25em;
-    color: var(--color-positive);
-    font-weight: 600;
-  }
-
-  .node:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    background: var(--color-ink);
-  }
-
-  @media (max-width: 47.99rem) {
-    .node:not(:last-child)::after {
-      left: 1.5rem;
-      top: 100%;
-      width: 1px;
-      height: var(--space-5);
-    }
-  }
-
-  @media (min-width: 48rem) {
-    .node:not(:last-child)::after {
-      top: 50%;
-      left: 100%;
-      width: var(--space-6);
-      height: 1px;
-    }
-  }
-
-  figcaption {
-    margin-top: var(--space-3);
-    font-size: var(--text-xs);
-    color: var(--color-muted);
-  }
-
   .rules {
     margin: 0;
     border-top: var(--border-hairline);

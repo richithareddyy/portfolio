@@ -1,0 +1,99 @@
+---
+const stages = ['Extract', 'Validate', 'Stage', 'Merge', 'Check'];
+const total = 18_897_027;
+const rejected = [
+  { label: 'Invalid', value: 111_408 },
+  { label: 'Orphaned', value: 53_793 },
+  { label: 'Duplicate', value: 21_826 },
+];
+const fmt = (n: number) => n.toLocaleString('en-US');
+---
+
+<div class="etl" role="img" aria-label={`Diagram: five stages, extract, validate, stage, merge, check. Of ${fmt(total)} lines read, 18,710,000 rows loaded; ${rejected.map((r) => `${fmt(r.value)} ${r.label.toLowerCase()}`).join(', ')} were rejected and recorded.`}>
+  <ol class="stages" aria-hidden="true">
+    {stages.map((s, i) => <li><span>{i + 1}</span>{s}</li>)}
+  </ol>
+  <div class="ledger" aria-hidden="true">
+    <div class="row in"><span>Lines read</span><b>{fmt(total)}</b></div>
+    <div class="row ok"><span>Loaded</span><b>18,710,000</b></div>
+    {rejected.map((r) => <div class="row bad"><span>{r.label}, recorded</span><b>{fmt(r.value)}</b></div>)}
+  </div>
+</div>
+
+<style>
+  .etl {
+    display: grid;
+    align-content: center;
+    gap: var(--space-4);
+    min-height: 100%;
+    padding: var(--space-4);
+    container-type: inline-size;
+  }
+
+  .stages {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    list-style: none;
+    border: var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
+  }
+
+  .stages li {
+    display: grid;
+    gap: 2px;
+    padding: var(--space-2);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .stages li + li {
+    border-left: var(--border-hairline);
+  }
+
+  .stages span {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--color-accent-ink);
+  }
+
+  .ledger {
+    display: grid;
+    gap: 2px;
+    font-size: var(--text-xs);
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: 4px var(--space-2);
+    border-bottom: var(--border-hairline);
+  }
+
+  .row b {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .in {
+    color: var(--color-muted);
+  }
+
+  .ok b {
+    color: var(--color-ink);
+  }
+
+  .bad b {
+    color: var(--color-accent-ink);
+  }
+
+  @container (max-width: 20rem) {
+    .stages li {
+      font-size: 0.625rem;
+      padding: 6px 2px;
+    }
+  }
+</style>

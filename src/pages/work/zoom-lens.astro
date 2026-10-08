@@ -2,101 +2,139 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CaseHeader from '../../components/CaseHeader.astro';
 import CaseSection from '../../components/CaseSection.astro';
-import NextProject from '../../components/NextProject.astro';
-import ZoomLensMedia from '../../components/ZoomLensMedia.astro';
-import ZoomLensModes from '../../components/ZoomLensModes.astro';
+import BulletList from '../../components/BulletList.astro';
+import ProjectVisual from '../../components/ProjectVisual.astro';
+import DecisionList from '../../components/DecisionList.astro';
 import ZoomLensDelivery from '../../components/ZoomLensDelivery.astro';
 import ZoomLensStatus from '../../components/ZoomLensStatus.astro';
-import DecisionList from '../../components/DecisionList.astro';
-import { zoomLens } from '../../data/projects';
+import NextProject from '../../components/NextProject.astro';
+import { projects, zoomLens } from '../../data/projects';
 
+const project = projects.find((p) => p.slug === 'zoom-lens')!;
 const sections = [
-  { id: 'how', label: 'How it works' },
-  { id: 'delivery', label: 'Response delivery' },
-  { id: 'decisions', label: 'Key decisions' },
-  { id: 'limitations', label: 'Limitations' },
-  { id: 'tradeoff', label: 'Tradeoff' },
-  { id: 'status', label: 'Status and next steps' },
+  { id: 'problem', label: 'Problem' },
+  { id: 'contribution', label: 'My contribution' },
+  { id: 'decisions', label: 'Decisions' },
+  { id: 'evaluation', label: 'Evaluation' },
+  { id: 'status', label: 'Limitations and next steps' },
 ];
 ---
 
-<BaseLayout title={zoomLens.title} description={zoomLens.oneLiner}>
+<BaseLayout title={project.title} description={project.summary}>
   <div data-page="project">
-    <CaseHeader
-      slug={zoomLens.slug}
-      kicker={`${zoomLens.kicker} · ${zoomLens.year}`}
-      title={zoomLens.title}
-      summary={zoomLens.oneLiner}
-      facts={[
-        { label: 'Problem', value: zoomLens.problemShort },
-        { label: 'Role', value: zoomLens.role },
-        { label: 'What I built', value: zoomLens.contribution },
-        { label: 'Status', value: `${zoomLens.status}. Reads the participant’s display; meeting-feed capture is not yet enabled.` },
-        { label: 'Outcome', value: zoomLens.outcome },
-      ]}
-      stack={zoomLens.tags}
-      sections={sections}
-    />
+    <CaseHeader project={{ ...project, status: 'Working prototype' }} role={zoomLens.role} sections={sections} />
 
     <div class="wrap">
-      <div class="hero-figure">
-        <ZoomLensMedia />
+      <div class="lead-visual">
+        {
+          zoomLens.demoVideo ? (
+            <figure class="video">
+              <video src={zoomLens.demoVideo} controls muted playsinline preload="metadata" aria-label="Zoom Lens demo recording" />
+              <figcaption>Zoom Lens running in a live meeting.</figcaption>
+            </figure>
+          ) : (
+            <ProjectVisual visual={project.visual} size="full" />
+          )
+        }
       </div>
 
-      <CaseSection title="How it works" id="how">
+      <CaseSection title="Problem and constraints" id="problem">
         {zoomLens.problem.map((p) => <p>{p}</p>)}
-        <p>{zoomLens.howItWorks}</p>
-        <ZoomLensModes />
-        <h3>About the response times</h3>
-        {zoomLens.timingContext.map((p) => <p>{p}</p>)}
+        <BulletList items={zoomLens.constraints} />
       </CaseSection>
 
-      <CaseSection title="Response delivery" id="delivery">
+      <CaseSection title="My contribution" id="contribution">
+        <p>{project.contribution}</p>
+        <p>{zoomLens.howItWorks}</p>
+        <dl class="modes">
+          {
+            zoomLens.modes.map((m) => (
+              <div>
+                <dt>
+                  {m.name} <span class="ui">“{m.label}”</span>
+                </dt>
+                <dd>{m.body}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </CaseSection>
+
+      <CaseSection title="Decisions and tradeoffs" id="decisions">
+        <DecisionList items={zoomLens.decisions} />
+        <h3>Answer delivery rules</h3>
         <ZoomLensDelivery />
       </CaseSection>
 
-      <CaseSection title="Key decisions" id="decisions">
-        <DecisionList items={zoomLens.decisions} />
+      <CaseSection title="Evaluation" id="evaluation">
+        <p>
+          There is no formal evaluation yet. Interface estimates shown by the app:{' '}
+          {zoomLens.modes.map((m) => `${m.name} ${m.estimate}`).join(', ')}.
+        </p>
+        <p class="note">{zoomLens.timingContext}</p>
       </CaseSection>
 
-      <CaseSection title="Limitations" id="limitations">
-        <h3>Screen capture</h3>
-        <p>{zoomLens.capture.current}</p>
-        <p>{zoomLens.capture.consequence}</p>
-      </CaseSection>
-
-      <CaseSection title="Tradeoff" id="tradeoff">
-        <div class="tradeoff">
-          {zoomLens.tradeoff.map((p) => <p>{p}</p>)}
-        </div>
-      </CaseSection>
-
-      <CaseSection title="Status and next steps" id="status">
+      <CaseSection title="Limitations and next steps" id="status">
         <ZoomLensStatus />
       </CaseSection>
     </div>
 
-    <NextProject slug={zoomLens.slug} />
+    <NextProject slug={project.slug} />
   </div>
 </BaseLayout>
 
 <style>
-  .hero-figure {
-    max-width: 52rem;
+  .lead-visual {
+    max-width: 60rem;
     padding-bottom: var(--space-6);
   }
 
-  .tradeoff {
-    display: grid;
-    gap: var(--space-4);
-    max-width: var(--width-prose);
-    padding-left: var(--space-5);
-    border-left: 2px solid var(--color-pending);
+  .video {
+    margin: 0;
   }
 
-  .tradeoff p {
-    font-family: var(--font-serif);
-    font-size: var(--text-lg);
-    line-height: 1.55;
+  .video video {
+    width: 100%;
+    border: var(--border-hairline);
+    border-radius: var(--radius-md);
+  }
+
+  .video figcaption {
+    margin-top: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+
+  .modes {
+    margin: 0;
+    border-top: var(--border-hairline);
+  }
+
+  .modes > div {
+    display: grid;
+    gap: 2px;
+    padding-block: var(--space-3);
+    border-bottom: var(--border-hairline);
+    font-size: var(--text-sm);
+  }
+
+  .modes dt {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .ui {
+    font-weight: 400;
+    color: var(--color-muted);
+  }
+
+  .modes dd {
+    margin: 0;
+  }
+
+
+  .note {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
   }
 </style>

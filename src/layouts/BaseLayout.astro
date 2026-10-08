@@ -18,10 +18,14 @@ interface Props {
   description?: string;
   /** Path the header nav links resolve against. Home uses in-page anchors. */
   isHome?: boolean;
+  noindex?: boolean;
 }
 
-const { title, description = profile.description, isHome = false } = Astro.props;
-const pageTitle = title ? `${title} · ${profile.name}` : `${profile.name} · Software & Applied AI`;
+const { title, description = profile.description, isHome = false, noindex = false } = Astro.props;
+const pageTitle = title ? `${title} · ${profile.name}` : `${profile.name} · Software Engineering and Applied AI`;
+const path = Astro.url.pathname.length > 1 ? Astro.url.pathname.replace(/\/$/, '') : '/';
+const canonical = new URL(path, Astro.site);
+const ogImage = new URL('/og-image.png', Astro.site);
 ---
 
 <!doctype html>
@@ -32,9 +36,17 @@ const pageTitle = title ? `${title} · ${profile.name}` : `${profile.name} · So
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <meta name="author" content={profile.name} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+    <meta property="og:site_name" content={profile.name} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={isHome ? 'website' : 'article'} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${profile.name}: software engineering and applied AI`} />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="theme-color" content="#f5f3ee" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#151513" media="(prefers-color-scheme: dark)" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
