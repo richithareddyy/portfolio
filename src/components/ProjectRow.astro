@@ -1,0 +1,193 @@
+---
+import { Image } from 'astro:assets';
+import type { Project } from '../data/projects';
+import ProjectLinks from './ProjectLinks.astro';
+
+interface Props {
+  project: Project;
+}
+const { project } = Astro.props;
+const href = project.caseStudy ? `/work/${project.slug}` : (project.demo ?? project.github);
+const external = !project.caseStudy;
+const v = project.visual;
+---
+
+<article class="row" id={`project-${project.slug}`} aria-labelledby={`${project.slug}-title`} data-reveal>
+  <a
+    class="thumb"
+    href={href}
+    tabindex="-1"
+    aria-hidden="true"
+    {...(external ? { target: '_blank', rel: 'noopener' } : {})}
+  >
+    {
+      v.kind === 'image' ? (
+        <Image src={v.src} alt="" widths={[240, 480]} sizes="12rem" loading="lazy" />
+      ) : (
+        <span class="thumb-text">{v.kind === 'output' ? '0 errors · 51,633 requests' : 'Diagram'}</span>
+      )
+    }
+  </a>
+
+  <div class="main">
+    <p class="meta">{[project.year, project.role].filter(Boolean).join(' · ')}</p>
+    <h4 id={`${project.slug}-title`}>
+      {project.caseStudy ? <a href={`/work/${project.slug}`} transition:name={`title-${project.slug}`}>{project.title}</a> : project.title}
+    </h4>
+    {project.problemShort && <p class="problem">{project.problemShort}</p>}
+    <p class="contribution">{project.contribution}</p>
+    <ul class="stack" aria-label="Technologies">
+      {project.tech.map((t) => <li>{t}</li>)}
+    </ul>
+  </div>
+
+  <p class="result">
+    <strong>{project.result.headline}</strong>
+    {project.result.qualifier && <span>{project.result.qualifier}</span>}
+  </p>
+
+  <div class="links-cell">
+    <ProjectLinks project={project} />
+  </div>
+</article>
+
+<style>
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3) var(--space-6);
+    padding-block: var(--space-5);
+    border-bottom: var(--border-hairline);
+  }
+
+  @media (min-width: 40rem) {
+    .row {
+      grid-template-columns: 9rem minmax(0, 1fr);
+    }
+
+    .thumb {
+      grid-row: span 3;
+    }
+
+    .result,
+    .links-cell {
+      grid-column: 2;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .row {
+      grid-template-columns: 12rem minmax(0, 1fr) 14rem;
+    }
+
+    .thumb {
+      grid-row: span 2;
+    }
+
+    .result {
+      grid-column: 3;
+      grid-row: 1;
+    }
+
+    .links-cell {
+      grid-column: 2;
+      grid-row: 2;
+    }
+  }
+
+  .thumb {
+    display: none;
+    align-self: start;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border: var(--border-hairline);
+    border-radius: var(--radius-sm);
+    background: var(--color-panel);
+  }
+
+  @media (min-width: 40rem) {
+    .thumb {
+      display: block;
+    }
+  }
+
+  .thumb :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top left;
+    transition: transform var(--duration-slow) var(--ease-out);
+  }
+
+  .thumb:hover :global(img) {
+    transform: scale(1.04);
+  }
+
+  .thumb-text {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    padding: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    text-align: center;
+    color: var(--color-panel-ink);
+  }
+
+  .main {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+    min-width: 0;
+  }
+
+  .meta {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+
+  h4 {
+    font-size: var(--text-xl);
+  }
+
+  h4 a {
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  h4 a:hover {
+    color: var(--color-accent-ink);
+  }
+
+  .problem {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+
+  .contribution {
+    max-width: 40rem;
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
+  }
+
+  .result {
+    align-self: start;
+    padding-top: var(--space-2);
+    border-top: var(--border-hairline);
+    font-size: var(--text-sm);
+  }
+
+  .result strong {
+    display: block;
+    font-weight: 600;
+  }
+
+  .result span {
+    display: block;
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+</style>

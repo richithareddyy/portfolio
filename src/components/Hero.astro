@@ -1,19 +1,31 @@
 ---
 import { profile } from '../data/profile';
+
+const proof = [
+  { text: 'a private AI assistant inside Zoom', href: '#project-zoom-lens' },
+  { text: 'a Rust change-impact analyzer', href: '#project-codeatlas' },
+  { text: 'an 18.9M‑line PostgreSQL pipeline', href: '#project-reddit-data-pipeline' },
+];
 ---
 
 <section class="hero wrap" id="top" aria-labelledby="hero-title">
   <div class="main">
     <h1 id="hero-title">{profile.name}</h1>
-    <p class="headline">Software engineering and applied AI.</p>
-    <p class="intro">
-      I’m a Zoom Fellow at ASU Next Lab, a fellowship in partnership with Zoom, building an assistant that privately explains
-      shared screens in meetings. I also build developer tools and data systems, with results that state how they were
-      measured.
+    <p class="headline">Software engineer building applied AI systems.</p>
+    <p class="proof">
+      Recently:{' '}
+      {
+        proof.map((p, i) => (
+          <>
+            <a href={p.href}>{p.text}</a>
+            {i < proof.length - 2 ? ', ' : i === proof.length - 2 ? ', and ' : '.'}
+          </>
+        ))
+      }
     </p>
 
     <div class="actions">
-      <a class="button primary" href="#work">View work</a>
+      <a class="button primary" href="#work">View projects</a>
       <a class="button" href={profile.links.resume} target="_blank" rel="noopener">
         Résumé<span class="visually-hidden"> (PDF, opens in a new tab)</span>
       </a>
@@ -27,13 +39,19 @@ import { profile } from '../data/profile';
 
   <dl class="facts">
     <div>
+      <dt>Now</dt>
+      <dd>Zoom Fellow, ASU Next Lab</dd>
+      <dd class="sub">Fellowship in partnership with Zoom, building Zoom Lens</dd>
+    </div>
+    <div>
       <dt>Education</dt>
-      <dd>M.S. Data Science, Analytics and Engineering, Arizona State University</dd>
-      <dd class="sub">{profile.graduation}</dd>
+      <dd>M.S. Data Science, Analytics and Engineering</dd>
+      <dd class="sub">Arizona State University · {profile.graduation}</dd>
     </div>
     <div>
       <dt>Open to</dt>
-      <dd>New grad and internship roles in software engineering, applied AI, and ML engineering</dd>
+      <dd>Applied AI, software, AI/ML, and backend engineering</dd>
+      <dd class="sub">New grad and internship roles</dd>
     </div>
   </dl>
 </section>
@@ -49,7 +67,7 @@ import { profile } from '../data/profile';
 
   @media (min-width: 60rem) {
     .hero {
-      grid-template-columns: minmax(0, 1fr) 18rem;
+      grid-template-columns: minmax(0, 1fr) 19rem;
       gap: var(--space-8);
       align-items: end;
     }
@@ -64,15 +82,29 @@ import { profile } from '../data/profile';
     margin-top: var(--space-2);
     font-family: var(--font-serif);
     font-size: var(--text-xl);
+    line-height: var(--leading-snug);
     color: var(--color-accent-ink);
   }
 
-  .intro {
-    max-width: 38rem;
+  .proof {
+    max-width: 36rem;
     margin-top: var(--space-4);
-    font-size: var(--text-lg);
+    font-size: var(--text-md);
     line-height: 1.55;
     color: var(--color-ink-soft);
+  }
+
+  .proof a {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--color-rule-strong);
+    text-underline-offset: 0.2em;
+    transition: color var(--duration-fast) var(--ease-out), text-decoration-color var(--duration-fast) var(--ease-out);
+  }
+
+  .proof a:hover {
+    color: var(--color-accent-ink);
+    text-decoration-color: currentColor;
   }
 
   .actions {
@@ -144,9 +176,9 @@ import { profile } from '../data/profile';
     border-top: var(--border-hairline);
   }
 
-  @media (min-width: 48rem) and (max-width: 59.99rem) {
+  @media (min-width: 40rem) and (max-width: 59.99rem) {
     .facts {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 
@@ -158,17 +190,19 @@ import { profile } from '../data/profile';
 
   dt {
     font-size: var(--text-xs);
-    font-weight: 500;
+    font-weight: 600;
     color: var(--color-muted);
   }
 
   dd {
     margin: 2px 0 0;
     font-size: var(--text-sm);
+    font-weight: 500;
     line-height: var(--leading-snug);
   }
 
   dd.sub {
+    font-weight: 400;
     color: var(--color-muted);
   }
 

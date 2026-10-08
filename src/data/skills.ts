@@ -1,29 +1,13 @@
 export type SkillGroup = { name: string; items: string[] };
 
-/** From the résumé, grouped by how they were used in the projects on this site. */
+/** Taken from the résumé, limited to what the projects on this site demonstrate. The résumé has the full list. */
 export const skills: SkillGroup[] = [
+  { name: 'Languages', items: ['Python', 'SQL', 'JavaScript', 'Java', 'C++', 'MATLAB'] },
+  { name: 'Applied AI & ML', items: ['Scikit-learn', 'XGBoost', 'SHAP', 'NLTK', 'VADER'] },
   {
-    name: 'Applied AI & ML',
-    items: ['Python', 'Scikit-learn', 'XGBoost', 'SHAP', 'NLTK', 'VADER'],
+    name: 'Backend & APIs',
+    items: ['Flask', 'Node.js', 'Express.js', 'REST APIs', 'Streamlit', 'Claude', 'Google Gemini API', 'Zoom Video SDK', 'Zoom Realtime Media Streams API'],
   },
-  {
-    name: 'APIs & SDKs',
-    items: ['Google Gemini API', 'Claude', 'Zoom Video SDK', 'Zoom Realtime Media Streams API'],
-  },
-  {
-    name: 'Data',
-    items: ['SQL', 'PostgreSQL', 'MongoDB', 'SQLite', 'PySpark', 'Pandas', 'NumPy'],
-  },
-  {
-    name: 'Backend & apps',
-    items: ['Flask', 'Node.js', 'Express.js', 'Streamlit', 'PyMuPDF', 'JavaScript'],
-  },
-  {
-    name: 'Tooling',
-    items: ['Docker', 'Git', 'GitHub Actions'],
-  },
-  {
-    name: 'Also used',
-    items: ['Java', 'C++', 'C', 'R', 'MATLAB', 'TensorFlow', 'OpenCV', 'Matplotlib', 'Jupyter', 'Databricks', 'Snowflake', 'Power BI', 'Tableau', 'ServiceNow'],
-  },
+  { name: 'Databases & data engineering', items: ['PostgreSQL', 'MongoDB', 'SQLite', 'PySpark', 'Pandas', 'NumPy'] },
+  { name: 'Developer tools', items: ['Docker', 'Git', 'GitHub Actions'] },
 ];

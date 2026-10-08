@@ -46,6 +46,11 @@ const nav = [
             </li>
           ))
         }
+        <li class="menu-ext">
+          <a href={profile.links.github} target="_blank" rel="noopener">
+            GitHub<span class="visually-hidden"> (opens in a new tab)</span>
+          </a>
+        </li>
         <li class="menu-resume">
           <a href={profile.links.resume} target="_blank" rel="noopener">
             Résumé<span class="visually-hidden"> (PDF, opens in a new tab)</span>
@@ -231,8 +236,14 @@ const nav = [
     transform: scaleX(1);
   }
 
+  .menu-ext {
+    margin-left: var(--space-3);
+    padding-left: var(--space-3);
+    border-left: var(--border-hairline);
+  }
+
   .menu-resume {
-    margin-left: var(--space-2);
+    margin-left: var(--space-1);
   }
 
   .menu-resume a {
@@ -342,6 +353,12 @@ const nav = [
 
     .menu a[aria-current] {
       color: var(--color-accent-ink);
+    }
+
+    .menu-ext {
+      margin: 0;
+      padding: 0;
+      border: 0;
     }
 
     .menu-resume {
