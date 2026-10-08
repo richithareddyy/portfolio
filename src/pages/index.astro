@@ -2,35 +2,31 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import SectionHeading from '../components/SectionHeading.astro';
-import ZoomLensFeature from '../components/ZoomLensFeature.astro';
-import ProjectPreview from '../components/ProjectPreview.astro';
-import OtherWork from '../components/OtherWork.astro';
+import FeaturedProject from '../components/FeaturedProject.astro';
+import ProjectCard from '../components/ProjectCard.astro';
 import Experience from '../components/Experience.astro';
 import Skills from '../components/Skills.astro';
 import About from '../components/About.astro';
 import Contact from '../components/Contact.astro';
-import { projects } from '../data/projects';
-
-const bySlug = Object.fromEntries(projects.map((p) => [p.slug, p]));
-const main = ['codeatlas', 'reddit-data-pipeline'].map((s) => bySlug[s]!);
-const compact = ['streambox', 'ticket-triage'].map((s) => bySlug[s]!);
+import { featured, more } from '../data/projects';
 ---
 
 <BaseLayout isHome>
   <div data-page="home">
     <Hero />
 
-    <section id="work" aria-labelledby="work-title">
-      <div class="wrap">
-        <SectionHeading id="work">Selected projects</SectionHeading>
-      </div>
+    <section id="work" class="wrap" aria-labelledby="work-title">
+      <SectionHeading id="work">Selected work</SectionHeading>
 
-      <ZoomLensFeature />
+      {
+        featured.map((p, i) => (
+          <FeaturedProject project={p} emphasis={i < 2 ? 'primary' : 'secondary'} flip={i === 1} eager={i === 0} />
+        ))
+      }
 
-      <div class="wrap">
-        {main.map((p) => <ProjectPreview project={p} />)}
-        {compact.map((p) => <ProjectPreview project={p} size="compact" />)}
-        <OtherWork />
+      <h3 class="more-title">More projects</h3>
+      <div class="grid">
+        {more.map((p) => <ProjectCard project={p} />)}
       </div>
     </section>
 
@@ -40,3 +36,29 @@ const compact = ['streambox', 'ticket-triage'].map((s) => bySlug[s]!);
     <Contact />
   </div>
 </BaseLayout>
+
+<style>
+  .more-title {
+    margin-top: var(--space-7);
+    margin-bottom: var(--space-5);
+    font-size: var(--text-xl);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-7) var(--space-6);
+  }
+
+  @media (min-width: 40rem) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

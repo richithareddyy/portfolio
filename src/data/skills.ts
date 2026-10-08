@@ -1,25 +1,29 @@
-export type SkillGroup = { name: string; items: string[]; note?: string };
+export type SkillGroup = { name: string; items: string[] };
 
-/** Grouped by how they were used in the projects on this site. */
+/** From the résumé, grouped by how they were used in the projects on this site. */
 export const skills: SkillGroup[] = [
   {
     name: 'Applied AI & ML',
-    items: ['Python', 'XGBoost', 'Scikit-learn', 'SHAP', 'NLTK', 'PySpark', 'Google Gemini API'],
+    items: ['Python', 'Scikit-learn', 'XGBoost', 'SHAP', 'NLTK', 'VADER'],
   },
   {
-    name: 'Backend & data',
-    items: ['SQL', 'PostgreSQL', 'Neo4j', 'MongoDB', 'GraphQL', 'Flask', 'Node.js', 'Express.js'],
+    name: 'APIs & SDKs',
+    items: ['Google Gemini API', 'Claude', 'Zoom Video SDK', 'Zoom Realtime Media Streams API'],
   },
   {
-    name: 'Systems & tooling',
-    items: ['Rust', 'tree-sitter', 'Docker', 'GitHub Actions', 'Git'],
+    name: 'Data',
+    items: ['SQL', 'PostgreSQL', 'MongoDB', 'SQLite', 'PySpark', 'Pandas', 'NumPy'],
   },
   {
-    name: 'Frontend',
-    items: ['TypeScript', 'JavaScript', 'SvelteKit', 'Streamlit'],
+    name: 'Backend & apps',
+    items: ['Flask', 'Node.js', 'Express.js', 'Streamlit', 'PyMuPDF', 'JavaScript'],
+  },
+  {
+    name: 'Tooling',
+    items: ['Docker', 'Git', 'GitHub Actions'],
   },
   {
     name: 'Also used',
-    items: ['Java', 'C++', 'C', 'R', 'MATLAB', 'TensorFlow', 'OpenCV', 'SQLite'],
+    items: ['Java', 'C++', 'C', 'R', 'MATLAB', 'TensorFlow', 'OpenCV', 'Matplotlib', 'Jupyter', 'Databricks', 'Snowflake', 'Power BI', 'Tableau', 'ServiceNow'],
   },
 ];

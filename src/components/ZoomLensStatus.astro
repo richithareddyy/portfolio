@@ -14,7 +14,7 @@ const { progress } = zoomLens;
   <section class="col pending" aria-labelledby="status-pending">
     <h3 id="status-pending"><span class="dot" aria-hidden="true"></span>Not yet</h3>
     <ul>
-      <li>{progress.notYet}</li>
+      {progress.notYet.map((item) => <li>{item}</li>)}
     </ul>
   </section>
 

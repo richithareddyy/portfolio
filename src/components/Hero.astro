@@ -7,13 +7,13 @@ import { profile } from '../data/profile';
     <h1 id="hero-title">{profile.name}</h1>
     <p class="headline">Software engineering and applied AI.</p>
     <p class="intro">
-      I build software and applied AI systems, currently{' '}
-      <a class="text-link" href="/work/zoom-lens">Zoom Lens</a>, an assistant that privately explains a shared screen to one
-      meeting participant. My other projects cover Rust static analysis, PostgreSQL data pipelines, and explainable ML services.
+      I’m a Zoom Fellow at ASU Next Lab, a fellowship in partnership with Zoom, building an assistant that privately explains
+      shared screens in meetings. I also build developer tools and data systems, with results that state how they were
+      measured.
     </p>
 
     <div class="actions">
-      <a class="button primary" href="#work">View projects</a>
+      <a class="button primary" href="#work">View work</a>
       <a class="button" href={profile.links.resume} target="_blank" rel="noopener">
         Résumé<span class="visually-hidden"> (PDF, opens in a new tab)</span>
       </a>
@@ -28,11 +28,8 @@ import { profile } from '../data/profile';
   <dl class="facts">
     <div>
       <dt>Education</dt>
-      <dd>M.S. Data Science, Analytics and Engineering, Arizona State University · {profile.graduation}</dd>
-    </div>
-    <div>
-      <dt>Current</dt>
-      <dd>Zoom Fellow, ASU Next Lab</dd>
+      <dd>M.S. Data Science, Analytics and Engineering, Arizona State University</dd>
+      <dd class="sub">{profile.graduation}</dd>
     </div>
     <div>
       <dt>Open to</dt>
@@ -149,7 +146,7 @@ import { profile } from '../data/profile';
 
   @media (min-width: 48rem) and (max-width: 59.99rem) {
     .facts {
-      grid-template-columns: 1.3fr 0.8fr 1.2fr;
+      grid-template-columns: 1fr 1fr;
     }
   }
 
@@ -169,6 +166,10 @@ import { profile } from '../data/profile';
     margin: 2px 0 0;
     font-size: var(--text-sm);
     line-height: var(--leading-snug);
+  }
+
+  dd.sub {
+    color: var(--color-muted);
   }
 
   @media (max-width: 30rem) {

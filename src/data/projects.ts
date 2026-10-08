@@ -1,253 +1,252 @@
+import type { ImageMetadata } from 'astro';
+import codeatlasImpact from '../assets/projects/codeatlas-impact.png';
+import codeatlasGraph from '../assets/projects/codeatlas-graph.png';
+import codeatlasChanges from '../assets/projects/codeatlas-changes.png';
+import triageDemo from '../assets/projects/triage-demo.webp';
+import researchDemo from '../assets/projects/research-demo.webp';
+import meetingDemo from '../assets/projects/meeting-demo.webp';
+import triageShapPriority from '../assets/projects/triage-shap-priority.png';
+import triageShapResolution from '../assets/projects/triage-shap-resolution.png';
+import parkingCurrent from '../assets/projects/parking-current.jpeg';
+
 export type Link = { label: string; href: string };
 
 /** A result plus the condition it was measured under. */
 export type Metric = { value: string; label: string; qualifier?: string };
 
-export type Decision = { heading: string; body: string };
+export type Decision = { heading: string; body: string; tradeoff: string };
+
+export type Visual =
+  | { kind: 'image'; src: ImageMetadata; alt: string; caption: string }
+  | { kind: 'diagram'; id: 'zoom-lens' | 'etl'; caption: string }
+  | { kind: 'output'; id: 'streambox-loadtest'; caption: string };
 
 export type Project = {
   slug: string;
   title: string;
-  kicker: string;
-  year: string;
-  /** One sentence used in previews and page metadata. */
+  /** One-sentence value statement. */
   summary: string;
-  /** One sentence for previews. */
-  problemShort: string;
-  problem: string;
-  /** What I built, phrased from the résumé. */
+  tier: 'featured' | 'more';
+  year: string;
+  /** Shown on cards and case studies. */
+  role: string;
   contribution: string;
-  status: string;
-  outcome: string;
-  /** At most four; shown in previews. */
-  tags: string[];
-  stack: string[];
-  links: Link[];
-  /** The first one or two are shown in previews. */
-  metrics: Metric[];
-  evaluationNote?: string;
-  architecture: { stages: string[]; note?: string };
-  built: string[];
-  decisions: Decision[];
-  limitations: string[];
+  /** Strongest supported result, or current status when there is no result. */
+  result: { headline: string; qualifier?: string };
+  /** Up to four, shown on cards. */
+  tech: string[];
+  demo?: string;
+  github?: string;
+  caseStudy: boolean;
+  visual: Visual;
+  gallery?: Visual[];
+
+  // Case-study content
+  status?: string;
+  problem?: string;
+  constraints?: string[];
+  built?: string[];
+  stack?: string[];
+  decisions?: Decision[];
+  evaluation?: { method: string[]; metrics: Metric[]; evidence: Link[] };
+  limitations?: string[];
   next?: string[];
 };
 
-export const zoomLens = {
-  slug: 'zoom-lens',
-  title: 'Zoom Lens',
-  kicker: 'Zoom Fellowship · ASU Next Lab',
-  year: '2026 – present',
-  /** Demo recording. Put the file in public/ and set the path, e.g. '/zoom-lens-demo.mp4'. */
-  demoVideo: null as string | null,
-  demoPoster: null as string | null,
-  oneLiner:
-    'An AI assistant inside Zoom that privately helps a participant understand what is being shared on screen.',
-  problemShort:
-    'When you lose the thread of a shared chart, spreadsheet, slide, paper, or code, the usual options are to interrupt the presenter or stay lost. Zoom Lens lets you ask privately instead.',
-  problem: [
-    'Someone is presenting a spreadsheet, a chart, a slide, a paper, or a page of code. You looked away, joined late, or the material is outside what you know.',
-    'The usual options are to interrupt and ask the presenter to go back, or to wait and hope it becomes clear. Zoom Lens adds a third option: ask privately, without interrupting the presenter or other participants.',
-  ],
-  role: 'Zoom Fellow, ASU Next Lab',
-  status: 'Working prototype',
-  contribution:
-    'Built the prototype on Zoom APIs/SDKs and generative AI: the Describe, Explain, and Follow-up interactions, and participant-specific request handling that returns each response only to the requester.',
-  outcome:
-    'A working in-meeting app, opened from the Zoom Apps panel, that answers questions about the shared screen for one participant at a time.',
-  howItWorks:
-    'Zoom Lens opens from the Apps panel during a meeting and appears as a narrow panel beside the meeting window with three actions.',
-  modes: [
-    {
-      name: 'Describe',
-      timing: '≈ 6 s',
-      what: 'What the screen says.',
-      body: 'Summarizes what is being shared, naming the content type and reporting the actual numbers and headings.',
-    },
-    {
-      name: 'Explain',
-      timing: '≈ 12 s',
-      what: 'What the content means.',
-      body: 'Explains what a chart implies, why a diagram is laid out as it is, or what a piece of code is for.',
-    },
-    {
-      name: 'Follow-up',
-      timing: '≈ 3 s',
-      what: 'One question about the last answer.',
-      body: 'Asks a single question about the previous answer, so you do not have to start over.',
-    },
-  ],
-  timingNote: 'Typical wait times shown by the app.',
-  timingContext: [
-    'The times (about 6 s for Describe, 12 s for Explain, and 3 s for Follow-up) are the typical waits Zoom Lens displays while it works, for example “Reading the screen. This usually takes about 6 seconds.”',
-    'They are estimates shown in the interface, not results from a formal benchmark. Explain is expected to take longer than Describe because it reasons about what the content means instead of reporting what is on screen.',
-  ],
-  delivery: {
-    summary:
-      'Answers are routed only to the participant who asked. Other participants do not see the request or the answer, and the presenter is not notified.',
-    rules: [
-      { title: 'One recipient per message', body: 'Every message the server sends is addressed to exactly one session.' },
-      { title: 'No broadcast path', body: 'The server has no way to send a message to the whole meeting.' },
-      {
-        title: 'Replies must match a request',
-        body: 'A reply is refused unless it matches a request that the same session made.',
-      },
-    ],
-    whyServer:
-      'These rules are enforced on the server rather than in the panel, because anything enforced in the panel could be changed by whoever is running it.',
-    scope:
-      'This controls who sees answers inside the meeting. It is not, by itself, an end-to-end privacy guarantee: the captured screen is still processed by a generative AI model to produce each answer.',
-  },
-  capture: {
-    current:
-      'Zoom Lens does not yet take the video feed directly from the meeting. That needs a capability enabled on the Zoom account. Until then it reads the requesting participant’s display, which gives the same result for content shared in the meeting but is not the architecture it will ship with.',
-    consequence:
-      'Because it reads the local display, an answer can mention anything visible on that screen, not only the shared content. In testing, a Describe answer also listed browser tabs and participant names that were on screen.',
-  },
-  decisions: [
-    {
-      heading: 'Enforce delivery on the server',
-      body: 'Recipient rules live where the person running the panel cannot change them.',
-    },
-    {
-      heading: 'Two answer depths',
-      body: 'Describe and Explain answer different questions, so Explain is allowed to take longer (about 12 s versus 6 s).',
-    },
-    {
-      heading: 'One follow-up, tied to the last answer',
-      body: 'A follow-up is scoped to the previous response instead of starting a new conversation.',
-    },
-  ],
-  tradeoff: [
-    'The person sharing is not notified. This is deliberate: people use Zoom Lens because they do not want to interrupt or admit they lost track, and a notification would remove that.',
-    'It is still an asymmetry, and whether it is acceptable is a judgement for people to make, not something the code can settle.',
-  ],
-  progress: {
-    built: [
-      'Runs inside a live Zoom meeting, opened from the Apps panel',
-      'Describe, Explain, and Follow-up on shared-screen content',
-      'Participant-specific delivery: each answer returns only to the requester',
-      'Server-side recipient rules: single recipient, no broadcast, request matching',
-    ],
-    notYet: 'Capture directly from the meeting feed. It currently reads the participant’s display.',
-    exploring: [
-      'Direct capture from the meeting feed',
-      'Continuous screen understanding instead of on-demand snapshots',
-      'Reasoning over the transcript and the screen together',
-      'Accessibility support',
-    ],
-  },
-  tags: ['Zoom APIs & SDKs', 'Generative AI'],
-} as const;
+const gh = (repo: string) => `https://github.com/richithareddyy/${repo}`;
+const ghPath = (repo: string, path: string) => `https://github.com/richithareddyy/${repo}/blob/main/${path}`;
+const ghTree = (repo: string, path: string) => `https://github.com/richithareddyy/${repo}/tree/main/${path}`;
 
 export const projects: Project[] = [
   {
+    slug: 'zoom-lens',
+    title: 'Zoom Lens',
+    summary: 'An assistant inside Zoom that privately explains a shared screen to the participant who asks.',
+    tier: 'featured',
+    year: '2026 – present',
+    role: 'Zoom Fellow, ASU Next Lab',
+    contribution:
+      'Built the prototype on Zoom APIs/SDKs and Claude: Describe, Explain, and Follow-up actions, with participant-specific request pipelines in Python that return each answer only to the requester.',
+    result: {
+      headline: 'Working prototype in live Zoom meetings',
+      qualifier: 'Captures the participant’s display for now, not the meeting feed',
+    },
+    tech: ['Python', 'Zoom Video SDK', 'Zoom Realtime Media Streams API', 'Claude'],
+    caseStudy: true,
+    visual: {
+      kind: 'diagram',
+      id: 'zoom-lens',
+      caption: 'Diagram of the panel and answer routing, using the prototype’s interface labels. Not a screenshot.',
+    },
+  },
+  {
     slug: 'codeatlas',
     title: 'CodeAtlas',
-    kicker: 'Static analysis · Developer tools',
-    year: '2026',
     summary:
-      'A change-impact analyzer for Rust that shows which functions, modules, and tests a change can reach, with the source line behind each step.',
-    problemShort:
-      'Before merging a change you want to know what it can break and which tests to run, with answers you can verify.',
-    problem:
-      'Before merging a change you want to know what it can break and which tests to run. Tools that guess from name similarity give answers you cannot check. Impact analysis is only useful if each result traces back to code.',
+      'Change-impact analysis for Rust: which functions, modules, and tests a change can reach, with the source line behind each step.',
+    tier: 'featured',
+    year: '2026',
+    role: 'Solo project',
     contribution:
       'Built a Rust analyzer that labels each call site by whether it can be resolved, then answers change-impact queries from a Neo4j call graph.',
-    status: 'All planned milestones complete; open source',
-    outcome: 'Impact and test-selection results with an evidence chain for every step, scored against fault injection.',
-    tags: ['Rust', 'tree-sitter', 'Neo4j', 'GraphQL'],
-    stack: ['Rust', 'tree-sitter', 'Neo4j', 'GraphQL', 'SvelteKit', 'TypeScript', 'Cytoscape.js', 'GitHub Actions'],
-    links: [{ label: 'GitHub', href: 'https://github.com/richithareddyy/CodeAtlas' }],
-    metrics: [
-      { value: '3.6 s', label: 'full index of tokio', qualifier: '808 files, ~163k LOC, one machine' },
-      { value: '83–100%', label: 'test-selection recall', qualifier: 'small fixture projects' },
-      { value: '81–89%', label: 'test-selection precision', qualifier: 'small fixture projects' },
-      { value: '181 + 31', label: 'Rust and web tests in CI' },
-    ],
-    evaluationNote:
-      'Test selection is scored against fault injection: functions are made to panic one at a time and the real suite is run. On ripgrep, macro-generated tests and generic dispatch limit recall; the repository documents those numbers too.',
-    architecture: {
-      stages: ['Ingest', 'Module tree', 'Parse (tree-sitter)', 'Extract', 'Resolve', 'Neo4j graph', 'Impact', 'GraphQL', 'SvelteKit'],
-      note: 'The analysis core is a library with no database code; Neo4j handles graph queries and the web workspace.',
+    result: { headline: '3.6 s to index tokio', qualifier: '808 files, ~163k LOC, release build on one machine' },
+    tech: ['Rust', 'tree-sitter', 'Neo4j', 'GraphQL'],
+    github: gh('CodeAtlas'),
+    caseStudy: true,
+    visual: {
+      kind: 'image',
+      src: codeatlasImpact,
+      alt: 'CodeAtlas impact view: a changed trait method, the five symbols it can affect, and the source lines connecting each one.',
+      caption: 'Impact view on the project’s change-impact fixture. Screenshot from the repository.',
     },
+    gallery: [
+      {
+        kind: 'image',
+        src: codeatlasGraph,
+        alt: 'CodeAtlas graph view showing callers of RegexMatcherBuilder::build in ripgrep, with test callers drawn dashed.',
+        caption: 'Callers of RegexMatcherBuilder::build in ripgrep; tests are dashed.',
+      },
+      {
+        kind: 'image',
+        src: codeatlasChanges,
+        alt: 'CodeAtlas changes view comparing two Git revisions, listing changed symbols and the code and tests that depend on them.',
+        caption: 'Git diff impact between two revisions of the pr-impact fixture.',
+      },
+    ],
+    status: 'All planned milestones complete; open source',
+    problem:
+      'Before merging a change you want to know what it can break and which tests to run. Tools that match names by similarity give answers you cannot check.',
+    constraints: [
+      'Rust only, without full type inference, so some calls cannot be resolved with certainty.',
+      'Every result needs to be traceable to specific source lines.',
+      'Re-indexing large repositories has to stay fast when little has changed.',
+    ],
     built: [
-      'Rust analyzer that rebuilds the module tree the way the compiler does and resolves calls with Rust scoping and visibility rules',
+      'Analyzer that rebuilds the module tree as the compiler does and resolves calls with Rust scoping and visibility rules',
       'Neo4j code graph with bounded queries for callers, callees, dependents, paths, and tests that reach a symbol',
       'Git-diff impact between two revisions, with the tests to run',
       'GraphQL API and SvelteKit workspace with graph, impact, changes, architecture, and cycle views',
     ],
+    stack: ['Rust', 'tree-sitter', 'Neo4j', 'GraphQL', 'SvelteKit', 'TypeScript', 'Cytoscape.js', 'GitHub Actions'],
     decisions: [
       {
         heading: 'Label uncertainty instead of guessing',
-        body: 'Only resolved calls become CALLS edges. Ambiguous calls keep their candidates and a reason, and are followed only on request.',
+        body: 'Each call site is resolved, ambiguous, unresolved, or external. Only resolved calls become edges; ambiguous ones keep their candidates and are followed only on request.',
+        tradeoff:
+          'On generic-heavy code, resolved calls alone miss tests. On ripgrep, including ambiguous calls raised recall among visible tests from 19.3% to 93.7% at lower precision.',
       },
       {
-        heading: 'Evidence on every result',
+        heading: 'An evidence chain for every result',
         body: 'An impact result is a chain of facts with file and line, such as: test_checkout calls checkout (line 16), which calls authorize (line 5).',
-      },
-      {
-        heading: 'Measure test selection',
-        body: 'A probe command injects a panic into one function at a time and records which tests fail, giving ground truth to score selection against.',
+        tradeoff: 'Results are only as complete as the graph; a dependency static analysis misses is reported as missing, not inferred.',
       },
       {
         heading: 'Incremental indexing',
-        body: 'Re-indexing parses only changed files and writes only the graph difference. Tests check that the result matches a full index.',
+        body: 'Re-indexing parses only changed files and writes only the graph difference in one transaction. Tests check the result matches a full index.',
+        tradeoff: 'Incremental state is local to one machine, so indexing from two machines falls back to full writes.',
+      },
+      {
+        heading: 'Score test selection with fault injection',
+        body: 'A probe command makes one function panic at a time, runs the real test suite, and records which tests fail. Selection is scored against that.',
+        tradeoff: 'Probing executes the repository’s code, so it should run only on trusted repositories.',
       },
     ],
+    evaluation: {
+      method: [
+        'Indexing: codeatlas bench, medians of 5 runs on one machine (Apple M5, release build, Neo4j 5.26 in Docker).',
+        'Test selection: panic-on-entry probes on small fixture projects, compared with the tests CodeAtlas selected.',
+        'These are separate evaluations: tokio was used for indexing speed, the fixtures for selection quality.',
+      ],
+      metrics: [
+        { value: '3.6 s', label: 'full index of tokio', qualifier: '808 files, ~163k LOC' },
+        { value: '83–100%', label: 'test-selection recall', qualifier: 'small fixture projects' },
+        { value: '81–89%', label: 'test-selection precision', qualifier: 'small fixture projects' },
+        { value: '181 + 31', label: 'Rust and web tests in CI' },
+      ],
+      evidence: [
+        { label: 'Benchmark method', href: ghPath('CodeAtlas', 'benchmarks/README.md') },
+        { label: 'Benchmark results', href: ghTree('CodeAtlas', 'benchmarks/results') },
+        { label: 'Test-selection results (ripgrep)', href: ghTree('CodeAtlas', 'benchmarks/test-impact') },
+        { label: 'Impact analysis notes', href: ghPath('CodeAtlas', 'docs/impact-analysis.md') },
+        { label: 'CI workflow', href: ghPath('CodeAtlas', '.github/workflows/ci.yml') },
+      ],
+    },
     limitations: [
-      'Only Rust is analyzed; macro_rules! bodies and #[cfg] are not expanded.',
-      'No general type inference, so calls on some receivers are reported as ambiguous.',
-      'Benchmarking tokio exposed a resolver bug (exponential work on glob-import cycles), since fixed to run in polynomial time.',
+      'macro_rules! bodies and #[cfg] are not expanded, which limits resolution on large crates.',
+      'On ripgrep, macro-generated tests and generic dispatch keep static selection a starting point, not a replacement for running the suite.',
     ],
     next: ['Expand macro_rules! and cfg macros', 'Measure explanation quality with real local models'],
   },
   {
     slug: 'reddit-data-pipeline',
     title: 'Reddit Data ETL Pipeline',
-    kicker: 'Data engineering',
+    summary: 'Loads Reddit-format archives into PostgreSQL and accounts for every rejected record.',
+    tier: 'featured',
     year: '2026',
-    summary: 'A five-stage pipeline that loads Reddit-format archives into PostgreSQL and accounts for every rejected record.',
-    problemShort: 'Archive dumps contain malformed lines, duplicates, and orphaned records that either break a load or slip in silently.',
-    problem:
-      'Large archive dumps contain malformed lines, duplicates, and records whose parents never appear. Loading them naively either fails on constraints or silently stores bad data.',
+    role: 'Solo project',
     contribution:
-      'Built an extract, validate, stage, merge, and check pipeline with per-line rejection records, set-based deduplication and referential checks, idempotent upserts, and 13 post-load quality checks.',
-    status: 'Complete; tests run in GitHub Actions',
-    outcome: 'Counts reconcile exactly on an 18.9M-line benchmark, and a faster bulk path cut run time from 584 s to 345 s.',
-    tags: ['Python', 'PostgreSQL', 'SQL', 'Docker'],
-    stack: ['Python', 'PostgreSQL', 'SQL', 'Docker', 'GitHub Actions'],
-    links: [{ label: 'GitHub', href: 'https://github.com/richithareddyy/reddit-data-pipeline' }],
-    metrics: [
-      { value: '584 → 345 s', label: 'end-to-end run time', qualifier: 'generated data, one machine' },
-      { value: '18.71M', label: 'clean rows loaded from 18.9M lines', qualifier: 'generated data with injected defects' },
-      { value: '49', label: 'automated tests on every push' },
-    ],
-    evaluationNote:
-      'The benchmark uses generated data with deliberately injected defects (111,408 invalid, 21,826 duplicate, 53,793 orphaned). Every count matched the generator’s manifest, and all 13 quality checks passed. Runtime depends on hardware.',
-    architecture: {
-      stages: ['Extract (plain, gzip, zstd)', 'Validate', 'Stage (COPY, unlogged)', 'Merge (dedupe, orphans, upsert)', 'Check (13 rules)'],
-      note: 'Entities load in dependency order, so each child’s referential check is one set-based join against parents already loaded.',
+      'Built a five-stage pipeline (extract, validate, stage, merge, check) with per-line rejection records, set-based deduplication, and 13 post-load quality checks.',
+    result: {
+      headline: '18.9M lines reconciled exactly; 584 s cut to 345 s',
+      qualifier: 'Generated data with injected defects, one machine',
     },
+    tech: ['Python', 'PostgreSQL', 'SQL', 'Docker'],
+    github: gh('reddit-data-pipeline'),
+    caseStudy: true,
+    visual: {
+      kind: 'diagram',
+      id: 'etl',
+      caption: 'Diagram of the pipeline stages and benchmark record counts.',
+    },
+    status: 'Complete; tests run in GitHub Actions',
+    problem:
+      'Archive dumps contain malformed lines, duplicates, and records whose parents never appear. A naive load either fails on constraints or silently stores bad data.',
+    constraints: [
+      'Inputs are large, so memory use has to stay constant while streaming.',
+      'Every rejected line must be traceable to its source line and reason.',
+      'Re-running a load must not duplicate or regress data.',
+    ],
     built: [
-      'Streaming extraction and per-line validation, with every rejection stored with its source line and reason',
+      'Streaming extraction from plain, gzip, and Zstandard files, with per-line validation',
       'Set-based deduplication, referential checks, and idempotent upserts',
       'Thirteen post-load data-quality checks and per-run audit records',
     ],
+    stack: ['Python', 'PostgreSQL', 'SQL', 'Docker', 'GitHub Actions'],
     decisions: [
       {
-        heading: 'Bulk path designed around PostgreSQL',
-        body: 'COPY into unlogged staging tables. In bulk mode, foreign keys and indexes are dropped during the load, then rebuilt and validated in one pass.',
+        heading: 'Drop and rebuild constraints for bulk loads',
+        body: 'On an empty database, foreign keys and secondary indexes are dropped during the load, then rebuilt and validated in one pass.',
+        tradeoff: 'This only applies to the first load; later runs switch to incremental mode and keep constraints in place.',
       },
       {
-        heading: 'Narrow merge',
-        body: 'One window-function pass finds only the rows that must not load (superseded duplicates and orphans), and the upsert anti-joins against that small set. The merge step went from 267 s to 102 s.',
+        heading: 'Narrow, set-based merge',
+        body: 'One window-function pass finds only the rows that must not load (superseded duplicates and orphans), and the upsert anti-joins against that small set.',
+        tradeoff: 'The merge depends on entities loading in parent-first order, so a missing parent file turns its children into orphans.',
       },
       {
         heading: 'Safe to re-run',
         body: 'An advisory lock blocks concurrent runs, interrupted runs are marked failed with constraints restored, and upserts apply only strictly newer data.',
+        tradeoff: 'Only one run can proceed at a time.',
       },
     ],
+    evaluation: {
+      method: [
+        'Full-scale run into an empty database: 18,897,027 lines (5.9 GB NDJSON) of generated data with a 1% defect rate.',
+        'Docker limited to 10 CPUs and 8 GB on an Apple Silicon Mac with an SSD.',
+        'Counts compared with the generator’s manifest of injected defects.',
+      ],
+      metrics: [
+        { value: '584 → 345 s', label: 'end-to-end run time', qualifier: 'merge step 267 → 102 s' },
+        { value: '18.71M', label: 'clean rows loaded', qualifier: 'every count matched the manifest' },
+        { value: '13 / 13', label: 'quality checks passed' },
+        { value: '49', label: 'automated tests on every push' },
+      ],
+      evidence: [
+        { label: 'Benchmark details (README)', href: `${gh('reddit-data-pipeline')}#benchmark` },
+        { label: 'Integration tests', href: ghPath('reddit-data-pipeline', 'tests/test_pipeline_integration.py') },
+        { label: 'CI workflow', href: ghPath('reddit-data-pipeline', '.github/workflows/ci.yml') },
+      ],
+    },
     limitations: [
       'Benchmark numbers come from generated data, not a real Reddit dump.',
       'Runtime depends on hardware and input characteristics.',
@@ -256,44 +255,62 @@ export const projects: Project[] = [
   {
     slug: 'streambox',
     title: 'StreamBox',
-    kicker: 'Full-stack · Backend concurrency',
-    year: '2022',
-    summary: 'A streaming platform whose backend stays consistent when many users write to the same data at once.',
-    problemShort: 'Double-clicks, multiple tabs, and concurrent edits cause duplicate entries, rewound playback, and wrong totals.',
-    problem:
-      'Double-clicks, multiple tabs, retried heartbeats, and two admins editing one title all create race conditions: duplicate list entries, rewound playback, wrong rating averages, and lost edits.',
+    summary: 'A streaming web app whose backend stays consistent when many users write to the same data.',
+    tier: 'more',
+    year: '2024',
+    role: 'Solo project',
     contribution:
-      'Built a 24-endpoint Express REST API with JWT authentication and five MongoDB collections, using atomic updates and optimistic locking to keep concurrent writes consistent.',
+      'Built a 24-endpoint Express REST API with JWT auth and five MongoDB collections, using atomic updates and optimistic locking.',
+    result: { headline: '0 errors or duplicates in 51,633 requests', qualifier: '100 concurrent users, development laptop' },
+    tech: ['Node.js', 'Express.js', 'MongoDB'],
+    github: gh('ott-platform'),
+    caseStudy: true,
+    visual: { kind: 'output', id: 'streambox-loadtest', caption: 'Load-test output reported in the project README.' },
     status: 'Open source; runs locally with Docker',
-    outcome: 'A 100-user load test finished with 0 errors, duplicates, or incorrect totals.',
-    tags: ['Node.js', 'Express.js', 'MongoDB'],
-    stack: ['Node.js', 'Express.js', 'MongoDB', 'Mongoose', 'JWT', 'Docker'],
-    links: [{ label: 'GitHub', href: 'https://github.com/richithareddyy/ott-platform' }],
-    metrics: [
-      { value: '0 errors', label: 'in 51,633 requests (≈ 3,440/s)', qualifier: '100 users, development laptop' },
-      { value: '24', label: 'automated race-condition tests' },
+    problem:
+      'Double-clicks, multiple tabs, retried heartbeats, and two admins editing one title create race conditions: duplicate list entries, rewound playback, wrong rating averages, and lost edits.',
+    constraints: [
+      'Writes from many sessions can hit the same title at once.',
+      'Playback heartbeats can arrive late or out of order.',
     ],
-    evaluationNote:
-      'The load test runs concurrent clients with writes concentrated on a few titles, then checks the database for duplicates and incorrect totals. Results depend on hardware.',
-    architecture: {
-      stages: ['Vanilla JS single-page app', 'Express REST API', 'JWT auth', 'MongoDB (5 collections)', 'HTTP range streaming'],
-    },
     built: [
       'Catalog browsing, full-text search, watchlists, resumable playback, reviews, and an admin interface',
       'HTTP range streaming with short-lived, title-scoped stream tokens',
     ],
+    stack: ['Node.js', 'Express.js', 'MongoDB', 'Mongoose', 'JWT', 'Docker'],
     decisions: [
       {
-        heading: 'Unique indexes and upserts',
-        body: 'A unique compound index on {user, title} plus idempotent upserts prevents duplicate list entries, reviews, and progress records.',
+        heading: 'Unique indexes with idempotent upserts',
+        body: 'A unique compound index on {user, title} plus upserts prevents duplicate list entries, reviews, and progress records.',
+        tradeoff: 'A request that loses an insert race gets a duplicate-key error that has to be handled as already exists.',
       },
-      { heading: 'Atomic rating updates', body: 'Rating totals and averages update in a single aggregation-pipeline write.' },
       {
         heading: 'Ordered heartbeats',
-        body: 'Playback updates apply only if newer than the stored value, so a delayed heartbeat cannot rewind position.',
+        body: 'Each playback update carries the client’s timestamp and applies only if newer than the stored value.',
+        tradeoff: 'Correct ordering depends on client-reported time.',
       },
-      { heading: 'Optimistic locking', body: 'Admin edits include the version they read; a stale edit returns 409 Conflict.' },
+      {
+        heading: 'Optimistic locking for admin edits',
+        body: 'Edits include the version that was read; a stale edit matches nothing and returns 409 Conflict.',
+        tradeoff: 'The second admin has to reload and reapply their change.',
+      },
     ],
+    evaluation: {
+      method: [
+        '100 concurrent clients for 15 seconds, with writes concentrated on 10 titles to force contention.',
+        'Afterward the database is checked for duplicates and incorrect totals.',
+        'Single Node process with MongoDB in Docker on a development laptop.',
+      ],
+      metrics: [
+        { value: '51,633', label: 'requests in 15 s (≈ 3,440/s)', qualifier: 'development laptop' },
+        { value: '0', label: 'errors, duplicates, or incorrect totals' },
+        { value: '24', label: 'automated race-condition tests' },
+      ],
+      evidence: [
+        { label: 'Load-test script', href: ghPath('ott-platform', 'scripts/load-test.js') },
+        { label: 'Concurrency tests', href: ghPath('ott-platform', 'test/concurrency.test.js') },
+      ],
+    },
     limitations: [
       'No video files are included; playback needs media supplied by whoever runs it.',
       'The login rate limiter is in memory, so several instances would need a shared store.',
@@ -302,74 +319,208 @@ export const projects: Project[] = [
   {
     slug: 'ticket-triage',
     title: 'Support Ticket Triage',
-    kicker: 'Machine learning · Explainability',
-    year: '2026',
     summary: 'Predicts support-ticket priority and resolution time, and explains each prediction.',
-    problemShort: 'A triage model has to be accurate and explain itself, so an agent can trust or override it.',
+    tier: 'more',
+    year: '2026',
+    role: 'Solo project',
+    contribution:
+      'Built an ML pipeline comparing three models, with NLTK and VADER text features, SHAP explanations, and a Dockerized Flask API.',
+    result: { headline: 'Macro-F1 0.705; MAE 12.2 h vs. 24.4 h baseline', qualifier: '20,000 synthetic tickets' },
+    tech: ['Python', 'XGBoost', 'SHAP', 'Flask'],
+    demo: 'https://richithareddyy-ticket-triage-demostreamlit-app-3uubea.streamlit.app',
+    github: gh('ticket-triage'),
+    caseStudy: true,
+    visual: {
+      kind: 'image',
+      src: triageDemo,
+      alt: 'Ticket Triage live demo: a sample feature-request ticket scored Low priority with 95% confidence, 3.7 days expected resolution, and an on-track 168-hour SLA.',
+      caption: 'Live demo scoring a sample feature-request ticket. Screenshot of the demo.',
+    },
+    gallery: [
+      {
+        kind: 'image',
+        src: triageShapPriority,
+        alt: 'Bar chart of mean absolute SHAP values for the priority model; text-signal probabilities and customer tier rank highest.',
+        caption: 'Global SHAP importance for the priority model. Plot from the repository.',
+      },
+      {
+        kind: 'image',
+        src: triageShapResolution,
+        alt: 'Bar chart of mean absolute SHAP values for the resolution-time model.',
+        caption: 'Global SHAP importance for the resolution-time model.',
+      },
+    ],
+    status: 'Open source; live demo on Streamlit Community Cloud',
     problem:
       'Triage depends on what a ticket says and who sent it. A useful model needs to be accurate and to explain its output, so an agent can trust or override it.',
-    contribution:
-      'Built an ML pipeline comparing Logistic Regression, Random Forest, and XGBoost, with NLTK and VADER text features, SHAP per-prediction explanations, and a Dockerized Flask REST API.',
-    status: 'Open source; live demo on Streamlit Community Cloud',
-    outcome: 'XGBoost reached macro-F1 0.705 and cut resolution-time error roughly in half against a baseline, on synthetic data.',
-    tags: ['Python', 'XGBoost', 'SHAP', 'Flask'],
-    stack: ['Python', 'XGBoost', 'Scikit-learn', 'SHAP', 'NLTK', 'VADER', 'PySpark', 'Flask', 'Streamlit', 'Docker'],
-    links: [
-      { label: 'GitHub', href: 'https://github.com/richithareddyy/ticket-triage' },
-      { label: 'Live demo', href: 'https://richithareddyy-ticket-triage-demostreamlit-app-3uubea.streamlit.app' },
+    constraints: [
+      'Real ticket datasets with resolution times are proprietary, so training uses synthetic tickets with a known causal structure.',
+      'Explanations have to be meaningful to an agent, not just mathematically exact.',
     ],
-    metrics: [
-      { value: '0.705', label: 'macro-F1 on priority', qualifier: '20,000 synthetic tickets' },
-      { value: '12.2 h', label: 'resolution-time MAE vs. 24.4 h baseline', qualifier: 'synthetic tickets' },
-      { value: '15–40 ms', label: 'API response with SHAP explanations' },
-      { value: '25', label: 'automated tests' },
-    ],
-    evaluationNote: 'Trained and evaluated on synthetic tickets; results describe that dataset, not a real support queue.',
-    architecture: {
-      stages: ['Tickets', 'PySpark / pandas features', 'Stacked text model + XGBoost', 'SHAP explanations', 'Flask API', 'Streamlit UI'],
-      note: 'A parity test checks that the PySpark and pandas feature pipelines produce identical features.',
-    },
     built: [
-      'Model comparison across Logistic Regression, Random Forest, and XGBoost',
+      'Comparison of Logistic Regression, Random Forest, and XGBoost',
       'NLTK text features with VADER sentiment, and a PySpark feature job',
       'SHAP per-prediction explanations served through a Flask API and a Streamlit interface',
     ],
+    stack: ['Python', 'XGBoost', 'Scikit-learn', 'SHAP', 'NLTK', 'VADER', 'PySpark', 'Flask', 'Streamlit', 'Docker'],
     decisions: [
       {
         heading: 'Stacked text model for readable explanations',
-        body: 'Raw TF-IDF columns made SHAP explanations dominated by absent words. A linear text model now compresses text into a few out-of-fold scores that XGBoost combines with ticket metadata.',
+        body: 'Raw TF-IDF columns made SHAP explanations dominated by absent words. A linear text model now compresses text into a few out-of-fold scores that XGBoost combines with metadata.',
+        tradeoff: 'Explanations come at two levels (SHAP on the final model, term weights behind the text score) instead of one.',
       },
       {
-        heading: 'Test the explanations',
-        body: 'A test confirms grouped SHAP contributions add up to the model output. The Spark parity test caught a real rounding difference between Spark and NumPy.',
+        heading: 'Test the explanations and the features',
+        body: 'A test confirms grouped SHAP contributions add up to the model output, and a parity test compares the PySpark and pandas features.',
+        tradeoff: 'The parity test runs in Docker with Java, which makes the full suite slower; it caught a real rounding difference between Spark and NumPy.',
       },
     ],
+    evaluation: {
+      method: [
+        'Held-out synthetic test set of 3,000 tickets; models trained on the same split.',
+        'Baselines: majority class for priority, median for resolution time.',
+        'The generator adds label noise on purpose, so a score near 1.0 would suggest leakage.',
+      ],
+      metrics: [
+        { value: '0.705', label: 'macro-F1 on priority', qualifier: 'majority baseline 0.130' },
+        { value: '12.2 h', label: 'resolution-time MAE', qualifier: 'median baseline 24.4 h' },
+        { value: '15–40 ms', label: 'API response with SHAP', qualifier: 'once warm' },
+        { value: '25', label: 'automated tests' },
+      ],
+      evidence: [{ label: 'Results and method (README)', href: `${gh('ticket-triage')}#results` }],
+    },
     limitations: ['Results are on synthetic data and are not evidence of performance on a real support queue.'],
   },
-];
-
-export type MinorProject = { title: string; summary: string; stack: string[]; links: Link[] };
-
-export const otherWork: MinorProject[] = [
   {
+    slug: 'research-paper-summarizer',
     title: 'Research Paper Summarizer',
-    summary: 'Summarize, question, and compare papers from a PDF, DOI, or arXiv link, and export notes and citations.',
-    stack: ['Python', 'Streamlit', 'Gemini API'],
-    links: [{ label: 'GitHub', href: 'https://github.com/richithareddyy/Researchpaper_summerizer' }],
+    summary: 'Summarize, question, and compare academic papers from a PDF, DOI, or arXiv link.',
+    tier: 'more',
+    year: '2025',
+    role: 'Solo project',
+    contribution:
+      'Built a Streamlit app that parses papers with PyMuPDF and TF-IDF (no LLM parsing) and uses Gemini for five summary styles and paper chat, with model fallback.',
+    result: { headline: 'Live demo available', qualifier: 'AI features use the host’s Gemini API quota' },
+    tech: ['Python', 'Streamlit', 'Gemini API', 'PyMuPDF'],
+    demo: 'https://researchpapersummerizer-3bmsmrmm7glsxfeavslfb6.streamlit.app/',
+    github: gh('Researchpaper_summerizer'),
+    caseStudy: false,
+    visual: {
+      kind: 'image',
+      src: researchDemo,
+      alt: 'Research Paper Summarizer live demo with Attention Is All You Need loaded: paper metadata, analysis tabs, and a generated technical summary.',
+      caption: 'Live demo with a sample paper and a generated summary. Screenshot of the demo.',
+    },
   },
   {
+    slug: 'meeting-insights',
     title: 'Meeting Insights',
-    summary: 'Turns a meeting transcript into action items, decisions, and open questions, with a redaction step before analysis.',
-    stack: ['Python', 'Streamlit', 'Gemini API'],
-    links: [
-      { label: 'GitHub', href: 'https://github.com/richithareddyy/zoom-meeting-insights' },
-      { label: 'Live demo', href: 'https://richithareddyy-zoom-meeting-insights-app-gr5imo.streamlit.app' },
-    ],
+    summary: 'Turns a meeting transcript into action items, decisions, and open questions.',
+    tier: 'more',
+    year: '',
+    role: 'Solo project',
+    contribution:
+      'Built a Streamlit prototype that redacts emails and phone numbers, then makes one structured Gemini call and exports the results as JSON.',
+    result: { headline: 'Prototype with a live demo', qualifier: 'Works from uploaded transcripts; live Zoom capture is not connected' },
+    tech: ['Python', 'Streamlit', 'Gemini API'],
+    demo: 'https://richithareddyy-zoom-meeting-insights-app-gr5imo.streamlit.app',
+    github: gh('zoom-meeting-insights'),
+    caseStudy: false,
+    visual: {
+      kind: 'image',
+      src: meetingDemo,
+      alt: 'Meeting Insights live demo with the sample WebVTT transcript loaded, redaction options enabled, and the Analyze meeting button.',
+      caption: 'Live demo with the sample transcript and redaction settings. Screenshot of the demo.',
+    },
   },
   {
+    slug: 'smart-parking',
     title: 'Smart Parking',
     summary: 'Estimates parking-space occupancy by comparing a camera image with an empty reference.',
-    stack: ['MATLAB'],
-    links: [{ label: 'GitHub', href: 'https://github.com/richithareddyy/Smart-Parking-App' }],
+    tier: 'more',
+    year: '',
+    role: 'Solo project',
+    contribution:
+      'Built a MATLAB app for marking spaces, estimating occupancy per space and lane, recommending a lane, and exporting results to CSV.',
+    result: { headline: 'MATLAB prototype', qualifier: 'No real-world accuracy benchmark yet' },
+    tech: ['MATLAB'],
+    github: gh('Smart-Parking-App'),
+    caseStudy: false,
+    visual: {
+      kind: 'image',
+      src: parkingCurrent,
+      alt: 'Overhead photo of a parking lot with 18 marked spaces, some occupied.',
+      caption: 'Sample input image from the repository, not a detection result.',
+    },
   },
 ];
+
+export const featured = projects.filter((p) => p.tier === 'featured');
+export const more = projects.filter((p) => p.tier === 'more');
+export const caseStudies = projects.filter((p) => p.caseStudy);
+
+/** Zoom Lens case-study details that do not fit the shared shape. */
+export const zoomLens = {
+  role: 'Zoom Fellow, ASU Next Lab (a fellowship in partnership with Zoom)',
+  /** Demo recording. Put the file in public/ and set the path, e.g. '/zoom-lens-demo.mp4'. */
+  demoVideo: null as string | null,
+  problem: [
+    'Someone is presenting a spreadsheet, a chart, a slide, a paper, or a page of code. You looked away, joined late, or the material is outside what you know.',
+    'The usual options are to interrupt the presenter or to wait and hope it becomes clear. Zoom Lens adds a third: ask privately, without interrupting the presenter or other participants.',
+  ],
+  constraints: [
+    'Asking must not interrupt the meeting or signal anything to the room.',
+    'Recipient rules must hold even if someone modifies the panel.',
+    'Capturing the shared screen directly from the meeting feed needs a capability that is not yet enabled on the Zoom account.',
+  ],
+  howItWorks:
+    'Zoom Lens opens from the Apps panel during a meeting and appears as a narrow panel beside the meeting window with three actions.',
+  modes: [
+    { name: 'Describe', label: 'What is on the shared screen', estimate: '≈ 6 s', body: 'Summarizes what is shared, naming the content type and reporting the actual numbers and headings.' },
+    { name: 'Explain', label: 'What the content means', estimate: '≈ 12 s', body: 'Explains what a chart implies, why a diagram is laid out as it is, or what a piece of code is for.' },
+    { name: 'Follow-up', label: 'Ask about the last answer', estimate: '≈ 3 s', body: 'One question about the previous answer, so you do not have to start over.' },
+  ],
+  timingContext:
+    'The times are the typical waits the app displays while it works, for example “Reading the screen. This usually takes about 6 seconds.” They are interface estimates, not results from a formal benchmark.',
+  delivery: {
+    rules: [
+      { title: 'One recipient per message', body: 'Every message the server sends is addressed to exactly one session.' },
+      { title: 'No broadcast path', body: 'The server has no way to send a message to the whole meeting.' },
+      { title: 'Replies must match a request', body: 'A reply is refused unless it matches a request that the same session made.' },
+    ],
+  },
+  decisions: [
+    {
+      heading: 'Enforce answer delivery on the server',
+      body: 'Recipient rules live on the server, where the person running the panel cannot change them. Other participants do not see the request or the answer.',
+      tradeoff:
+        'This controls who sees answers inside the meeting. It is not an end-to-end privacy guarantee: the captured screen is still sent to Claude to produce each answer.',
+    },
+    {
+      heading: 'Read the participant’s display for now',
+      body: 'Until direct meeting-feed capture is enabled, the prototype captures the requesting participant’s display.',
+      tradeoff:
+        'This is not the same as capturing the meeting feed. An answer can mention anything visible on that screen; in testing, a Describe answer also listed browser tabs and participant names that were on screen.',
+    },
+    {
+      heading: 'Do not notify the presenter',
+      body: 'People use Zoom Lens because they do not want to interrupt or admit they lost track, and a notification would remove that.',
+      tradeoff: 'It is a real asymmetry, and whether it is acceptable is a judgement for people to make, not something the code can settle.',
+    },
+  ],
+  progress: {
+    built: [
+      'Runs inside a live Zoom meeting, opened from the Apps panel',
+      'Describe, Explain, and Follow-up on shared-screen content',
+      'Each answer returns only to the requester',
+      'Server-side recipient rules: single recipient, no broadcast, request matching',
+    ],
+    notYet: ['Capture directly from the meeting feed'],
+    exploring: [
+      'Continuous screen understanding instead of on-demand snapshots',
+      'Reasoning over the transcript and the screen together',
+      'Accessibility support',
+    ],
+  },
+} as const;
+

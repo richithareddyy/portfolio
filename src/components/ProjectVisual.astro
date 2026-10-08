@@ -1,0 +1,125 @@
+---
+import { Image } from 'astro:assets';
+import type { Visual } from '../data/projects';
+import ZoomLensDiagram from './visuals/ZoomLensDiagram.astro';
+import EtlDiagram from './visuals/EtlDiagram.astro';
+import LoadTestOutput from './visuals/LoadTestOutput.astro';
+
+interface Props {
+  visual: Visual;
+  /** card: fixed 16:10 frame; feature: larger frame; full: natural height on case studies. */
+  size?: 'card' | 'feature' | 'full';
+  eager?: boolean;
+}
+
+const { visual, size = 'card', eager = false } = Astro.props;
+const widths = size === 'card' ? [400, 640, 800] : [640, 960, 1280, 1600];
+const sizes =
+  size === 'card'
+    ? '(min-width: 64rem) 22rem, (min-width: 40rem) 45vw, 92vw'
+    : '(min-width: 64rem) 40rem, 92vw';
+const kindLabel = visual.kind === 'image' ? null : visual.kind === 'diagram' ? 'Diagram' : 'Sample output';
+---
+
+<figure class:list={['visual', size, visual.kind]}>
+  <div class="frame">
+    {
+      visual.kind === 'image' && (
+        <Image
+          src={visual.src}
+          alt={visual.alt}
+          widths={widths}
+          sizes={sizes}
+          loading={eager ? 'eager' : 'lazy'}
+          class:list={[{ contain: visual.src.height > visual.src.width * 0.8 }]}
+        />
+      )
+    }
+    {visual.kind === 'diagram' && visual.id === 'zoom-lens' && <ZoomLensDiagram />}
+    {visual.kind === 'diagram' && visual.id === 'etl' && <EtlDiagram />}
+    {visual.kind === 'output' && <LoadTestOutput />}
+  </div>
+  <figcaption>
+    {kindLabel && <span class="kind">{kindLabel}.</span>}
+    {visual.caption}
+  </figcaption>
+</figure>
+
+<style>
+  .visual {
+    margin: 0;
+    min-width: 0;
+  }
+
+  .frame {
+    position: relative;
+    background: var(--color-surface);
+    border: var(--border-hairline);
+    border-radius: var(--radius-md);
+  }
+
+  .card .frame {
+    aspect-ratio: 16 / 10;
+  }
+
+  .feature .frame {
+    aspect-ratio: 16 / 10;
+  }
+
+  .full.diagram .frame,
+  .full.output .frame {
+    aspect-ratio: 16 / 9;
+    max-height: 30rem;
+  }
+
+  .image .frame {
+    overflow: hidden;
+  }
+
+  .output .frame {
+    overflow: hidden;
+    border-radius: var(--radius-md);
+  }
+
+  .frame :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top left;
+  }
+
+  .frame :global(img.contain) {
+    object-fit: contain;
+    background: #fff;
+  }
+
+  .full .frame :global(img) {
+    height: auto;
+  }
+
+  figcaption {
+    margin-top: var(--space-2);
+    font-size: var(--text-xs);
+    line-height: 1.45;
+    color: var(--color-muted);
+  }
+
+  .card figcaption {
+    min-height: calc(2 * 1.45em);
+  }
+
+  .kind {
+    font-weight: 600;
+    color: var(--color-ink-soft);
+    margin-right: 0.25em;
+  }
+
+  @media (max-width: 30rem) {
+    .full.diagram .frame,
+    .full.output .frame {
+      aspect-ratio: auto;
+      min-height: 16rem;
+    }
+  }
+</style>
