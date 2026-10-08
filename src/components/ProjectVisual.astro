@@ -10,9 +10,12 @@ interface Props {
   /** card: fixed 16:10 frame; feature: larger frame; full: natural height on case studies. */
   size?: 'card' | 'feature' | 'full';
   eager?: boolean;
+  /** Makes the frame a mouse shortcut to this URL (kept out of the tab order; the title link is the accessible one). */
+  href?: string;
 }
 
-const { visual, size = 'card', eager = false } = Astro.props;
+const { visual, size = 'card', eager = false, href } = Astro.props;
+
 const widths = size === 'card' ? [400, 640, 800] : [640, 960, 1280, 1600];
 const sizes =
   size === 'card'
@@ -22,7 +25,7 @@ const kindLabel = visual.kind === 'image' ? null : visual.kind === 'diagram' ? '
 ---
 
 <figure class:list={['visual', size, visual.kind]}>
-  <div class="frame">
+  <div class:list={['frame', { linked: !!href }]}>
     {
       visual.kind === 'image' && (
         <Image
@@ -38,6 +41,7 @@ const kindLabel = visual.kind === 'image' ? null : visual.kind === 'diagram' ? '
     {visual.kind === 'diagram' && visual.id === 'zoom-lens' && <ZoomLensDiagram />}
     {visual.kind === 'diagram' && visual.id === 'etl' && <EtlDiagram />}
     {visual.kind === 'output' && <LoadTestOutput />}
+    {href && <a class="cover" href={href} tabindex="-1" aria-hidden="true"></a>}
   </div>
   <figcaption>
     {kindLabel && <span class="kind">{kindLabel}.</span>}
@@ -74,6 +78,28 @@ const kindLabel = visual.kind === 'image' ? null : visual.kind === 'diagram' ? '
 
   .image .frame {
     overflow: hidden;
+  }
+
+  .linked {
+    transition: border-color var(--duration-base) var(--ease-out);
+  }
+
+  .cover {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .linked:hover {
+    border-color: var(--color-rule-strong);
+  }
+
+  .linked :global(img) {
+    transition: transform var(--duration-slow) var(--ease-out);
+  }
+
+  .linked:hover :global(img) {
+    transform: scale(1.02);
   }
 
   .output .frame {

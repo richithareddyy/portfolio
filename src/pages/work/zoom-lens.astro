@@ -7,14 +7,17 @@ import ProjectVisual from '../../components/ProjectVisual.astro';
 import DecisionList from '../../components/DecisionList.astro';
 import ZoomLensDelivery from '../../components/ZoomLensDelivery.astro';
 import ZoomLensStatus from '../../components/ZoomLensStatus.astro';
+import ZoomLensArchitecture from '../../components/visuals/ZoomLensArchitecture.astro';
 import NextProject from '../../components/NextProject.astro';
 import { projects, zoomLens } from '../../data/projects';
 
 const project = projects.find((p) => p.slug === 'zoom-lens')!;
 const sections = [
   { id: 'problem', label: 'Problem' },
-  { id: 'contribution', label: 'My contribution' },
-  { id: 'decisions', label: 'Decisions' },
+  { id: 'interaction', label: 'Product' },
+  { id: 'architecture', label: 'Architecture' },
+  { id: 'routing', label: 'Routing and privacy' },
+  { id: 'challenges', label: 'Challenges' },
   { id: 'evaluation', label: 'Evaluation' },
   { id: 'status', label: 'Limitations and next steps' },
 ];
@@ -38,14 +41,16 @@ const sections = [
         }
       </div>
 
-      <CaseSection title="Problem and constraints" id="problem">
+      <CaseSection title="The problem" id="problem">
         {zoomLens.problem.map((p) => <p>{p}</p>)}
+        <h3>Constraints</h3>
         <BulletList items={zoomLens.constraints} />
       </CaseSection>
 
-      <CaseSection title="My contribution" id="contribution">
-        <p>{project.contribution}</p>
-        <p>{zoomLens.howItWorks}</p>
+      <CaseSection title="Product interaction" id="interaction">
+        <ol class="steps">
+          {zoomLens.interaction.map((step) => <li>{step}</li>)}
+        </ol>
         <dl class="modes">
           {
             zoomLens.modes.map((m) => (
@@ -60,10 +65,30 @@ const sections = [
         </dl>
       </CaseSection>
 
-      <CaseSection title="Decisions and tradeoffs" id="decisions">
-        <DecisionList items={zoomLens.decisions} />
-        <h3>Answer delivery rules</h3>
+      <CaseSection title="System architecture" id="architecture">
+        <p>{project.contribution}</p>
+        <ZoomLensArchitecture />
+        <h3>AI integration</h3>
+        <BulletList items={zoomLens.ai} />
+      </CaseSection>
+
+      <CaseSection title="Routing and privacy boundaries" id="routing">
         <ZoomLensDelivery />
+        <div class="bounds">
+          <div>
+            <h3>What the routing protects</h3>
+            <BulletList items={zoomLens.boundaries.covered} />
+          </div>
+          <div>
+            <h3>What it does not cover</h3>
+            <BulletList items={zoomLens.boundaries.notCovered} />
+          </div>
+        </div>
+      </CaseSection>
+
+      <CaseSection title="Engineering challenges and decisions" id="challenges">
+        <BulletList items={zoomLens.challenges} />
+        <DecisionList items={zoomLens.decisions} />
       </CaseSection>
 
       <CaseSection title="Evaluation" id="evaluation">
@@ -105,6 +130,18 @@ const sections = [
     color: var(--color-muted);
   }
 
+  .steps {
+    display: grid;
+    gap: var(--space-2);
+    max-width: var(--width-prose);
+    padding-left: var(--space-5);
+  }
+
+  .steps li::marker {
+    font-family: var(--font-mono);
+    color: var(--color-accent-ink);
+  }
+
   .modes {
     margin: 0;
     border-top: var(--border-hairline);
@@ -132,6 +169,23 @@ const sections = [
     margin: 0;
   }
 
+  .bounds {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-5) var(--space-7);
+  }
+
+  @media (min-width: 48rem) {
+    .bounds {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .bounds > div {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+  }
 
   .note {
     font-size: var(--text-sm);

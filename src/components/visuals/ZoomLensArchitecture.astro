@@ -1,0 +1,125 @@
+---
+/* Simplified architecture of the Zoom Lens prototype, from the project description. */
+---
+
+<figure class="arch">
+  <div class="grid" role="img" aria-label="Diagram: each participant's Zoom Apps panel sends a request to a Python server, which holds session-scoped requests and recipient rules. The screen, currently captured from the participant's display, is sent with the request to Claude. The answer is routed back to the requesting session only.">
+    <div class="node panel" aria-hidden="true">
+      <span class="k">Client</span>
+      <b>Zoom Apps panel</b>
+      <span>One per participant. Describe, Explain, Follow-up.</span>
+    </div>
+    <span class="arrow a1" aria-hidden="true">request →</span>
+    <div class="node server" aria-hidden="true">
+      <span class="k">Server · Python</span>
+      <b>Request pipeline</b>
+      <span>Session-scoped requests. One recipient per message, no broadcast, replies must match a request.</span>
+    </div>
+    <span class="arrow a2" aria-hidden="true">screen + task →</span>
+    <div class="node model" aria-hidden="true">
+      <span class="k">Model</span>
+      <b>Claude</b>
+      <span>Generates the answer for the chosen action.</span>
+    </div>
+    <div class="node source" aria-hidden="true">
+      <span class="k">Screen source</span>
+      <b>Now: participant’s display</b>
+      <span>Planned: direct meeting feed, which needs a capability not yet enabled on the account.</span>
+    </div>
+    <p class="return" aria-hidden="true">← answer to the requesting session only</p>
+  </div>
+  <figcaption><span>Diagram.</span> Simplified architecture of the prototype. Not a screenshot.</figcaption>
+</figure>
+
+<style>
+  .arch {
+    margin: 0;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background: var(--color-surface);
+    border: var(--border-hairline);
+    border-radius: var(--radius-md);
+  }
+
+  @media (min-width: 56rem) {
+    .grid {
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.2fr) auto minmax(0, 1fr);
+      align-items: stretch;
+      gap: var(--space-3);
+    }
+
+    .source {
+      grid-column: 3 / 6;
+    }
+
+    .return {
+      grid-column: 1 / 6;
+    }
+  }
+
+  .node {
+    display: grid;
+    align-content: start;
+    gap: 2px;
+    padding: var(--space-3);
+    font-size: var(--text-xs);
+    line-height: 1.45;
+    background: var(--color-bg);
+    border: var(--border-strong);
+    border-radius: var(--radius-sm);
+    color: var(--color-muted);
+  }
+
+  .server {
+    border-color: var(--color-ink);
+  }
+
+  .source {
+    border-style: dashed;
+  }
+
+  .k {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--color-accent-ink);
+  }
+
+  b {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .arrow {
+    align-self: center;
+    justify-self: center;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--color-muted);
+    white-space: nowrap;
+  }
+
+  .return {
+    padding-top: var(--space-2);
+    border-top: 1px dashed var(--color-rule-strong);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-ink-soft);
+  }
+
+  figcaption {
+    margin-top: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+
+  figcaption span {
+    font-weight: 600;
+    color: var(--color-ink-soft);
+  }
+</style>

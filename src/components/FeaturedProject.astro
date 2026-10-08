@@ -14,7 +14,7 @@ const { project, emphasis = 'primary', flip = false, eager = false } = Astro.pro
 const href = project.caseStudy ? `/work/${project.slug}` : undefined;
 ---
 
-<article class:list={['featured', emphasis, { flip }]} id={`project-${project.slug}`} aria-labelledby={`${project.slug}-title`}>
+<article class:list={['featured', emphasis, { flip }]} id={`project-${project.slug}`} aria-labelledby={`${project.slug}-title`} data-reveal>
   <div class="text">
     <p class="year">{[project.year, project.role].filter(Boolean).join(' · ')}</p>
     <h3 id={`${project.slug}-title`}>
@@ -43,7 +43,7 @@ const href = project.caseStudy ? `/work/${project.slug}` : undefined;
   </div>
 
   <div class="media">
-    <ProjectVisual visual={project.visual} size="feature" eager={eager} />
+    <ProjectVisual visual={project.visual} size="feature" eager={eager} href={href} />
   </div>
 </article>
 

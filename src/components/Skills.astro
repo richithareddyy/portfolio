@@ -1,21 +1,30 @@
 ---
 import { skills } from '../data/skills';
+import { profile } from '../data/profile';
 import SectionHeading from './SectionHeading.astro';
 ---
 
 <section class="wrap section" id="skills" aria-labelledby="skills-title">
   <SectionHeading id="skills">Skills</SectionHeading>
 
-  <dl class="grid">
+  <dl class="grid" data-reveal>
     {
       skills.map((group) => (
-        <div class:list={['group', { muted: group.name === 'Also used' }]}>
+        <div class="group">
           <dt>{group.name}</dt>
-          <dd>{group.items.join(' · ')}</dd>
+          <dd>
+            <ul class="items">
+              {group.items.map((item) => <li>{item}</li>)}
+            </ul>
+          </dd>
         </div>
       ))
     }
   </dl>
+  <p class="more">
+    These are the tools used in the projects above. The{' '}
+    <a class="text-link" href={profile.links.resume} target="_blank" rel="noopener">résumé<span class="visually-hidden"> (PDF, opens in a new tab)</span></a> has the full list.
+  </p>
 </section>
 
 <style>
@@ -38,7 +47,7 @@ import SectionHeading from './SectionHeading.astro';
 
   @media (min-width: 48rem) {
     .group {
-      grid-template-columns: 11rem minmax(0, 1fr);
+      grid-template-columns: 14rem minmax(0, 1fr);
       align-items: baseline;
     }
   }
@@ -50,11 +59,24 @@ import SectionHeading from './SectionHeading.astro';
 
   dd {
     margin: 0;
+  }
+
+  .items {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
     font-size: var(--text-md);
     line-height: 1.7;
   }
 
-  .muted dd {
+  .items li:not(:last-child)::after {
+    content: '·';
+    margin-inline: 0.6em;
+    color: var(--color-rule-strong);
+  }
+
+  .more {
+    margin-top: var(--space-3);
     font-size: var(--text-sm);
     color: var(--color-muted);
   }

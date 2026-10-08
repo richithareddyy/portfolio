@@ -1,0 +1,122 @@
+---
+/* Before/after run times for the Reddit pipeline, from the project README. */
+const rows = [
+  { label: 'Full run, end to end', before: 584, after: 345 },
+  { label: 'Merge step (comments)', before: 267, after: 102 },
+];
+const max = Math.max(...rows.map((r) => r.before));
+const pct = (b: number, a: number) => Math.round(((b - a) / b) * 100);
+---
+
+<figure class="perf">
+  <ul>
+    {
+      rows.map((r) => (
+        <li>
+          <p class="label-row">
+            <span class="name">{r.label}</span>
+            <span class="delta">{pct(r.before, r.after)}% less time</span>
+          </p>
+          <div class="bar-row">
+            <span class="tag">Before</span>
+            <span class="track" aria-hidden="true">
+              <span class="fill before" style={`--w:${(r.before / max) * 100}%`} />
+            </span>
+            <span class="val">{r.before} s</span>
+          </div>
+          <div class="bar-row">
+            <span class="tag">After</span>
+            <span class="track" aria-hidden="true">
+              <span class="fill after" style={`--w:${(r.after / max) * 100}%`} />
+            </span>
+            <span class="val">{r.after} s</span>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+  <figcaption>
+    The change: a narrow, set-based merge that collects only the rows that must not load, and a WAL-free initial insert.
+    Generated benchmark data on one machine; runtime depends on hardware.
+  </figcaption>
+</figure>
+
+<style>
+  .perf {
+    margin: 0;
+  }
+
+  ul {
+    display: grid;
+    gap: var(--space-5);
+    list-style: none;
+  }
+
+  .label-row {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-2);
+    font-size: var(--text-sm);
+  }
+
+  .name {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .delta {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-positive);
+    white-space: nowrap;
+  }
+
+  .bar-row {
+    display: grid;
+    grid-template-columns: 3.5rem minmax(0, 1fr) 3.5rem;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: 4px;
+    font-size: var(--text-xs);
+  }
+
+  .tag {
+    color: var(--color-muted);
+  }
+
+  .track {
+    height: 10px;
+    background: var(--color-surface-sunken);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .fill {
+    display: block;
+    width: var(--w);
+    height: 100%;
+    border-radius: 2px;
+  }
+
+  .before {
+    background: var(--color-rule-strong);
+  }
+
+  .after {
+    background: var(--color-ink);
+  }
+
+  .val {
+    font-family: var(--font-mono);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  figcaption {
+    margin-top: var(--space-4);
+    max-width: var(--width-prose);
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+</style>

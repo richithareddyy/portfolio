@@ -7,6 +7,8 @@ import ProjectVisual from '../../components/ProjectVisual.astro';
 import Metrics from '../../components/Metrics.astro';
 import DecisionList from '../../components/DecisionList.astro';
 import EvidenceLinks from '../../components/EvidenceLinks.astro';
+import DataTable from '../../components/DataTable.astro';
+import PerfCompare from '../../components/PerfCompare.astro';
 import NextProject from '../../components/NextProject.astro';
 import { caseStudies, type Project } from '../../data/projects';
 
@@ -24,6 +26,7 @@ interface Props {
 const { project } = Astro.props;
 const sections = [
   { id: 'problem', label: 'Problem' },
+  ...(project.challenges ? [{ id: 'challenges', label: 'What makes it hard' }] : []),
   { id: 'contribution', label: 'My contribution' },
   { id: 'decisions', label: 'Decisions' },
   { id: 'evaluation', label: 'Evaluation' },
@@ -44,6 +47,14 @@ const sections = [
         <p>{project.problem}</p>
         {project.constraints && <BulletList items={project.constraints} />}
       </CaseSection>
+
+      {
+        project.challenges && (
+          <CaseSection title="What makes it hard" id="challenges">
+            <BulletList items={project.challenges} />
+          </CaseSection>
+        )
+      }
 
       <CaseSection title="My contribution" id="contribution">
         <p>{project.contribution}</p>
@@ -69,6 +80,8 @@ const sections = [
             <h3>Method</h3>
             <BulletList items={project.evaluation.method} />
             <Metrics metrics={project.evaluation.metrics} />
+            {project.slug === 'reddit-data-pipeline' && <PerfCompare />}
+            {project.tables?.map((t) => <DataTable table={t} />)}
             <EvidenceLinks links={project.evaluation.evidence} />
           </CaseSection>
         )
