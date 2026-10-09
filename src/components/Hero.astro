@@ -1,28 +1,13 @@
 ---
 import { profile } from '../data/profile';
-
-const proof = [
-  { text: 'a private AI assistant inside Zoom', href: '#project-zoom-lens' },
-  { text: 'a Rust change-impact analyzer', href: '#project-codeatlas' },
-  { text: 'an 18.9M‑line PostgreSQL pipeline', href: '#project-reddit-data-pipeline' },
-];
 ---
 
 <section class="hero wrap" id="top" aria-labelledby="hero-title">
-  <div class="main">
-    <h1 id="hero-title">{profile.name}</h1>
-    <p class="headline">Software engineer building applied AI systems.</p>
-    <p class="proof">
-      Recently:{' '}
-      {
-        proof.map((p, i) => (
-          <>
-            <a href={p.href}>{p.text}</a>
-            {i < proof.length - 2 ? ', ' : i === proof.length - 2 ? ', and ' : '.'}
-          </>
-        ))
-      }
-    </p>
+  <div class="intro">
+    <h1 id="hero-title" class="name">
+      <span>Richitha</span> <span>Rekula<span class="dot" aria-hidden="true">.</span></span>
+    </h1>
+    <p class="lede">Software engineer building applied AI systems.</p>
 
     <div class="actions">
       <a class="button primary" href="#work">View projects</a>
@@ -37,74 +22,71 @@ const proof = [
     </div>
   </div>
 
-  <dl class="facts">
-    <div>
-      <dt>Now</dt>
-      <dd>Zoom Fellow, ASU Next Lab</dd>
-      <dd class="sub">Fellowship in partnership with Zoom, building Zoom Lens</dd>
-    </div>
-    <div>
-      <dt>Education</dt>
-      <dd>M.S. Data Science, Analytics and Engineering</dd>
-      <dd class="sub">Arizona State University · {profile.graduation}</dd>
-    </div>
-    <div>
-      <dt>Open to</dt>
-      <dd>Applied AI, software, AI/ML, and backend engineering</dd>
-      <dd class="sub">New grad and internship roles</dd>
-    </div>
-  </dl>
+  <div class="band">
+    <dl class="facts">
+      <div>
+        <dt>Now</dt>
+        <dd>Zoom Fellow, ASU Next Lab</dd>
+        <dd class="sub">Fellowship in partnership with Zoom</dd>
+      </div>
+      <div>
+        <dt>Education</dt>
+        <dd>M.S. Data Science, Analytics and Engineering</dd>
+        <dd class="sub">Arizona State University · {profile.graduation}</dd>
+      </div>
+      <div>
+        <dt>Open to</dt>
+        <dd>Applied AI, software, AI/ML, and backend roles</dd>
+        <dd class="sub">New grad and internship</dd>
+      </div>
+    </dl>
+    <a class="scroll" href="#work">
+      Selected work <span class="arrow" aria-hidden="true">↓</span>
+    </a>
+  </div>
 </section>
 
 <style>
+  /* The intro fills the first screen; work begins on scroll. */
   .hero {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-6);
-    padding-top: clamp(1.75rem, 1rem + 2.5vw, 3rem);
-    padding-bottom: clamp(2rem, 1.25rem + 2vw, 3rem);
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100svh - var(--header-height));
+    padding-top: var(--space-6);
+    padding-bottom: var(--space-5);
   }
 
-  @media (min-width: 60rem) {
-    .hero {
-      grid-template-columns: minmax(0, 1fr) 19rem;
-      gap: var(--space-8);
-      align-items: end;
-    }
+  .intro {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-block: var(--space-7);
   }
 
-  h1 {
-    font-size: var(--text-3xl);
-    letter-spacing: -0.02em;
+
+  .name {
+    font-size: clamp(3.25rem, 1rem + 9vw, 10rem);
+    font-weight: 500;
+    line-height: 0.92;
+    letter-spacing: -0.04em;
   }
 
-  .headline {
-    margin-top: var(--space-2);
+  /* Each word stays whole; the name breaks between first and last name on narrow screens. */
+  .name > span {
+    display: inline-block;
+  }
+
+  .dot {
+    color: var(--color-accent);
+  }
+
+  .lede {
+    margin-top: var(--space-5);
     font-family: var(--font-serif);
-    font-size: var(--text-xl);
+    font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.5rem);
     line-height: var(--leading-snug);
-    color: var(--color-accent-ink);
-  }
-
-  .proof {
-    max-width: 36rem;
-    margin-top: var(--space-4);
-    font-size: var(--text-md);
-    line-height: 1.55;
     color: var(--color-ink-soft);
-  }
-
-  .proof a {
-    color: var(--color-ink);
-    text-decoration: underline;
-    text-decoration-color: var(--color-rule-strong);
-    text-underline-offset: 0.2em;
-    transition: color var(--duration-fast) var(--ease-out), text-decoration-color var(--duration-fast) var(--ease-out);
-  }
-
-  .proof a:hover {
-    color: var(--color-accent-ink);
-    text-decoration-color: currentColor;
   }
 
   .actions {
@@ -112,7 +94,7 @@ const proof = [
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-3);
-    margin-top: var(--space-5);
+    margin-top: var(--space-6);
   }
 
   .button {
@@ -167,24 +149,31 @@ const proof = [
     text-decoration-color: currentColor;
   }
 
-  .facts {
+  .band {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-3) var(--space-6);
-    margin: 0;
+    gap: var(--space-5);
     padding-top: var(--space-4);
-    border-top: var(--border-hairline);
-  }
-
-  @media (min-width: 40rem) and (max-width: 59.99rem) {
-    .facts {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
+    border-top: var(--border-ink);
   }
 
   @media (min-width: 60rem) {
+    .band {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+    }
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3) var(--space-7);
+    margin: 0;
+  }
+
+  @media (min-width: 40rem) {
     .facts {
-      border-top: var(--border-ink);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 
@@ -204,6 +193,40 @@ const proof = [
   dd.sub {
     font-weight: 400;
     color: var(--color-muted);
+  }
+
+  .scroll {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    justify-self: start;
+    padding-block: var(--space-2);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-ink);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .scroll:hover {
+    color: var(--color-accent-ink);
+  }
+
+  .scroll .arrow {
+    display: inline-block;
+    animation: nudge 2.4s var(--ease-out) infinite;
+  }
+
+  @keyframes nudge {
+    0%,
+    60%,
+    100% {
+      transform: none;
+    }
+    75% {
+      transform: translateY(3px);
+    }
   }
 
   @media (max-width: 30rem) {
