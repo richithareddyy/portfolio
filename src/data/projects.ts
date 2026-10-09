@@ -1,4 +1,5 @@
 import type { ImageMetadata } from 'astro';
+import zoomLensMeeting from '../assets/projects/zoom-lens-meeting.webp';
 import codeatlasImpact from '../assets/projects/codeatlas-impact.png';
 import codeatlasGraph from '../assets/projects/codeatlas-graph.png';
 import codeatlasChanges from '../assets/projects/codeatlas-changes.png';
@@ -20,7 +21,7 @@ export type DataTable = { caption: string; columns: string[]; rows: string[][]; 
 
 export type Visual =
   | { kind: 'image'; src: ImageMetadata; alt: string; caption: string }
-  | { kind: 'diagram'; id: 'zoom-lens' | 'etl'; caption: string }
+  | { kind: 'diagram'; id: 'etl'; caption: string }
   | { kind: 'output'; id: 'streambox-loadtest'; caption: string };
 
 export type Project = {
@@ -82,9 +83,10 @@ export const projects: Project[] = [
     tech: ['Python', 'Zoom Video SDK', 'Zoom Realtime Media Streams API', 'Claude'],
     caseStudy: true,
     visual: {
-      kind: 'diagram',
-      id: 'zoom-lens',
-      caption: 'Diagram of the panel and answer routing, using the prototype’s interface labels. Not a screenshot.',
+      kind: 'image',
+      src: zoomLensMeeting,
+      alt: 'Zoom Lens in a live Zoom meeting: a paper is shared on screen, and the Zoom Lens panel on the right shows a Describe answer naming the paper, its authors, and its venue, with an Ask a follow-up box and the note Only you see your answers.',
+      caption: 'Zoom Lens answering in a live meeting. Screenshot of the prototype.',
     },
   },
   {
@@ -556,16 +558,16 @@ export const zoomLens = {
   howItWorks:
     'Zoom Lens opens from the Apps panel during a meeting and appears as a narrow panel beside the meeting window with three actions.',
   modes: [
-    { name: 'Describe', label: 'What is on the shared screen', estimate: '≈ 6 s', body: 'Summarizes what is shared, naming the content type and reporting the actual numbers and headings.' },
-    { name: 'Explain', label: 'What the content means', estimate: '≈ 12 s', body: 'Explains what a chart implies, why a diagram is laid out as it is, or what a piece of code is for.' },
-    { name: 'Follow-up', label: 'Ask about the last answer', estimate: '≈ 3 s', body: 'One question about the previous answer, so you do not have to start over.' },
+    { name: 'Describe', label: 'Describe screen', estimate: '≈ 6 s', body: 'Summarizes what is shared, naming the content type and reporting the actual numbers and headings.' },
+    { name: 'Explain', label: 'Explain this', estimate: '≈ 12 s', body: 'Explains what a chart implies, why a diagram is laid out as it is, or what a piece of code is for.' },
+    { name: 'Follow-up', label: 'Ask a follow-up…', estimate: '≈ 3 s', body: 'One question about the previous answer, so you do not have to start over.' },
   ],
   timingContext:
-    'The times are the typical waits the app displays while it works, for example “Reading the screen. This usually takes about 6 seconds.” They are interface estimates, not results from a formal benchmark.',
+    'The times are the typical waits the prototype’s panel displayed while working, for example “This usually takes about 6 seconds.” They are interface estimates, not results from a formal benchmark.',
   interaction: [
     'Open Zoom Lens from the Apps panel during a meeting. It appears as a narrow panel beside the meeting window, visible only to you.',
-    'Pick an action. The panel shows that it is reading the screen and the typical wait, then the answer appears in the panel.',
-    'Ask one follow-up about that answer, or run Describe or Explain again when the shared content changes.',
+    'Choose Describe screen or Explain this. The answer appears in the panel, marked “Only you see your answers.”',
+    'Type one follow-up about that answer, or run Describe or Explain again when the shared content changes.',
   ],
   ai: [
     'Each action sends the captured screen to Claude with a different job.',
