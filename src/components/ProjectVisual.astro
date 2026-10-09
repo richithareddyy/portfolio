@@ -1,7 +1,6 @@
 ---
 import { Image } from 'astro:assets';
 import type { Visual } from '../data/projects';
-import ZoomLensDiagram from './visuals/ZoomLensDiagram.astro';
 import EtlDiagram from './visuals/EtlDiagram.astro';
 import LoadTestOutput from './visuals/LoadTestOutput.astro';
 
@@ -38,7 +37,6 @@ const kindLabel = visual.kind === 'image' ? null : visual.kind === 'diagram' ? '
         />
       )
     }
-    {visual.kind === 'diagram' && visual.id === 'zoom-lens' && <ZoomLensDiagram />}
     {visual.kind === 'diagram' && visual.id === 'etl' && <EtlDiagram />}
     {visual.kind === 'output' && <LoadTestOutput />}
     {href && <a class="cover" href={href} tabindex="-1" aria-hidden="true"></a>}
