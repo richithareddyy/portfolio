@@ -7,18 +7,26 @@ import SectionHeading from './SectionHeading.astro';
 
   <div class="prose" data-reveal>
     <p>
-      I studied Artificial Intelligence and Machine Learning at Anurag University in Hyderabad, then came to Arizona State
-      University for an M.S. in Data Science, Analytics and Engineering.
+      I started out studying Artificial Intelligence and Machine Learning at Anurag University in Hyderabad, and I am now
+      pursuing my M.S. in Data Science, Analytics and Engineering at Arizona State University.
+    </p>
+    <p class="pull">What interests me most is the point where AI stops being a model and starts becoming a product.</p>
+    <p>
+      I like taking an idea all the way from the intelligence behind it to the system someone actually interacts with. With
+      Zoom Lens, that means building an AI assistant directly into a meeting so someone can privately understand what is
+      being shared without interrupting the conversation. In another project, it meant building a support-ticket model that
+      predicts priority and resolution time, then using SHAP to show why it made each prediction.
+    </p>
+    <p class="pull">But I do not want a system to just look like it works.</p>
+    <p>
+      I want evidence. I have built ETL pipelines that reconcile millions of records, tested APIs under concurrent requests,
+      written ground truth by hand, and measured models against real baselines. I also document the limits of those results,
+      whether that is synthetic data, a controlled test environment, or a system that has not yet been tested at production
+      scale.
     </p>
     <p>
-      The work I enjoy most is turning a model into something people can use in the middle of their day: an assistant inside
-      the Zoom window they already have open, or a triage model that says why it ranked a ticket the way it did. I like the
-      parts underneath too: pipelines, schemas, and concurrency.
-    </p>
-    <p>
-      Before I build something, I decide how I will know it works. That is why CodeAtlas has hand-written ground truth, the
-      ETL pipeline reconciles every record, and StreamBox has a load test. I write down the limits as well, like synthetic
-      data or a single test machine.
+      That is the work I enjoy: building useful AI, engineering the systems around it, and being able to explain exactly how I
+      know they work.
     </p>
   </div>
 </section>
@@ -36,5 +44,11 @@ import SectionHeading from './SectionHeading.astro';
     font-size: var(--text-lg);
     line-height: 1.6;
     color: var(--color-ink-soft);
+  }
+
+  .pull {
+    font-size: var(--text-xl);
+    line-height: var(--leading-snug);
+    color: var(--color-ink);
   }
 </style>
