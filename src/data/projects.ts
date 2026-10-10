@@ -5,6 +5,7 @@ import codeatlasChanges from '../assets/projects/codeatlas-changes.png';
 import triageDemo from '../assets/projects/triage-demo.webp';
 import researchDemo from '../assets/projects/research-demo.webp';
 import meetingDemo from '../assets/projects/meeting-demo.webp';
+import streamboxHome from '../assets/projects/streambox-home.webp';
 import triageShapPriority from '../assets/projects/triage-shap-priority.png';
 import triageShapResolution from '../assets/projects/triage-shap-resolution.png';
 import parkingCurrent from '../assets/projects/parking-current.jpeg';
@@ -360,9 +361,15 @@ export const projects: Project[] = [
       'Built a 24-endpoint Express REST API with JWT auth and five MongoDB collections, using atomic updates and optimistic locking.',
     result: { headline: '0 errors or duplicates in 51,633 requests', qualifier: '100 concurrent users, development laptop' },
     tech: ['Node.js', 'Express.js', 'MongoDB'],
+    demo: 'https://ott-platform-azon.onrender.com/',
     github: gh('ott-platform'),
     caseStudy: true,
-    visual: { kind: 'output', id: 'streambox-loadtest', caption: 'Load-test output reported in the project README.' },
+    visual: {
+      kind: 'image',
+      src: streamboxHome,
+      alt: 'StreamBox home page: a featured series with Play and More info buttons, a Most watched row of poster art, and a banner offering a live demo without an account.',
+      caption: 'StreamBox home page. Screenshot of the live demo.',
+    },
     status: 'Open source; runs locally with Docker',
     problem:
       'Double-clicks, multiple tabs, retried heartbeats, and two admins editing one title create race conditions: duplicate list entries, rewound playback, wrong rating averages, and lost edits.',
