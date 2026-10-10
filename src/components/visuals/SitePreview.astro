@@ -1,0 +1,162 @@
+---
+/* A live, scaled-down view of a product site in a browser frame. The whole frame opens the site. */
+interface Props {
+  url: string;
+  /** Product name, for the link label and the frame title. */
+  name: string;
+  caption: string;
+  eager?: boolean;
+}
+const { url, name, caption, eager = false } = Astro.props;
+const host = new URL(url).host;
+---
+
+<figure class="site" data-site-preview>
+  <div class="window">
+    <div class="bar" aria-hidden="true">
+      <span class="dots"><i></i><i></i><i></i></span>
+      <span class="url">{host}</span>
+      <span class="open">Open site <span class="ext-arrow">↗</span></span>
+    </div>
+    <div class="view">
+      <span class="fallback" aria-hidden="true">{host}</span>
+      <iframe
+        src={url}
+        title={`${name} product site preview`}
+        loading={eager ? 'eager' : 'lazy'}
+        tabindex="-1"
+        aria-hidden="true"
+        sandbox="allow-scripts allow-same-origin"
+        referrerpolicy="no-referrer"></iframe>
+    </div>
+    <a class="cover" href={url} target="_blank" rel="noopener" aria-label={`Open the ${name} product site (opens in a new tab)`}></a>
+  </div>
+  <figcaption>{caption}</figcaption>
+</figure>
+
+<script>
+  // Render the site at a desktop width and scale it to fit the frame.
+  const SITE_WIDTH = 1280;
+  function setupSitePreview() {
+    for (const view of document.querySelectorAll<HTMLElement>('[data-site-preview] .view:not([data-ready])')) {
+      view.dataset.ready = 'true';
+      const fit = () => view.style.setProperty('--site-scale', String(view.clientWidth / SITE_WIDTH));
+      new ResizeObserver(fit).observe(view);
+      fit();
+    }
+  }
+  document.addEventListener('astro:page-load', setupSitePreview);
+</script>
+
+<style>
+  .site {
+    margin: 0;
+    min-width: 0;
+  }
+
+  .window {
+    position: relative;
+    overflow: clip;
+    border: var(--border-hairline);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    transition: border-color var(--duration-fast) var(--ease-out);
+  }
+
+  .window:hover,
+  .window:has(.cover:focus-visible) {
+    border-color: var(--color-rule-strong);
+  }
+
+  .window:has(.cover:focus-visible) {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 3px;
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    border-bottom: var(--border-hairline);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--color-muted);
+  }
+
+  .dots {
+    display: flex;
+    gap: 5px;
+  }
+
+  .dots i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-rule-strong);
+  }
+
+  .url {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-xs);
+    background: var(--color-bg);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .open {
+    color: var(--color-ink);
+    white-space: nowrap;
+  }
+
+  .window:hover .ext-arrow,
+  .window:has(.cover:focus-visible) .ext-arrow {
+    transform: translate(2px, -2px);
+  }
+
+  /* 16:10, matching the 1280 x 800 desktop the site is rendered at. */
+  .view {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: clip;
+    background: var(--color-panel);
+  }
+
+  .fallback {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+
+  iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1280px;
+    height: 800px;
+    border: 0;
+    transform: scale(var(--site-scale, 0.4));
+    transform-origin: 0 0;
+    pointer-events: none;
+  }
+
+  .cover {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    outline: none;
+  }
+
+  figcaption {
+    margin-top: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+</style>

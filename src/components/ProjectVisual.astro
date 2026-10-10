@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import type { Visual } from '../data/projects';
 import EtlDiagram from './visuals/EtlDiagram.astro';
 import LoadTestOutput from './visuals/LoadTestOutput.astro';
+import SitePreview from './visuals/SitePreview.astro';
 
 interface Props {
   visual: Visual;
@@ -23,29 +24,35 @@ const sizes =
 const kindLabel = visual.kind === 'image' ? null : visual.kind === 'diagram' ? 'Diagram' : 'Sample output';
 ---
 
-<figure class:list={['visual', size, visual.kind]}>
-  <div class:list={['frame', { linked: !!href }]}>
-    {
-      visual.kind === 'image' && (
-        <Image
-          src={visual.src}
-          alt={visual.alt}
-          widths={widths}
-          sizes={sizes}
-          loading={eager ? 'eager' : 'lazy'}
-          class:list={[{ contain: visual.src.height > visual.src.width * 0.8 }]}
-        />
-      )
-    }
-    {visual.kind === 'diagram' && visual.id === 'etl' && <EtlDiagram />}
-    {visual.kind === 'output' && <LoadTestOutput />}
-    {href && <a class="cover" href={href} tabindex="-1" aria-hidden="true"></a>}
-  </div>
-  <figcaption>
-    {kindLabel && <span class="kind">{kindLabel}.</span>}
-    {visual.caption}
-  </figcaption>
-</figure>
+{
+  visual.kind === 'site' ? (
+    <SitePreview url={visual.url} name="Zoom Lens" caption={visual.caption} eager={eager} />
+  ) : (
+    <figure class:list={['visual', size, visual.kind]}>
+      <div class:list={['frame', { linked: !!href }]}>
+        {
+          visual.kind === 'image' && (
+            <Image
+              src={visual.src}
+              alt={visual.alt}
+              widths={widths}
+              sizes={sizes}
+              loading={eager ? 'eager' : 'lazy'}
+              class:list={[{ contain: visual.src.height > visual.src.width * 0.8 }]}
+            />
+          )
+        }
+        {visual.kind === 'diagram' && visual.id === 'etl' && <EtlDiagram />}
+        {visual.kind === 'output' && <LoadTestOutput />}
+        {href && <a class="cover" href={href} tabindex="-1" aria-hidden="true"></a>}
+      </div>
+      <figcaption>
+        {kindLabel && <span class="kind">{kindLabel}.</span>}
+        {visual.caption}
+      </figcaption>
+    </figure>
+  )
+}
 
 <style>
   .visual {
