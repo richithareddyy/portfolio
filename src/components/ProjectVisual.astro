@@ -24,7 +24,7 @@ const kindLabel = visual.kind === 'image' ? null : visual.kind === 'diagram' ? '
 ---
 
 <figure class:list={['visual', size, visual.kind]}>
-  <div class:list={['frame', { linked: !!href, viewfinder: size !== 'card' }]}>
+  <div class:list={['frame', { linked: !!href }]} data-depth={href ? '' : undefined}>
     {
       visual.kind === 'image' && (
         <Image
@@ -92,21 +92,13 @@ const kindLabel = visual.kind === 'image' ? null : visual.kind === 'diagram' ? '
     border-color: var(--color-rule-strong);
   }
 
-  .frame.viewfinder {
-    --vf-inset: 12px;
-    --vf-len: 20px;
-  }
-
-  .linked.viewfinder:hover {
-    --vf-inset: 6px;
-  }
 
   .linked :global(img) {
     transition: transform var(--duration-slow) var(--ease-out);
   }
 
   .linked:hover :global(img) {
-    transform: scale(1.02);
+    transform: translate(var(--px, 0px), var(--py, 0px)) scale(1.03);
   }
 
   .output .frame {

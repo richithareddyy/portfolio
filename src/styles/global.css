@@ -167,25 +167,68 @@ button {
   color: var(--color-rule-strong);
 }
 
-/* Progressive scroll reveal: content is always visible; supporting browsers add a short fade. */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    [data-reveal] {
-      animation: reveal linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 35%;
-    }
+/* Technology names that open the Data Lab: they look like the text around them until hovered or focused. */
+.tech-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.25em;
+  transition: color var(--duration-fast) var(--ease-out), text-decoration-color var(--duration-fast) var(--ease-out);
+}
 
-    @keyframes reveal {
-      from {
-        opacity: 0.35;
-        transform: translateY(14px);
-      }
-      to {
-        opacity: 1;
-        transform: none;
-      }
-    }
+.tech-link:hover,
+.tech-link:focus-visible {
+  color: var(--color-accent-ink);
+  text-decoration-color: currentColor;
+}
+
+/*
+  Interaction system. One easing curve and three durations, used everywhere.
+  Reveal: the script marks only elements that start below the fold as pending, then reveals them as they
+  enter. Content already on screen, or any content when the script does not run, is never hidden.
+*/
+:root {
+  /* --ease-out and --duration-fast/base/slow live in tokens.css. */
+  --ease-press: cubic-bezier(0.3, 0, 0.2, 1);
+  --duration-reveal: 480ms;
+}
+
+[data-reveal] {
+  transition: opacity var(--duration-reveal) var(--ease-out), transform var(--duration-reveal) var(--ease-out);
+}
+
+[data-reveal].reveal-pending {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+/* Diagonal nudge for external-link arrows, used by any element with .ext-arrow. */
+.ext-arrow {
+  display: inline-block;
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+a:hover .ext-arrow,
+a:focus-visible .ext-arrow {
+  transform: translate(2px, -2px);
+}
+
+/* Touch devices: no hover, so give links and buttons a brief pressed state instead. */
+@media (hover: none) {
+  a,
+  button {
+    -webkit-tap-highlight-color: transparent;
+    transition-property: opacity, color, background-color, border-color;
+  }
+
+  a:active,
+  button:active {
+    opacity: 0.65;
   }
 }
 
@@ -200,139 +243,5 @@ button {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-}
-
-/*
-  Lens theme: viewfinder corner brackets.
-  Add .viewfinder to a positioned element; the corners are drawn by ::before so the element keeps its own background.
-  --vf-inset moves the corners in (positive) or out (negative); --vf-len and --vf-weight size them.
-*/
-.viewfinder {
-  position: relative;
-  --vf-color: var(--color-accent);
-  --vf-len: 18px;
-  --vf-weight: 1.5px;
-  --vf-inset: 0px;
-}
-
-.viewfinder::before {
-  content: '';
-  position: absolute;
-  inset: var(--vf-inset);
-  z-index: 2;
-  pointer-events: none;
-  background:
-    linear-gradient(var(--vf-color) 0 0) top left / var(--vf-len) var(--vf-weight),
-    linear-gradient(var(--vf-color) 0 0) top left / var(--vf-weight) var(--vf-len),
-    linear-gradient(var(--vf-color) 0 0) top right / var(--vf-len) var(--vf-weight),
-    linear-gradient(var(--vf-color) 0 0) top right / var(--vf-weight) var(--vf-len),
-    linear-gradient(var(--vf-color) 0 0) bottom left / var(--vf-len) var(--vf-weight),
-    linear-gradient(var(--vf-color) 0 0) bottom left / var(--vf-weight) var(--vf-len),
-    linear-gradient(var(--vf-color) 0 0) bottom right / var(--vf-len) var(--vf-weight),
-    linear-gradient(var(--vf-color) 0 0) bottom right / var(--vf-weight) var(--vf-len);
-  background-repeat: no-repeat;
-  transition: inset var(--duration-slow) var(--ease-out);
-}
-
-/* Lens theme: a short focus pull, used once on the hero name. */
-@media (prefers-reduced-motion: no-preference) {
-  .focus-pull {
-    animation: focus-pull 900ms var(--ease-out) both;
-  }
-
-  @keyframes focus-pull {
-    from {
-      filter: blur(10px);
-      opacity: 0.35;
-    }
-    to {
-      filter: none;
-      opacity: 1;
-    }
-  }
-}
-
-/*
-  Lens theme: scroll-linked motion. Only in browsers with scroll-driven animations and when the visitor
-  has not asked for reduced motion; everywhere else the page is static and fully visible.
-*/
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    /*
-      Written as longhands on purpose: the CSS minifier would otherwise fold animation-timeline into the
-      animation shorthand, a form some browsers reject.
-    */
-    .hero .intro,
-    .viewfinder img,
-    .viewfinder::before,
-    .reticle {
-      animation-timing-function: linear;
-      animation-fill-mode: both;
-      animation-timeline: view();
-    }
-
-    /* The intro drifts up and defocuses as it scrolls away. */
-    .hero .intro {
-      animation-name: lens-defocus;
-      animation-range: exit 0% exit 100%;
-    }
-
-    /* Project images come into focus as they enter... */
-    .viewfinder img {
-      animation-name: lens-focus;
-      animation-range: entry 0% entry 80%;
-    }
-
-    /* ...while the viewfinder corners close in around them. */
-    .viewfinder::before {
-      animation-name: lens-close;
-      animation-range: entry 10% cover 40%;
-    }
-
-    /* Section reticles turn into place. */
-    .reticle {
-      animation-name: lens-turn;
-      animation-range: entry 0% cover 35%;
-    }
-
-    @keyframes lens-defocus {
-      to {
-        opacity: 0.15;
-        filter: blur(8px);
-        transform: translateY(-12%) scale(0.97);
-      }
-    }
-
-    @keyframes lens-focus {
-      from {
-        filter: blur(10px);
-        transform: scale(1.06);
-      }
-      to {
-        filter: none;
-        transform: none;
-      }
-    }
-
-    @keyframes lens-close {
-      from {
-        scale: 1.08;
-        opacity: 0;
-      }
-      to {
-        scale: 1;
-        opacity: 1;
-      }
-    }
-
-    @keyframes lens-turn {
-      from {
-        rotate: -120deg;
-      }
-      to {
-        rotate: 0deg;
-      }
-    }
   }
 }

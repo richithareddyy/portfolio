@@ -10,7 +10,7 @@ import SectionHeading from './SectionHeading.astro';
   <ol class="timeline">
     {
       experience.map((role) => (
-        <li class:list={['role', { current: role.current }]}>
+        <li class:list={['role', { current: role.current }]} data-reveal>
           <p class="dates">{role.dates}</p>
           <div class="what">
             <h3>
