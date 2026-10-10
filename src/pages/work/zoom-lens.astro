@@ -3,11 +3,11 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import CaseHeader from '../../components/CaseHeader.astro';
 import CaseSection from '../../components/CaseSection.astro';
 import BulletList from '../../components/BulletList.astro';
-import ProjectVisual from '../../components/ProjectVisual.astro';
 import DecisionList from '../../components/DecisionList.astro';
 import ZoomLensDelivery from '../../components/ZoomLensDelivery.astro';
 import ZoomLensStatus from '../../components/ZoomLensStatus.astro';
 import ZoomLensArchitecture from '../../components/visuals/ZoomLensArchitecture.astro';
+import ZoomLensExplorer from '../../components/visuals/ZoomLensExplorer.astro';
 import NextProject from '../../components/NextProject.astro';
 import { projects, zoomLens } from '../../data/projects';
 
@@ -36,7 +36,7 @@ const sections = [
               <figcaption>Zoom Lens running in a live meeting.</figcaption>
             </figure>
           ) : (
-            <ProjectVisual visual={project.visual} size="full" />
+            <ZoomLensExplorer eager />
           )
         }
       </div>

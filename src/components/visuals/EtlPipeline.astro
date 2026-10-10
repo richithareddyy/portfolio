@@ -1,0 +1,324 @@
+---
+/* Interactive view of the Reddit ETL pipeline. Every figure comes from the project README (generated benchmark data). */
+const stages = [
+  {
+    id: 'extract',
+    name: 'Extract',
+    does: 'Streams plain, gzip, or Zstandard NDJSON line by line, parsing with orjson, so memory stays constant.',
+    tech: ['Python', 'orjson'],
+    metric: '18,897,027 lines read (5.9 GB)',
+  },
+  {
+    id: 'validate',
+    name: 'Validate',
+    does: 'Checks JSON shape, required fields, base-36 IDs, name rules, timestamp and integer ranges. Every rejected line is kept with its source line number and reason.',
+    tech: ['Python'],
+    metric: '111,408 invalid lines recorded',
+  },
+  {
+    id: 'stage',
+    name: 'Stage',
+    does: 'Valid rows land in unlogged, constraint-free staging tables through one COPY per entity, in 50K-row chunks.',
+    tech: ['PostgreSQL', 'COPY'],
+    metric: 'Parse, validate, and COPY: 97 s',
+  },
+  {
+    id: 'merge',
+    name: 'Merge',
+    does: 'One window-function pass finds superseded duplicates and orphans; the upsert anti-joins against that small set and applies only strictly newer data.',
+    tech: ['SQL', 'PostgreSQL'],
+    metric: '21,826 duplicates and 53,793 orphans set aside · 137 s',
+  },
+  {
+    id: 'check',
+    name: 'Check',
+    does: 'Rebuilds 7 secondary indexes, validates 5 foreign keys, then runs 13 data-quality checks. A failed error-level check fails the run.',
+    tech: ['SQL', 'GitHub Actions'],
+    metric: '13 / 13 checks passed · 110 s for indexes, keys, and checks',
+  },
+];
+const uid = `etl-${Math.random().toString(36).slice(2, 7)}`;
+---
+
+<figure class="etl" data-etl>
+  <ol class="stages" role="tablist" aria-label="Pipeline stages">
+    {
+      stages.map((s, i) => (
+        <li>
+          <button
+            type="button"
+            role="tab"
+            id={`${uid}-${s.id}`}
+            aria-controls={`${uid}-panel`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            tabindex={i === 0 ? 0 : -1}
+            data-stage={s.id}
+          >
+            <span class="i">{String(i + 1).padStart(2, '0')}</span>
+            {s.name}
+          </button>
+          {i < stages.length - 1 && (
+            <span class="pipe" aria-hidden="true">
+              <i />
+              <i />
+              <i />
+            </span>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+
+  <div class="detail" id={`${uid}-panel`} role="tabpanel" aria-live="polite">
+    {
+      stages.map((s, i) => (
+        <div class="stage-detail" data-detail={s.id} hidden={i !== 0}>
+          <p class="does">{s.does}</p>
+          <p class="metric">{s.metric}</p>
+          <ul class="stack" aria-label="Tools">
+            {s.tech.map((t) => (
+              <li>{t}</li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="ledger" aria-label="Where every line went">
+    <span><b>18,897,027</b> read</span>
+    <span class="ok"><b>18,710,000</b> loaded</span>
+    <span class="bad"><b>187,027</b> rejected and recorded</span>
+  </div>
+  <figcaption>Interactive diagram. Figures from the full-scale benchmark on generated data with injected defects.</figcaption>
+</figure>
+
+<script>
+  function setupEtl() {
+    for (const fig of document.querySelectorAll<HTMLElement>('[data-etl]:not([data-ready])')) {
+      fig.dataset.ready = 'true';
+      const tabs = Array.from(fig.querySelectorAll<HTMLButtonElement>('[data-stage]'));
+      const select = (id: string, focus = false) => {
+        tabs.forEach((t, i) => {
+          const on = t.dataset.stage === id;
+          t.setAttribute('aria-selected', String(on));
+          t.tabIndex = on ? 0 : -1;
+          if (on && focus) t.focus();
+          // Replay the flow into the next stage once.
+          const pipe = t.parentElement?.querySelector<HTMLElement>('.pipe');
+          if (pipe) {
+            pipe.classList.remove('is-flowing');
+            if (on) {
+              void pipe.offsetWidth;
+              pipe.classList.add('is-flowing');
+            }
+          }
+          t.closest('li')?.classList.toggle('is-done', tabs.findIndex((x) => x.dataset.stage === id) > i);
+        });
+        for (const d of fig.querySelectorAll<HTMLElement>('[data-detail]')) d.hidden = d.dataset.detail !== id;
+      };
+      tabs.forEach((t, i) => {
+        t.addEventListener('click', () => select(t.dataset.stage!));
+        t.addEventListener('keydown', (e) => {
+          const dir = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+          if (!dir) return;
+          e.preventDefault();
+          select(tabs[(i + dir + tabs.length) % tabs.length].dataset.stage!, true);
+        });
+      });
+    }
+  }
+  document.addEventListener('astro:page-load', setupEtl);
+</script>
+
+<style>
+  .etl {
+    margin: 0;
+    padding: var(--space-4);
+    border: var(--border-hairline);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+  }
+
+  .stages {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    list-style: none;
+  }
+
+  .stages li {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .stages button {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 2px;
+    justify-items: start;
+    width: 100%;
+    min-height: 3.25rem;
+    padding: var(--space-2);
+    border: var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-ink);
+    text-align: left;
+    cursor: pointer;
+    transition: border-color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out),
+      transform var(--duration-fast) var(--ease-press);
+  }
+
+  .stages button:hover {
+    border-color: var(--color-ink);
+  }
+
+  .stages button:active {
+    transform: scale(0.98);
+  }
+
+  .stages button[aria-selected='true'] {
+    border-color: var(--color-accent);
+    background: var(--color-surface);
+    box-shadow: inset 0 -2px 0 var(--color-accent);
+  }
+
+  .i {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--color-accent-ink);
+  }
+
+  .is-done button .i::after {
+    content: ' ✓';
+    color: var(--color-positive);
+  }
+
+  /* Connector between stages; dots travel along it once when the stage before it is selected. */
+  .pipe {
+    position: absolute;
+    right: calc(var(--space-2) * -1);
+    width: var(--space-2);
+    height: 2px;
+    background: var(--color-rule-strong);
+    overflow: visible;
+  }
+
+  .pipe i {
+    position: absolute;
+    top: -2px;
+    left: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .pipe.is-flowing i {
+      animation: flow 900ms var(--ease-out) forwards;
+    }
+
+    .pipe.is-flowing i:nth-child(2) {
+      animation-delay: 140ms;
+    }
+
+    .pipe.is-flowing i:nth-child(3) {
+      animation-delay: 280ms;
+    }
+
+    @keyframes flow {
+      0% {
+        opacity: 0;
+        transform: translateX(-10px);
+      }
+      30% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(14px);
+      }
+    }
+  }
+
+  .stages li:not(:last-child) button {
+    margin-right: var(--space-2);
+  }
+
+  .detail {
+    min-height: 7.5rem;
+    margin-top: var(--space-4);
+  }
+
+  .does {
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
+  }
+
+  .metric {
+    margin-top: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-ink);
+  }
+
+  .stage-detail .stack {
+    margin-top: var(--space-2);
+  }
+
+  .ledger {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-5);
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: var(--border-hairline);
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+
+  .ledger b {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+
+  .ledger .bad b {
+    color: var(--color-accent-ink);
+  }
+
+  figcaption {
+    margin-top: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+
+  @media (max-width: 34rem) {
+    .stages {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-2);
+    }
+
+    .stages li:not(:last-child) button {
+      margin-right: 0;
+    }
+
+    .stages button {
+      grid-auto-flow: column;
+      justify-content: start;
+      align-items: baseline;
+      gap: var(--space-3);
+      min-height: 2.75rem;
+    }
+
+    .pipe {
+      display: none;
+    }
+  }
+</style>

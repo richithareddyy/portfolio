@@ -158,6 +158,8 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
       }
       for (const p of paths) p.classList.toggle('is-on', !!id && (p.dataset.from === id || p.dataset.to === id));
       renderPanel(id);
+      const evidence = !id ? [] : graph.nodes[id].kind === 'tech' ? (graph.links[id] ?? []) : [id];
+      document.dispatchEvent(new CustomEvent('lab:change', { detail: { ids: locked ? evidence : [] } }));
     }
 
     function renderPanel(id: string | null) {

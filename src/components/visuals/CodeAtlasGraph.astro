@@ -1,0 +1,471 @@
+---
+/*
+  Interactive version of CodeAtlas's impact view on its change-impact fixture.
+  Nodes, edges, and source locations are taken from the repository's impact screenshot and README.
+*/
+import { Image } from 'astro:assets';
+import impactShot from '../../assets/projects/codeatlas-impact.png';
+
+interface Props {
+  compact?: boolean;
+}
+const { compact = false } = Astro.props;
+
+const nodes = [
+  { id: 'test_checkout', label: 'test_checkout', full: 'test_checkout', kind: 'test', loc: 'tests/payment_tests.rs:14', x: 70, y: 22 },
+  { id: 'checkout', label: 'checkout', full: 'checkout', kind: 'symbol', loc: 'src/checkout.rs:3', x: 70, y: 82 },
+  { id: 'test_authorize_valid', label: 'test_authorize_valid', full: 'test_authorize_valid', kind: 'test', loc: 'tests/payment_tests.rs:8', x: 290, y: 82 },
+  { id: 'authorize', label: 'PaymentService::authorize', full: 'PaymentService::authorize', kind: 'symbol', loc: 'src/payments.rs:12', x: 180, y: 142 },
+  { id: 'gateway', label: 'Gateway::charge', full: 'Gateway::charge (trait method)', kind: 'symbol', loc: 'src/gateway.rs:2', x: 180, y: 202 },
+  { id: 'charge', label: 'StripeGateway::charge', full: '<StripeGateway as Gateway>::charge', kind: 'changed', loc: 'src/gateway.rs:9', x: 180, y: 262 },
+];
+// caller -> callee, with the evidence CodeAtlas reports for each relationship.
+const edges = [
+  { from: 'gateway', to: 'charge', text: 'calls to Gateway::charge may dispatch to StripeGateway::charge', loc: 'src/gateway.rs:9', dispatch: true },
+  { from: 'authorize', to: 'gateway', text: 'PaymentService::authorize calls Gateway::charge', loc: 'src/payments.rs:14' },
+  { from: 'checkout', to: 'authorize', text: 'checkout calls PaymentService::authorize', loc: 'src/checkout.rs:5' },
+  { from: 'test_authorize_valid', to: 'authorize', text: 'test_authorize_valid calls PaymentService::authorize', loc: 'tests/payment_tests.rs:9' },
+  { from: 'test_checkout', to: 'checkout', text: 'test_checkout calls checkout', loc: 'tests/payment_tests.rs:16' },
+];
+const byId = Object.fromEntries(nodes.map((n) => [n.id, n]));
+const data = { nodes: byId, edges };
+const uid = compact ? 'ca-compact' : 'ca-full';
+---
+
+<figure class:list={['ca', { compact }]} data-ca>
+  <div class="tabs" role="tablist" aria-label="CodeAtlas view">
+    <button type="button" role="tab" id={`${uid}-tab-graph`} aria-controls={`${uid}-graph`} aria-selected="true" data-ca-tab="graph">Impact graph</button>
+    <button type="button" role="tab" id={`${uid}-tab-shot`} aria-controls={`${uid}-shot`} aria-selected="false" data-ca-tab="shot" tabindex="-1">Screenshot</button>
+  </div>
+
+  <div class="panel-graph" id={`${uid}-graph`} role="tabpanel" aria-labelledby={`${uid}-tab-graph`} data-ca-panel="graph">
+    <svg viewBox="0 0 360 286" role="group" aria-label="Impact graph. Select a symbol to see its evidence chain.">
+      <defs>
+        <marker id={`${uid}-arrow`} viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0 0L8 4L0 8z" class="arrowhead"></path>
+        </marker>
+      </defs>
+      <g class="edges" aria-hidden="true">
+        {
+          edges.map((e) => {
+            const a = byId[e.from];
+            const b = byId[e.to];
+            const my = (a.y + b.y) / 2;
+            return (
+              <path
+                class:list={['edge', { dispatch: e.dispatch }]}
+                data-from={e.from}
+                data-to={e.to}
+                d={`M${a.x} ${a.y + 7} C ${a.x} ${my}, ${b.x} ${my}, ${b.x} ${b.y - 10}`}
+                marker-end={`url(#${uid}-arrow)`}
+              />
+            );
+          })
+        }
+      </g>
+      {
+        nodes.map((n) => (
+          <g
+            class:list={['node', n.kind]}
+            data-ca-node={n.id}
+            role="button"
+            tabindex="0"
+            aria-pressed="false"
+            aria-label={`${n.full}, ${n.kind === 'changed' ? 'changed symbol' : n.kind}, ${n.loc}`}
+            transform={`translate(${n.x} ${n.y})`}
+          >
+            <rect class="hit" x={n.x > 240 ? -170 : -16} y="-16" width="186" height="32" />
+            {n.kind === 'changed' ? <rect class="mark" x="-6" y="-6" width="12" height="12" rx="2" /> : <circle class="mark" r="6" />}
+            <text x={n.x > 240 ? -13 : 13} dy="0.35em" text-anchor={n.x > 240 ? 'end' : 'start'}>{n.label}</text>
+          </g>
+        ))
+      }
+    </svg>
+
+    <div class="evidence" aria-live="polite" data-ca-evidence>
+      <p class="summary">
+        Changing <code>StripeGateway::charge</code> affects 5 symbols (1 direct, 4 indirect) in 4 files, including 2 tests.
+        Select a symbol to see the chain of evidence back to the change.
+      </p>
+    </div>
+    <div class="ca-actions">
+      <button type="button" class="reset" data-ca-reset hidden>Reset</button>
+      <span class="legend"><i class="lg-changed"></i>changed <i class="lg-symbol"></i>affected <i class="lg-test"></i>test</span>
+    </div>
+  </div>
+
+  <div class="panel-shot" id={`${uid}-shot`} role="tabpanel" aria-labelledby={`${uid}-tab-shot`} data-ca-panel="shot" hidden>
+    <Image
+      src={impactShot}
+      alt="CodeAtlas impact view: the changed trait method, the five symbols it can affect, and the source lines connecting each one."
+      widths={[640, 960, 1280]}
+      sizes="(min-width: 64rem) 40rem, 92vw"
+      loading="lazy"
+    />
+  </div>
+
+  <figcaption>
+    Built from CodeAtlas's change-impact fixture: the same symbols and source lines as the impact view in the repository.
+  </figcaption>
+  <script type="application/json" data-ca-data set:html={JSON.stringify(data)} />
+</figure>
+
+<script>
+  type CA = {
+    nodes: Record<string, { id: string; full: string; kind: string; loc: string }>;
+    edges: { from: string; to: string; text: string; loc: string }[];
+  };
+
+  function setupCodeAtlas() {
+    for (const fig of document.querySelectorAll<HTMLElement>('[data-ca]:not([data-ready])')) {
+      fig.dataset.ready = 'true';
+      const data: CA = JSON.parse(fig.querySelector('[data-ca-data]')!.textContent!);
+      const svg = fig.querySelector('svg')!;
+      const ev = fig.querySelector<HTMLElement>('[data-ca-evidence]')!;
+      const reset = fig.querySelector<HTMLButtonElement>('[data-ca-reset]')!;
+      const summary = ev.innerHTML;
+      let selected: string | null = null;
+
+      // The chain from a symbol down to the changed method, following callees.
+      const chainFrom = (id: string) => {
+        const out: CA['edges'] = [];
+        let cur = id;
+        const seen = new Set<string>();
+        while (cur !== 'charge' && !seen.has(cur)) {
+          seen.add(cur);
+          const e = data.edges.find((x) => x.from === cur);
+          if (!e) break;
+          out.push(e);
+          cur = e.to;
+        }
+        return out;
+      };
+
+      const esc = (s: string) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]!);
+
+      const show = (id: string | null) => {
+        svg.classList.toggle('has-focus', !!id);
+        const chain = id ? (id === 'charge' ? data.edges : chainFrom(id)) : [];
+        const onNodes = new Set(chain.flatMap((e) => [e.from, e.to]));
+        if (id) onNodes.add(id);
+        for (const p of svg.querySelectorAll<SVGPathElement>('.edge')) {
+          p.classList.toggle('is-on', chain.some((e) => e.from === p.dataset.from && e.to === p.dataset.to));
+        }
+        for (const n of svg.querySelectorAll<SVGGElement>('.node')) {
+          n.classList.toggle('is-on', onNodes.has(n.dataset.caNode!));
+          n.setAttribute('aria-pressed', String(n.dataset.caNode === selected));
+        }
+        reset.hidden = !selected;
+        if (!id) {
+          ev.innerHTML = summary;
+          return;
+        }
+        const node = data.nodes[id];
+        const lines =
+          id === 'charge'
+            ? `<p class="summary">This is the changed method (${esc(node.loc)}). Everything highlighted can be affected by it.</p>`
+            : `<ol class="chain">${chain
+                .map((e) => `<li><span>${esc(e.text)}</span><code>${esc(e.loc)}</code></li>`)
+                .join('')}</ol>`;
+        ev.innerHTML = `<p class="who"><code>${esc(node.full)}</code> <span>${esc(node.loc)}</span></p>${lines}`;
+      };
+
+      const select = (id: string | null) => {
+        selected = id && id !== selected ? id : null;
+        show(selected);
+      };
+
+      const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+      for (const n of svg.querySelectorAll<SVGGElement>('.node')) {
+        const id = n.dataset.caNode!;
+        n.addEventListener('click', () => select(id));
+        n.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            select(id);
+          } else if (e.key === 'Escape') select(null);
+        });
+        if (fine) {
+          n.addEventListener('pointerenter', () => !selected && show(id));
+          n.addEventListener('pointerleave', () => !selected && show(null));
+        }
+        n.addEventListener('focus', () => !selected && show(id));
+        n.addEventListener('blur', () => !selected && show(null));
+      }
+      reset.addEventListener('click', () => select(null));
+
+      // Tabs: graph and screenshot.
+      const tabs = Array.from(fig.querySelectorAll<HTMLButtonElement>('[data-ca-tab]'));
+      const activate = (name: string) => {
+        for (const t of tabs) {
+          const on = t.dataset.caTab === name;
+          t.setAttribute('aria-selected', String(on));
+          t.tabIndex = on ? 0 : -1;
+        }
+        for (const p of fig.querySelectorAll<HTMLElement>('[data-ca-panel]')) p.hidden = p.dataset.caPanel !== name;
+      };
+      for (const t of tabs) {
+        t.addEventListener('click', () => activate(t.dataset.caTab!));
+        t.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+            const next = tabs[(tabs.indexOf(t) + 1) % tabs.length];
+            next.focus();
+            activate(next.dataset.caTab!);
+          }
+        });
+      }
+    }
+  }
+  document.addEventListener('astro:page-load', setupCodeAtlas);
+</script>
+
+<style>
+  .ca {
+    margin: 0;
+    min-width: 0;
+  }
+
+  .tabs {
+    display: inline-flex;
+    gap: 2px;
+    margin-bottom: var(--space-3);
+    padding: 2px;
+    border: var(--border-hairline);
+    border-radius: var(--radius-sm);
+  }
+
+  .tabs button {
+    min-height: 2rem;
+    padding: 0 var(--space-3);
+    border: 0;
+    border-radius: var(--radius-xs);
+    background: none;
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+    cursor: pointer;
+    transition: color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out);
+  }
+
+  .tabs button:hover {
+    color: var(--color-ink);
+  }
+
+  .tabs button[aria-selected='true'] {
+    background: var(--color-ink);
+    color: var(--color-bg);
+  }
+
+  .ca:not(.compact) .panel-graph svg {
+    max-width: 30rem;
+  }
+
+  .panel-graph,
+  .panel-shot {
+    padding: var(--space-4);
+    border: var(--border-hairline);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    background-image: linear-gradient(var(--color-rule) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-rule) 1px, transparent 1px);
+    background-size: 24px 24px;
+    background-position: -1px -1px;
+  }
+
+  .panel-shot {
+    padding: 0;
+    overflow: clip;
+    background: var(--color-panel);
+  }
+
+  .panel-shot :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .edge {
+    fill: none;
+    stroke: var(--color-rule-strong);
+    stroke-width: 1.4;
+    transition: stroke var(--duration-base) var(--ease-out), opacity var(--duration-base) var(--ease-out);
+  }
+
+  .edge.dispatch {
+    stroke-dasharray: 4 3;
+  }
+
+  .arrowhead {
+    fill: var(--color-rule-strong);
+  }
+
+  .has-focus .edge {
+    opacity: 0.25;
+  }
+
+  .has-focus .edge.is-on {
+    stroke: var(--color-accent);
+    opacity: 1;
+  }
+
+  .node {
+    cursor: pointer;
+    outline: none;
+  }
+
+  .node .hit {
+    fill: transparent;
+  }
+
+  .node .mark {
+    fill: var(--color-bg);
+    stroke: var(--color-ink);
+    stroke-width: 1.5;
+    transition: fill var(--duration-fast) var(--ease-out), stroke var(--duration-fast) var(--ease-out);
+  }
+
+  .node.test .mark {
+    stroke-dasharray: 3 2;
+  }
+
+  .node.changed .mark {
+    fill: var(--color-accent);
+    stroke: var(--color-accent);
+  }
+
+  .node text {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    fill: var(--color-ink-soft);
+    transition: fill var(--duration-fast) var(--ease-out), opacity var(--duration-base) var(--ease-out);
+  }
+
+  .node:hover text,
+  .node:focus-visible text {
+    fill: var(--color-accent-ink);
+  }
+
+  .node:focus-visible .hit {
+    stroke: var(--color-focus);
+    stroke-width: 1.5;
+  }
+
+  .has-focus .node text {
+    opacity: 0.4;
+  }
+
+  .has-focus .node.is-on text {
+    opacity: 1;
+    fill: var(--color-ink);
+  }
+
+  .has-focus .node.is-on .mark {
+    stroke: var(--color-accent);
+  }
+
+  .evidence {
+    min-height: 4.5rem;
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: var(--border-hairline);
+    font-size: var(--text-xs);
+    color: var(--color-ink-soft);
+  }
+
+  .evidence :global(.summary) {
+    color: var(--color-muted);
+  }
+
+  .evidence :global(code) {
+    font-size: 0.95em;
+  }
+
+  .evidence :global(.who) {
+    margin-bottom: var(--space-2);
+    color: var(--color-ink);
+  }
+
+  .evidence :global(.who span) {
+    margin-left: var(--space-2);
+    font-family: var(--font-mono);
+    color: var(--color-muted);
+  }
+
+  .evidence :global(.chain) {
+    display: grid;
+    gap: 3px;
+    padding-left: var(--space-4);
+  }
+
+  .evidence :global(.chain li) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0 var(--space-3);
+  }
+
+  .evidence :global(.chain code) {
+    color: var(--color-muted);
+  }
+
+  .ca-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+  }
+
+  .reset {
+    padding: var(--space-1) 0;
+    border: 0;
+    background: none;
+    font-size: var(--text-xs);
+    color: var(--color-ink);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .legend {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--color-muted);
+  }
+
+  .legend i {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    margin-left: var(--space-2);
+    border: 1.5px solid var(--color-ink);
+    border-radius: 50%;
+  }
+
+  .legend .lg-changed {
+    border-radius: 2px;
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  .legend .lg-test {
+    border-style: dashed;
+  }
+
+  figcaption {
+    margin-top: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+</style>

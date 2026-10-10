@@ -1,0 +1,299 @@
+---
+import { domains, projects } from '../data/projects';
+
+// Domain positions in a 360 x 230 field; each project sits near the average of its domains.
+const W = 360;
+const H = 230;
+const pos: Record<string, { x: number; y: number }> = {
+  'applied-ai': { x: 70, y: 58 },
+  nlp: { x: 52, y: 168 },
+  ml: { x: 150, y: 196 },
+  data: { x: 262, y: 176 },
+  systems: { x: 300, y: 72 },
+  software: { x: 186, y: 34 },
+};
+const nudges = [
+  [14, 12],
+  [-10, 16],
+  [12, -14],
+  [-16, -8],
+  [18, 4],
+  [-6, -18],
+  [8, 20],
+  [-18, 6],
+];
+const points = projects.map((p, i) => {
+  const ds = p.domains.map((d) => pos[d]);
+  const x = ds.reduce((a, d) => a + d.x, 0) / ds.length + nudges[i % nudges.length][0];
+  const y = ds.reduce((a, d) => a + d.y, 0) / ds.length + nudges[i % nudges.length][1];
+  return { slug: p.slug, title: p.title, domains: p.domains as string[], x, y };
+});
+const labelLeft = (x: number) => x > W * 0.6;
+---
+
+<figure class="constellation" data-constellation>
+  <svg viewBox={`0 0 ${W} ${H}`} role="group" aria-label="Technical domains and the projects in each. Select a domain to filter the projects below.">
+    <defs>
+      <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+        <path d="M20 0H0V20" fill="none" class="grid-line"></path>
+      </pattern>
+    </defs>
+    <rect width={W} height={H} fill="url(#grid)" class="grid" aria-hidden="true"></rect>
+
+    <g class="edges" aria-hidden="true">
+      {
+        points.flatMap((p) =>
+          p.domains.map((d) => (
+            <line x1={pos[d].x} y1={pos[d].y} x2={p.x} y2={p.y} data-domain={d} data-proj={p.slug} />
+          )),
+        )
+      }
+    </g>
+
+    <g class="projects" aria-hidden="true">
+      {
+        points.map((p) => (
+          <g class="proj" data-proj={p.slug} data-domains={p.domains.join(' ')} transform={`translate(${p.x} ${p.y})`}>
+            <circle r="3" />
+            <text x={labelLeft(p.x) ? -7 : 7} dy="0.35em" text-anchor={labelLeft(p.x) ? 'end' : 'start'}>{p.title}</text>
+          </g>
+        ))
+      }
+    </g>
+
+    {
+      domains.map((d) => (
+        <g
+          class="domain"
+          data-domain-node={d.id}
+          data-explore={`domain:${d.id}`}
+          role="button"
+          tabindex="0"
+          aria-label={`${d.label}: filter projects`}
+          transform={`translate(${pos[d.id].x} ${pos[d.id].y})`}
+        >
+          <circle class="halo" r="14" />
+          <circle class="dot" r="5" />
+          <text y="-11" text-anchor="middle">{d.label}</text>
+        </g>
+      ))
+    }
+  </svg>
+  <figcaption>Domains × projects. Select a domain to filter the work below.</figcaption>
+</figure>
+
+<ul class="domain-list" aria-label="Filter projects by domain">
+  <li class="dl-label" aria-hidden="true">Explore by domain:</li>
+  {
+    domains.map((d) => (
+      <li>
+        <a href="#work" data-explore={`domain:${d.id}`}>
+          {d.label}
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<script>
+  function setupConstellation() {
+    const fig = document.querySelector<HTMLElement>('[data-constellation]');
+    if (!fig || fig.dataset.ready) return;
+    fig.dataset.ready = 'true';
+    const svg = fig.querySelector('svg')!;
+
+    const highlight = (domain: string | null, proj: string | null) => {
+      svg.classList.toggle('has-focus', !!(domain || proj));
+      for (const l of svg.querySelectorAll<SVGLineElement>('.edges line')) {
+        l.classList.toggle('is-on', (!!domain && l.dataset.domain === domain) || (!!proj && l.dataset.proj === proj));
+      }
+      for (const p of svg.querySelectorAll<SVGGElement>('.proj')) {
+        const on = (!!domain && (p.dataset.domains ?? '').split(' ').includes(domain)) || p.dataset.proj === proj;
+        p.classList.toggle('is-on', on);
+      }
+      for (const d of svg.querySelectorAll<SVGGElement>('.domain')) {
+        const projEl = proj ? svg.querySelector<SVGGElement>(`.proj[data-proj="${proj}"]`) : null;
+        const linked = projEl ? (projEl.dataset.domains ?? '').split(' ').includes(d.dataset.domainNode!) : false;
+        d.classList.toggle('is-on', d.dataset.domainNode === domain || linked);
+      }
+    };
+
+    for (const d of svg.querySelectorAll<SVGGElement>('.domain')) {
+      const id = d.dataset.domainNode!;
+      d.addEventListener('pointerenter', () => highlight(id, null));
+      d.addEventListener('pointerleave', () => highlight(null, null));
+      d.addEventListener('focus', () => highlight(id, null));
+      d.addEventListener('blur', () => highlight(null, null));
+      d.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          d.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        }
+      });
+    }
+    for (const p of svg.querySelectorAll<SVGGElement>('.proj')) {
+      p.addEventListener('pointerenter', () => highlight(null, p.dataset.proj!));
+      p.addEventListener('pointerleave', () => highlight(null, null));
+    }
+  }
+  document.addEventListener('astro:page-load', setupConstellation);
+</script>
+
+<style>
+  .constellation {
+    display: none;
+    margin: 0;
+  }
+
+  @media (min-width: 60rem) {
+    .constellation {
+      display: block;
+    }
+  }
+
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .grid-line {
+    stroke: var(--color-rule);
+    stroke-width: 0.6;
+  }
+
+  .edges line {
+    stroke: var(--color-rule-strong);
+    stroke-width: 0.8;
+    opacity: 0.6;
+    transition: opacity var(--duration-base) var(--ease-out), stroke var(--duration-base) var(--ease-out);
+  }
+
+  .has-focus .edges line {
+    opacity: 0.15;
+  }
+
+  .has-focus .edges line.is-on {
+    stroke: var(--color-accent);
+    stroke-width: 1.2;
+    opacity: 1;
+  }
+
+  .proj circle {
+    fill: var(--color-ink-soft);
+    transition: fill var(--duration-fast) var(--ease-out), r var(--duration-fast) var(--ease-out);
+  }
+
+  .proj text {
+    font-family: var(--font-sans);
+    font-size: 9.5px;
+    fill: var(--color-ink);
+    opacity: 0;
+    transition: opacity var(--duration-base) var(--ease-out);
+    pointer-events: none;
+  }
+
+  .proj {
+    cursor: default;
+  }
+
+  .proj.is-on circle {
+    fill: var(--color-accent);
+  }
+
+  .proj.is-on text {
+    opacity: 1;
+  }
+
+  .domain {
+    cursor: pointer;
+    outline: none;
+  }
+
+  .domain .halo {
+    fill: var(--color-accent);
+    opacity: 0;
+    transform: scale(0.6);
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: opacity var(--duration-base) var(--ease-out), transform var(--duration-base) var(--ease-out);
+  }
+
+  .domain .dot {
+    fill: var(--color-bg);
+    stroke: var(--color-ink);
+    stroke-width: 1.5;
+    transition: fill var(--duration-fast) var(--ease-out), stroke var(--duration-fast) var(--ease-out);
+  }
+
+  .domain text {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    fill: var(--color-muted);
+    transition: fill var(--duration-fast) var(--ease-out);
+  }
+
+  .domain.is-on .halo,
+  .domain:focus-visible .halo,
+  .domain.is-active .halo {
+    opacity: 0.14;
+    transform: scale(1);
+  }
+
+  .domain.is-on .dot,
+  .domain.is-active .dot {
+    fill: var(--color-accent);
+    stroke: var(--color-accent);
+  }
+
+  .domain.is-on text,
+  .domain.is-active text,
+  .domain:focus-visible text {
+    fill: var(--color-ink);
+  }
+
+  figcaption {
+    margin-top: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--color-muted);
+  }
+
+  /* Phones and tablets: a simple row of domain links instead of the chart. */
+  .domain-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+    list-style: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.03em;
+  }
+
+  .dl-label {
+    padding-block: var(--space-2);
+    color: var(--color-faint);
+  }
+
+  .domain-list a {
+    display: inline-block;
+    padding-block: var(--space-2);
+    color: var(--color-muted);
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .domain-list a:hover,
+  .domain-list a:active {
+    color: var(--color-accent-ink);
+  }
+
+  @media (min-width: 60rem) {
+    .domain-list {
+      display: none;
+    }
+  }
+</style>

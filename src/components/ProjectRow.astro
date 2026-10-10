@@ -13,7 +13,15 @@ const external = !project.caseStudy;
 const v = project.visual;
 ---
 
-<article class="row" id={`project-${project.slug}`} aria-labelledby={`${project.slug}-title`} data-reveal>
+<article
+  class="row"
+  id={`project-${project.slug}`}
+  aria-labelledby={`${project.slug}-title`}
+  data-reveal
+  data-project-id={`project:${project.slug}`}
+  data-domains={project.domains.join(' ')}
+  data-demo={project.demo ? 'true' : 'false'}
+>
   <a
     class="thumb"
     href={href}
