@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import type { Project } from '../data/projects';
+import { techId } from '../data/graph';
 import ProjectLinks from './ProjectLinks.astro';
 
 interface Props {
@@ -37,7 +38,7 @@ const v = project.visual;
     {project.problemShort && <p class="problem">{project.problemShort}</p>}
     <p class="contribution">{project.contribution}</p>
     <ul class="stack" aria-label="Technologies">
-      {project.tech.map((t) => <li>{t}</li>)}
+      {project.tech.map((t) => <li><button type="button" class="tech-link" data-tech-link={techId(t)}>{t}</button></li>)}
     </ul>
   </div>
 

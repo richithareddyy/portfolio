@@ -1,5 +1,6 @@
 ---
 import type { Project } from '../data/projects';
+import { techId } from '../data/graph';
 import ProjectVisual from './ProjectVisual.astro';
 import ProjectLinks from './ProjectLinks.astro';
 
@@ -37,7 +38,7 @@ const href = project.caseStudy ? `/work/${project.slug}` : undefined;
     </dl>
 
     <ul class="stack" aria-label="Technologies">
-      {project.tech.map((t) => <li>{t}</li>)}
+      {project.tech.map((t) => <li><button type="button" class="tech-link" data-tech-link={techId(t)}>{t}</button></li>)}
     </ul>
     <ProjectLinks project={project} />
   </div>

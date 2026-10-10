@@ -11,6 +11,7 @@ import DataTable from '../../components/DataTable.astro';
 import PerfCompare from '../../components/PerfCompare.astro';
 import NextProject from '../../components/NextProject.astro';
 import { caseStudies, type Project } from '../../data/projects';
+import { techId } from '../../data/graph';
 
 export function getStaticPaths() {
   // Zoom Lens has its own page.
@@ -61,7 +62,7 @@ const sections = [
         {project.built && <BulletList items={project.built} />}
         {project.stack && (
           <ul class="stack" aria-label="Full stack">
-            {project.stack.map((s) => <li>{s}</li>)}
+            {project.stack.map((s) => <li><button type="button" class="tech-link" data-tech-link={techId(s)}>{s}</button></li>)}
           </ul>
         )}
       </CaseSection>

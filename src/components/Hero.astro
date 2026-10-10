@@ -1,24 +1,32 @@
 ---
 import { profile } from '../data/profile';
+import { projects } from '../data/projects';
+import { experience } from '../data/experience';
+import { techs } from '../data/graph';
+
+const demos = projects.filter((p) => p.demo).length;
+const technologies = techs.length;
 ---
 
 <section class="hero wrap" id="top" aria-labelledby="hero-title">
   <div class="intro">
-    <p class="hud">
-      <span class="rec" aria-hidden="true"></span>
-      Tempe, AZ<span class="clock" data-clock aria-hidden="true"></span>
+    <p class="readout enter" style="--d: 0ms">
+      <a href="#skills">
+        <span>{projects.length} projects</span>
+        <span>{demos} live demos</span>
+        <span>{technologies} technologies</span>
+        <span>{experience.length} roles</span>
+      </a>
     </p>
-    <div class="frame viewfinder">
-      <h1 id="hero-title" class="name focus-pull">
-        <span>Richitha</span> <span>Rekula<span class="dot" aria-hidden="true">.</span></span>
-      </h1>
-    </div>
-    <p class="lede">Software engineer building applied AI systems.</p>
+    <h1 id="hero-title" class="name enter" style="--d: 80ms">
+      <span>Richitha</span> <span>Rekula<span class="dot" aria-hidden="true">.</span></span>
+    </h1>
+    <p class="lede enter" style="--d: 200ms">Software engineer building applied AI systems.</p>
 
-    <div class="actions">
-      <a class="button primary" href="#work">View projects</a>
-      <a class="button" href={profile.links.resume} target="_blank" rel="noopener">
-        Résumé<span class="visually-hidden"> (PDF, opens in a new tab)</span>
+    <div class="actions enter" style="--d: 300ms">
+      <a class="button primary" href="#work" data-magnetic>View projects</a>
+      <a class="button" href={profile.links.resume} target="_blank" rel="noopener" data-magnetic>
+        Résumé <span class="ext-arrow" aria-hidden="true">↗</span><span class="visually-hidden"> (PDF, opens in a new tab)</span>
       </a>
       <ul class="quiet" aria-label="Profiles and email">
         <li><a href={profile.links.github} target="_blank" rel="me noopener">GitHub<span class="visually-hidden"> (opens in a new tab)</span></a></li>
@@ -28,7 +36,7 @@ import { profile } from '../data/profile';
     </div>
   </div>
 
-  <div class="band">
+  <div class="band enter" style="--d: 420ms">
     <dl class="facts">
       <div>
         <dt>Now</dt>
@@ -52,21 +60,6 @@ import { profile } from '../data/profile';
   </div>
 </section>
 
-<script>
-  // Live local time in Tempe (Arizona does not observe daylight saving, so it is always MST).
-  let timer: number | undefined;
-  function startClock() {
-    window.clearInterval(timer);
-    const el = document.querySelector<HTMLElement>('[data-clock]');
-    if (!el) return;
-    const fmt = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Phoenix', hour: '2-digit', minute: '2-digit', hour12: false });
-    const tick = () => (el.textContent = ` · ${fmt.format(new Date())} MST`);
-    tick();
-    timer = window.setInterval(tick, 20_000);
-  }
-  document.addEventListener('astro:page-load', startClock);
-</script>
-
 <style>
   /* The intro fills the first screen; work begins on scroll. */
   .hero {
@@ -85,50 +78,50 @@ import { profile } from '../data/profile';
     padding-block: var(--space-7);
   }
 
-
-  .hud {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
-    margin-bottom: var(--space-4);
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--color-muted);
-  }
-
-  .rec {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--color-accent);
-  }
-
+  /* Staggered entrance: about 0.9s from first to last item. Content is visible immediately with reduced motion. */
   @media (prefers-reduced-motion: no-preference) {
-    .rec {
-      animation: blink 2.4s ease-in-out infinite;
+    .enter {
+      animation: enter 520ms var(--ease-out) both;
+      animation-delay: var(--d, 0ms);
     }
 
-    @keyframes blink {
-      50% {
-        opacity: 0.25;
+    @keyframes enter {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
       }
     }
   }
 
-  /* Viewfinder brackets hug the name; the negative margin keeps the text on the page's left edge. */
-  .frame {
-    align-self: flex-start;
-    max-width: 100%;
-    padding: 0.18em 0.26em 0.22em;
-    margin-left: -0.26em;
-    font-size: clamp(3.25rem, 1rem + 9vw, 10rem);
-    --vf-len: clamp(14px, 0.6rem + 1.4vw, 30px);
+  .readout {
+    margin-bottom: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.04em;
+  }
+
+  .readout a {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-3);
+    color: var(--color-muted);
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .readout span:not(:last-child)::after {
+    content: '·';
+    margin-left: var(--space-3);
+    color: var(--color-rule-strong);
+  }
+
+  .readout a:hover,
+  .readout a:focus-visible {
+    color: var(--color-accent-ink);
   }
 
   .name {
-    font-size: inherit;
+    font-size: clamp(3.25rem, 1rem + 9vw, 10rem);
     font-weight: 500;
     line-height: 0.92;
     letter-spacing: -0.04em;
@@ -140,7 +133,13 @@ import { profile } from '../data/profile';
   }
 
   .dot {
+    display: inline-block;
     color: var(--color-accent);
+    transition: transform var(--duration-slow) var(--ease-out);
+  }
+
+  .name:hover .dot {
+    transform: translateY(-0.08em);
   }
 
   .lede {
@@ -162,6 +161,7 @@ import { profile } from '../data/profile';
   .button {
     display: inline-flex;
     align-items: center;
+    gap: var(--space-2);
     min-height: 2.75rem;
     padding: 0 var(--space-5);
     border: var(--border-strong);
@@ -169,12 +169,19 @@ import { profile } from '../data/profile';
     font-size: var(--text-sm);
     font-weight: 500;
     text-decoration: none;
-    transition: border-color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out);
+    translate: var(--mx, 0) var(--my, 0);
+    transition: border-color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out),
+      transform var(--duration-fast) var(--ease-press), translate var(--duration-base) var(--ease-out);
   }
 
   .button:hover {
     border-color: var(--color-ink);
     background: var(--color-surface);
+    transform: translateY(-1px);
+  }
+
+  .button:active {
+    transform: translateY(0) scale(0.98);
   }
 
   .button.primary {
@@ -203,12 +210,15 @@ import { profile } from '../data/profile';
     color: var(--color-muted);
     text-decoration: underline;
     text-decoration-color: var(--color-rule-strong);
-    transition: color var(--duration-fast) var(--ease-out);
+    text-underline-offset: 0.2em;
+    transition: color var(--duration-fast) var(--ease-out), text-underline-offset var(--duration-base) var(--ease-out),
+      text-decoration-color var(--duration-fast) var(--ease-out);
   }
 
   .quiet a:hover {
     color: var(--color-ink);
     text-decoration-color: currentColor;
+    text-underline-offset: 0.3em;
   }
 
   .band {
@@ -277,18 +287,11 @@ import { profile } from '../data/profile';
 
   .scroll .arrow {
     display: inline-block;
-    animation: nudge 2.4s var(--ease-out) infinite;
+    transition: transform var(--duration-base) var(--ease-out);
   }
 
-  @keyframes nudge {
-    0%,
-    60%,
-    100% {
-      transform: none;
-    }
-    75% {
-      transform: translateY(3px);
-    }
+  .scroll:hover .arrow {
+    transform: translateY(3px);
   }
 
   @media (max-width: 30rem) {

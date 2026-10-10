@@ -21,7 +21,7 @@ const { project } = Astro.props;
       <li>
         <a class="ext" href={project.demo} target="_blank" rel="noopener">
           Live demo<span class="visually-hidden"> of {project.title} (opens in a new tab)</span>
-          <span aria-hidden="true">↗</span>
+          <span class="ext-arrow" aria-hidden="true">↗</span>
         </a>
       </li>
     )
@@ -31,7 +31,7 @@ const { project } = Astro.props;
       <li>
         <a class="ext" href={project.github} target="_blank" rel="noopener">
           GitHub<span class="visually-hidden">: {project.title} source (opens in a new tab)</span>
-          <span aria-hidden="true">↗</span>
+          <span class="ext-arrow" aria-hidden="true">↗</span>
         </a>
       </li>
     )
