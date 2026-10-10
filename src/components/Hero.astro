@@ -11,22 +11,19 @@ const technologies = techs.length;
 
 <section class="hero wrap" id="top" aria-labelledby="hero-title">
   <div class="intro">
-    <p class="readout enter" style="--d: 0ms">
-      <a href="#work" data-explore="projects">{projects.length} projects</a>
-      <a href="#work" data-explore="demos">{demos} live demos</a>
-      <a href="#skills" data-explore="skills">{technologies} technologies</a>
-      <a href="#experience" data-explore="experience">{experience.length} roles</a>
-    </p>
-    <h1 id="hero-title" class="name enter" style="--d: 80ms">
+    <h1 id="hero-title" class="name enter" style="--d: 0ms">
       <span>Richitha</span> <span>Rekula<span class="dot" aria-hidden="true">.</span></span>
     </h1>
     <div class="body">
       <div class="body-main">
-    <p class="lede enter" style="--d: 200ms">Software engineer building applied AI systems.</p>
+    <p class="lede enter" style="--d: 60ms">Software engineer building applied AI systems.</p>
+    <p class="desc enter" style="--d: 120ms">
+      I build useful AI, engineer the systems around it, and can explain exactly how I know they work.
+    </p>
 
-    <div class="actions enter" style="--d: 300ms">
-      <a class="button primary" href="#work" data-magnetic>View projects</a>
-      <a class="button" href={profile.links.resume} target="_blank" rel="noopener" data-magnetic>
+    <div class="actions enter" style="--d: 180ms">
+      <a class="button primary" href="#work">View projects</a>
+      <a class="button" href={profile.links.resume} target="_blank" rel="noopener">
         Résumé <span class="ext-arrow" aria-hidden="true">↗</span><span class="visually-hidden"> (PDF, opens in a new tab)</span>
       </a>
       <ul class="quiet" aria-label="Profiles and email">
@@ -35,14 +32,20 @@ const technologies = techs.length;
         <li><a href={`mailto:${profile.email}`}>Email</a></li>
       </ul>
     </div>
+    <p class="readout enter" style="--d: 240ms" aria-label="Portfolio at a glance">
+      <a href="#work" data-explore="projects">{projects.length} projects</a>
+      <a href="#work" data-explore="demos">{demos} live demos</a>
+      <a href="#skills" data-explore="skills">{technologies} technologies</a>
+      <a href="#experience" data-explore="experience">{experience.length} roles</a>
+    </p>
       </div>
-      <div class="body-viz enter" style="--d: 520ms">
+      <div class="body-viz enter" style="--d: 300ms">
         <HeroConstellation />
       </div>
     </div>
   </div>
 
-  <div class="band enter" style="--d: 420ms">
+  <div class="band enter" style="--d: 300ms">
     <dl class="facts">
       <div>
         <dt>Now</dt>
@@ -84,10 +87,10 @@ const technologies = techs.length;
     padding-block: var(--space-7);
   }
 
-  /* Staggered entrance: about 0.9s from first to last item. Content is visible immediately with reduced motion. */
+  /* Staggered entrance: about 0.7s from first to last item. Content is visible immediately with reduced motion. */
   @media (prefers-reduced-motion: no-preference) {
     .enter {
-      animation: enter 520ms var(--ease-out) both;
+      animation: enter var(--duration-slow) var(--ease-out) both;
       animation-delay: var(--d, 0ms);
     }
 
@@ -99,8 +102,15 @@ const technologies = techs.length;
     }
   }
 
+  .desc {
+    max-width: 34rem;
+    margin-top: var(--space-3);
+    font-size: var(--text-md);
+    color: var(--color-muted);
+  }
+
   .readout {
-    margin-bottom: var(--space-4);
+    margin-top: var(--space-5);
     font-family: var(--font-mono);
     font-size: var(--text-xs);
     letter-spacing: 0.04em;
@@ -200,9 +210,8 @@ const technologies = techs.length;
     font-size: var(--text-sm);
     font-weight: 500;
     text-decoration: none;
-    translate: var(--mx, 0) var(--my, 0);
     transition: border-color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out),
-      transform var(--duration-fast) var(--ease-press), translate var(--duration-base) var(--ease-out);
+      transform var(--duration-fast) var(--ease-press);
   }
 
   .button:hover {

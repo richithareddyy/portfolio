@@ -82,18 +82,6 @@ const labelLeft = (x: number) => x > W * 0.6;
   <figcaption>Domains × projects. Select a domain to filter the work below.</figcaption>
 </figure>
 
-<ul class="domain-list" aria-label="Filter projects by domain">
-  <li class="dl-label" aria-hidden="true">Explore by domain:</li>
-  {
-    domains.map((d) => (
-      <li>
-        <a href="#work" data-explore={`domain:${d.id}`}>
-          {d.label}
-        </a>
-      </li>
-    ))
-  }
-</ul>
 
 <script>
   function setupConstellation() {
@@ -171,7 +159,7 @@ const labelLeft = (x: number) => x > W * 0.6;
   }
 
   .has-focus .edges line {
-    opacity: 0.15;
+    opacity: calc(var(--opacity-dim) / 2);
   }
 
   .has-focus .edges line.is-on {
@@ -262,38 +250,4 @@ const labelLeft = (x: number) => x > W * 0.6;
     color: var(--color-muted);
   }
 
-  /* Phones and tablets: a simple row of domain links instead of the chart. */
-  .domain-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-1) var(--space-4);
-    list-style: none;
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    letter-spacing: 0.03em;
-  }
-
-  .dl-label {
-    padding-block: var(--space-2);
-    color: var(--color-faint);
-  }
-
-  .domain-list a {
-    display: inline-block;
-    padding-block: var(--space-2);
-    color: var(--color-muted);
-    text-decoration: none;
-    transition: color var(--duration-fast) var(--ease-out);
-  }
-
-  .domain-list a:hover,
-  .domain-list a:active {
-    color: var(--color-accent-ink);
-  }
-
-  @media (min-width: 60rem) {
-    .domain-list {
-      display: none;
-    }
-  }
 </style>

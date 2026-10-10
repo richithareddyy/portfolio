@@ -52,6 +52,8 @@ export type Project = {
   /** Up to four, shown on cards. */
   tech: string[];
   demo?: string;
+  /** Product or landing site (not an interactive demo). */
+  site?: string;
   github?: string;
   caseStudy: boolean;
   visual: Visual;
@@ -95,6 +97,8 @@ export const projects: Project[] = [
       qualifier: 'Captures the participant’s display for now, not the meeting feed',
     },
     tech: ['Python', 'Zoom Video SDK', 'Zoom Realtime Media Streams API', 'Claude'],
+    site: 'https://zoomlens.vercel.app/',
+    github: gh('ZoomLens'),
     caseStudy: true,
     visual: {
       kind: 'image',

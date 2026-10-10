@@ -195,7 +195,58 @@ button {
 :root {
   /* --ease-out and --duration-fast/base/slow live in tokens.css. */
   --ease-press: cubic-bezier(0.3, 0, 0.2, 1);
-  --duration-reveal: 480ms;
+  --duration-reveal: var(--duration-slow);
+}
+
+/*
+  One interaction language for every selectable control (filters, tabs, pipeline stages, flow steps,
+  safeguards). Hover previews with a stronger border; selected is the accent border on an accent wash;
+  pressed gives a small tactile scale. Graph nodes follow the same model in their own components:
+  hover previews, click persists, related items take the accent, unrelated items fade to --opacity-dim.
+*/
+.choice {
+  border: var(--border-hairline);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-out), background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-press);
+}
+
+.choice:hover {
+  border-color: var(--color-rule-strong);
+}
+
+.choice:active {
+  transform: scale(0.98);
+}
+
+.choice[aria-pressed='true'],
+.choice[aria-selected='true'] {
+  border-color: var(--color-accent);
+  background-color: var(--color-accent-wash);
+  color: var(--color-ink);
+}
+
+/* Reset: the same quiet text button everywhere a selection can be cleared. */
+.reset-link {
+  padding: var(--space-1) 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: var(--text-xs);
+  color: var(--color-ink);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--color-rule-strong);
+  text-underline-offset: 0.2em;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.reset-link:hover {
+  color: var(--color-accent-ink);
+  text-decoration-color: currentColor;
 }
 
 [data-reveal] {
@@ -218,7 +269,7 @@ button {
 }
 
 [data-project-id].is-muted {
-  opacity: 0.3;
+  opacity: var(--opacity-dim);
 }
 
 [data-project-id]::after,

@@ -48,6 +48,7 @@ const uid = `etl-${Math.random().toString(36).slice(2, 7)}`;
           <button
             type="button"
             role="tab"
+            class="choice"
             id={`${uid}-${s.id}`}
             aria-controls={`${uid}-panel`}
             aria-selected={i === 0 ? 'true' : 'false'}
@@ -161,30 +162,9 @@ const uid = `etl-${Math.random().toString(36).slice(2, 7)}`;
     width: 100%;
     min-height: 3.25rem;
     padding: var(--space-2);
-    border: var(--border-strong);
-    border-radius: var(--radius-sm);
-    background: var(--color-bg);
     font-size: var(--text-sm);
     font-weight: 500;
-    color: var(--color-ink);
     text-align: left;
-    cursor: pointer;
-    transition: border-color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out),
-      transform var(--duration-fast) var(--ease-press);
-  }
-
-  .stages button:hover {
-    border-color: var(--color-ink);
-  }
-
-  .stages button:active {
-    transform: scale(0.98);
-  }
-
-  .stages button[aria-selected='true'] {
-    border-color: var(--color-accent);
-    background: var(--color-surface);
-    box-shadow: inset 0 -2px 0 var(--color-accent);
   }
 
   .i {
@@ -221,15 +201,15 @@ const uid = `etl-${Math.random().toString(36).slice(2, 7)}`;
 
   @media (prefers-reduced-motion: no-preference) {
     .pipe.is-flowing i {
-      animation: flow 900ms var(--ease-out) forwards;
+      animation: flow calc(var(--duration-slow) * 1.5) var(--ease-out) forwards;
     }
 
     .pipe.is-flowing i:nth-child(2) {
-      animation-delay: 140ms;
+      animation-delay: calc(var(--duration-fast) * 0.66);
     }
 
     .pipe.is-flowing i:nth-child(3) {
-      animation-delay: 280ms;
+      animation-delay: calc(var(--duration-fast) * 1.33);
     }
 
     @keyframes flow {
