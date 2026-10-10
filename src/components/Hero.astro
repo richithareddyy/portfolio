@@ -4,9 +4,15 @@ import { profile } from '../data/profile';
 
 <section class="hero wrap" id="top" aria-labelledby="hero-title">
   <div class="intro">
-    <h1 id="hero-title" class="name">
-      <span>Richitha</span> <span>Rekula<span class="dot" aria-hidden="true">.</span></span>
-    </h1>
+    <p class="hud">
+      <span class="rec" aria-hidden="true"></span>
+      Tempe, AZ<span class="clock" data-clock aria-hidden="true"></span>
+    </p>
+    <div class="frame viewfinder">
+      <h1 id="hero-title" class="name focus-pull">
+        <span>Richitha</span> <span>Rekula<span class="dot" aria-hidden="true">.</span></span>
+      </h1>
+    </div>
     <p class="lede">Software engineer building applied AI systems.</p>
 
     <div class="actions">
@@ -46,6 +52,21 @@ import { profile } from '../data/profile';
   </div>
 </section>
 
+<script>
+  // Live local time in Tempe (Arizona does not observe daylight saving, so it is always MST).
+  let timer: number | undefined;
+  function startClock() {
+    window.clearInterval(timer);
+    const el = document.querySelector<HTMLElement>('[data-clock]');
+    if (!el) return;
+    const fmt = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Phoenix', hour: '2-digit', minute: '2-digit', hour12: false });
+    const tick = () => (el.textContent = ` · ${fmt.format(new Date())} MST`);
+    tick();
+    timer = window.setInterval(tick, 20_000);
+  }
+  document.addEventListener('astro:page-load', startClock);
+</script>
+
 <style>
   /* The intro fills the first screen; work begins on scroll. */
   .hero {
@@ -65,8 +86,49 @@ import { profile } from '../data/profile';
   }
 
 
-  .name {
+  .hud {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .rec {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--color-accent);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .rec {
+      animation: blink 2.4s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      50% {
+        opacity: 0.25;
+      }
+    }
+  }
+
+  /* Viewfinder brackets hug the name; the negative margin keeps the text on the page's left edge. */
+  .frame {
+    align-self: flex-start;
+    max-width: 100%;
+    padding: 0.18em 0.26em 0.22em;
+    margin-left: -0.26em;
     font-size: clamp(3.25rem, 1rem + 9vw, 10rem);
+    --vf-len: clamp(14px, 0.6rem + 1.4vw, 30px);
+  }
+
+  .name {
+    font-size: inherit;
     font-weight: 500;
     line-height: 0.92;
     letter-spacing: -0.04em;
