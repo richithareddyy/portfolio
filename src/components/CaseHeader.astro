@@ -10,6 +10,7 @@ interface Props {
 const { project, sections } = Astro.props;
 const role = Astro.props.role ?? project.role;
 const links = [
+  project.site && { label: 'Product site', href: project.site },
   project.demo && { label: 'Live demo', href: project.demo },
   project.github && { label: 'GitHub', href: project.github },
 ].filter(Boolean) as { label: string; href: string }[];

@@ -189,7 +189,7 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
         <h3 class="panel-title">${esc(node.label)}</h3>
         <p class="panel-sub">${heading}</p>
         <ul class="panel-list">${items}</ul>
-        <div class="panel-actions">${open}<button type="button" class="panel-clear" data-clear>Clear</button></div>`;
+        <div class="panel-actions">${open}<button type="button" class="reset-link" data-clear>Reset</button></div>`;
     }
 
     const select = (id: string | null) => {
@@ -385,7 +385,7 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
   }
 
   .has-focus .edges path {
-    opacity: 0.12;
+    opacity: calc(var(--opacity-dim) / 2);
   }
 
   .has-focus .edges path.is-on {
@@ -444,7 +444,7 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
   }
 
   .has-focus .node text {
-    opacity: 0.35;
+    opacity: var(--opacity-dim);
   }
 
   .has-focus .node.is-focus text,
@@ -557,16 +557,6 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
     color: var(--color-accent-ink);
   }
 
-  .panel :global(.panel-clear) {
-    padding: 0;
-    border: 0;
-    background: none;
-    font: inherit;
-    color: var(--color-muted);
-    cursor: pointer;
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
-  }
 
   .more {
     margin-top: var(--space-4);

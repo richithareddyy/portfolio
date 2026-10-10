@@ -17,6 +17,16 @@ const { project } = Astro.props;
     )
   }
   {
+    project.site && (
+      <li>
+        <a class="ext" href={project.site} target="_blank" rel="noopener">
+          Product site<span class="visually-hidden"> for {project.title} (opens in a new tab)</span>
+          <span class="ext-arrow" aria-hidden="true">↗</span>
+        </a>
+      </li>
+    )
+  }
+  {
     project.demo && (
       <li>
         <a class="ext" href={project.demo} target="_blank" rel="noopener">

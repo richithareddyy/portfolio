@@ -24,7 +24,7 @@ const kindLabel = visual.kind === 'image' ? null : visual.kind === 'diagram' ? '
 ---
 
 <figure class:list={['visual', size, visual.kind]}>
-  <div class:list={['frame', { linked: !!href }]} data-depth={href ? '' : undefined}>
+  <div class:list={['frame', { linked: !!href }]}>
     {
       visual.kind === 'image' && (
         <Image
@@ -98,7 +98,7 @@ const kindLabel = visual.kind === 'image' ? null : visual.kind === 'diagram' ? '
   }
 
   .linked:hover :global(img) {
-    transform: translate(var(--px, 0px), var(--py, 0px)) scale(1.03);
+    transform: scale(1.02);
   }
 
   .output .frame {

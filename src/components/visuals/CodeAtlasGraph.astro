@@ -34,8 +34,8 @@ const uid = compact ? 'ca-compact' : 'ca-full';
 
 <figure class:list={['ca', { compact }]} data-ca>
   <div class="tabs" role="tablist" aria-label="CodeAtlas view">
-    <button type="button" role="tab" id={`${uid}-tab-graph`} aria-controls={`${uid}-graph`} aria-selected="true" data-ca-tab="graph">Impact graph</button>
-    <button type="button" role="tab" id={`${uid}-tab-shot`} aria-controls={`${uid}-shot`} aria-selected="false" data-ca-tab="shot" tabindex="-1">Screenshot</button>
+    <button type="button" class="choice" role="tab" id={`${uid}-tab-graph`} aria-controls={`${uid}-graph`} aria-selected="true" data-ca-tab="graph">Impact graph</button>
+    <button type="button" class="choice" role="tab" id={`${uid}-tab-shot`} aria-controls={`${uid}-shot`} aria-selected="false" data-ca-tab="shot" tabindex="-1">Screenshot</button>
   </div>
 
   <div class="panel-graph" id={`${uid}-graph`} role="tabpanel" aria-labelledby={`${uid}-tab-graph`} data-ca-panel="graph">
@@ -89,7 +89,7 @@ const uid = compact ? 'ca-compact' : 'ca-full';
       </p>
     </div>
     <div class="ca-actions">
-      <button type="button" class="reset" data-ca-reset hidden>Reset</button>
+      <button type="button" class="reset-link" data-ca-reset hidden>Reset</button>
       <span class="legend"><i class="lg-changed"></i>changed <i class="lg-symbol"></i>affected <i class="lg-test"></i>test</span>
     </div>
   </div>
@@ -227,32 +227,14 @@ const uid = compact ? 'ca-compact' : 'ca-full';
 
   .tabs {
     display: inline-flex;
-    gap: 2px;
+    gap: var(--space-1);
     margin-bottom: var(--space-3);
-    padding: 2px;
-    border: var(--border-hairline);
-    border-radius: var(--radius-sm);
   }
 
   .tabs button {
     min-height: 2rem;
     padding: 0 var(--space-3);
-    border: 0;
-    border-radius: var(--radius-xs);
-    background: none;
     font-size: var(--text-xs);
-    color: var(--color-muted);
-    cursor: pointer;
-    transition: color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out);
-  }
-
-  .tabs button:hover {
-    color: var(--color-ink);
-  }
-
-  .tabs button[aria-selected='true'] {
-    background: var(--color-ink);
-    color: var(--color-bg);
   }
 
   .ca:not(.compact) .panel-graph svg {
@@ -265,10 +247,6 @@ const uid = compact ? 'ca-compact' : 'ca-full';
     border: var(--border-hairline);
     border-radius: var(--radius-md);
     background: var(--color-surface);
-    background-image: linear-gradient(var(--color-rule) 1px, transparent 1px),
-      linear-gradient(90deg, var(--color-rule) 1px, transparent 1px);
-    background-size: 24px 24px;
-    background-position: -1px -1px;
   }
 
   .panel-shot {
@@ -306,7 +284,7 @@ const uid = compact ? 'ca-compact' : 'ca-full';
   }
 
   .has-focus .edge {
-    opacity: 0.25;
+    opacity: var(--opacity-dim);
   }
 
   .has-focus .edge.is-on {
@@ -357,7 +335,7 @@ const uid = compact ? 'ca-compact' : 'ca-full';
   }
 
   .has-focus .node text {
-    opacity: 0.4;
+    opacity: var(--opacity-dim);
   }
 
   .has-focus .node.is-on text {
@@ -421,17 +399,6 @@ const uid = compact ? 'ca-compact' : 'ca-full';
     justify-content: space-between;
     gap: var(--space-2);
     margin-top: var(--space-2);
-  }
-
-  .reset {
-    padding: var(--space-1) 0;
-    border: 0;
-    background: none;
-    font-size: var(--text-xs);
-    color: var(--color-ink);
-    cursor: pointer;
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
   }
 
   .legend {
