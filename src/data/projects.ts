@@ -17,6 +17,17 @@ export type Metric = { value: string; label: string; qualifier?: string };
 
 export type Decision = { heading: string; body: string; tradeoff: string };
 
+/** Technical domains used by the hero constellation and the project filter. */
+export const domains = [
+  { id: 'applied-ai', label: 'Applied AI' },
+  { id: 'ml', label: 'ML' },
+  { id: 'nlp', label: 'NLP' },
+  { id: 'data', label: 'Data' },
+  { id: 'software', label: 'Software' },
+  { id: 'systems', label: 'Systems' },
+] as const;
+export type Domain = (typeof domains)[number]['id'];
+
 export type DataTable = { caption: string; columns: string[]; rows: string[][]; note?: string };
 
 export type Visual =
@@ -30,6 +41,8 @@ export type Project = {
   /** One-sentence value statement. */
   summary: string;
   tier: 'featured' | 'more';
+  /** Domains this project actually involves, from its README and stack. */
+  domains: Domain[];
   year: string;
   /** Shown on cards and case studies. */
   role: string;
@@ -72,6 +85,7 @@ export const projects: Project[] = [
     title: 'Zoom Lens',
     summary: 'An assistant inside Zoom that privately explains a shared screen to the participant who asks.',
     tier: 'featured',
+    domains: ['applied-ai', 'software'],
     year: '2026 – present',
     role: 'Zoom Fellow, ASU Next Lab',
     contribution:
@@ -95,6 +109,7 @@ export const projects: Project[] = [
     summary:
       'Change-impact analysis for Rust: which functions, modules, and tests a change can reach, with the source line behind each step.',
     tier: 'featured',
+    domains: ['software', 'systems'],
     year: '2026',
     role: 'Solo project',
     contribution:
@@ -228,6 +243,7 @@ export const projects: Project[] = [
     title: 'Reddit Data ETL Pipeline',
     summary: 'Loads Reddit-format archives into PostgreSQL and accounts for every rejected record.',
     tier: 'featured',
+    domains: ['data', 'systems'],
     year: '2026',
     role: 'Solo project',
     contribution:
@@ -334,6 +350,7 @@ export const projects: Project[] = [
     title: 'StreamBox',
     summary: 'A streaming web app whose backend stays consistent when many users write to the same data.',
     tier: 'more',
+    domains: ['software', 'systems'],
     year: '2024',
     role: 'Solo project',
     contribution:
@@ -399,6 +416,7 @@ export const projects: Project[] = [
     title: 'Support Ticket Triage',
     summary: 'Predicts support-ticket priority and resolution time, and explains each prediction.',
     tier: 'more',
+    domains: ['ml', 'nlp', 'data'],
     year: '2026',
     role: 'Solo project',
     contribution:
@@ -475,6 +493,7 @@ export const projects: Project[] = [
     title: 'Research Paper Summarizer',
     summary: 'Summarize, question, and compare academic papers from a PDF, DOI, or arXiv link.',
     tier: 'more',
+    domains: ['applied-ai', 'nlp'],
     year: '2025',
     role: 'Solo project',
     contribution:
@@ -497,6 +516,7 @@ export const projects: Project[] = [
     title: 'Meeting Insights',
     summary: 'Turns a meeting transcript into action items, decisions, and open questions.',
     tier: 'more',
+    domains: ['applied-ai', 'nlp'],
     year: '',
     role: 'Solo project',
     contribution:
@@ -519,6 +539,7 @@ export const projects: Project[] = [
     title: 'Smart Parking',
     summary: 'Estimates parking-space occupancy by comparing a camera image with an empty reference.',
     tier: 'more',
+    domains: ['software'],
     year: '',
     role: 'Solo project',
     contribution:

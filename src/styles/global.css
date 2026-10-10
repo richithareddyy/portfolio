@@ -207,6 +207,40 @@ button {
   transform: translateY(16px);
 }
 
+/*
+  Exploration states for projects and roles. Muted = outside the chosen domain (faded, never hidden).
+  Evidence = connected to the skill selected in the Data Lab, marked with a thin accent rule.
+*/
+[data-project-id],
+[data-role-id] {
+  position: relative;
+  transition: opacity var(--duration-reveal) var(--ease-out), transform var(--duration-reveal) var(--ease-out);
+}
+
+[data-project-id].is-muted {
+  opacity: 0.3;
+}
+
+[data-project-id]::after,
+[data-role-id]::after {
+  content: '';
+  position: absolute;
+  left: calc(var(--gutter) * -0.5);
+  top: var(--space-6);
+  bottom: var(--space-6);
+  width: 2px;
+  background: var(--color-accent);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform var(--duration-reveal) var(--ease-out);
+  pointer-events: none;
+}
+
+[data-project-id].is-evidence::after,
+[data-role-id].is-evidence::after {
+  transform: scaleY(1);
+}
+
 /* Diagonal nudge for external-link arrows, used by any element with .ext-arrow. */
 .ext-arrow {
   display: inline-block;

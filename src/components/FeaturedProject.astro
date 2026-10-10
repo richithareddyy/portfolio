@@ -1,6 +1,7 @@
 ---
 import type { Project } from '../data/projects';
 import { techId } from '../data/graph';
+import { domains } from '../data/projects';
 import ProjectVisual from './ProjectVisual.astro';
 import ProjectLinks from './ProjectLinks.astro';
 
@@ -15,9 +16,21 @@ const { project, emphasis = 'primary', flip = false, eager = false } = Astro.pro
 const href = project.caseStudy ? `/work/${project.slug}` : undefined;
 ---
 
-<article class:list={['featured', emphasis, { flip }]} id={`project-${project.slug}`} aria-labelledby={`${project.slug}-title`} data-reveal>
+<article
+  class:list={['featured', emphasis, { flip }]}
+  id={`project-${project.slug}`}
+  aria-labelledby={`${project.slug}-title`}
+  data-reveal
+  data-project-id={`project:${project.slug}`}
+  data-domains={project.domains.join(' ')}
+  data-demo={project.demo ? 'true' : 'false'}
+>
   <div class="text">
     <p class="year">{[project.year, project.role].filter(Boolean).join(' · ')}</p>
+    <p class="meta-data">
+      <span><b>Domain</b> {project.domains.map((d) => domains.find((x) => x.id === d)?.label).join(' · ')}</span>
+      {project.status && <span><b>Status</b> {project.status.split(';')[0]}</span>}
+    </p>
     <h3 id={`${project.slug}-title`}>
       {href ? <a href={href} transition:name={`title-${project.slug}`}>{project.title}</a> : project.title}
     </h3>
@@ -44,7 +57,7 @@ const href = project.caseStudy ? `/work/${project.slug}` : undefined;
   </div>
 
   <div class="media">
-    <ProjectVisual visual={project.visual} size="feature" eager={eager} href={href} />
+    {Astro.slots.has('visual') ? <slot name="visual" /> : <ProjectVisual visual={project.visual} size="feature" eager={eager} href={href} />}
   </div>
 </article>
 
@@ -82,6 +95,25 @@ const href = project.caseStudy ? `/work/${project.slug}` : undefined;
     gap: var(--space-3);
     justify-items: start;
     min-width: 0;
+  }
+
+  .meta-data {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px var(--space-5);
+    margin-top: calc(var(--space-2) * -1);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.02em;
+    color: var(--color-muted);
+  }
+
+  .meta-data b {
+    margin-right: 0.5em;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-faint);
   }
 
   .year {

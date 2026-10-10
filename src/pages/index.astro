@@ -9,6 +9,10 @@ import Skills from '../components/Skills.astro';
 import About from '../components/About.astro';
 import Contact from '../components/Contact.astro';
 import { featured, more } from '../data/projects';
+import DomainFilter from '../components/DomainFilter.astro';
+import ZoomLensExplorer from '../components/visuals/ZoomLensExplorer.astro';
+import CodeAtlasGraph from '../components/visuals/CodeAtlasGraph.astro';
+import EtlPipeline from '../components/visuals/EtlPipeline.astro';
 ---
 
 <BaseLayout isHome>
@@ -17,10 +21,15 @@ import { featured, more } from '../data/projects';
 
     <section id="work" class="wrap" aria-labelledby="work-title">
       <SectionHeading id="work">Selected work</SectionHeading>
+      <DomainFilter />
 
       {
         featured.map((p, i) => (
-          <FeaturedProject project={p} emphasis={i < 2 ? 'primary' : 'secondary'} flip={i === 1} eager={i === 0} />
+          <FeaturedProject project={p} emphasis={i < 2 ? 'primary' : 'secondary'} flip={i === 1} eager={i === 0}>
+            {p.slug === 'zoom-lens' && <ZoomLensExplorer slot="visual" href="/work/zoom-lens" />}
+            {p.slug === 'codeatlas' && <CodeAtlasGraph slot="visual" compact />}
+            {p.slug === 'reddit-data-pipeline' && <EtlPipeline slot="visual" />}
+          </FeaturedProject>
         ))
       }
 

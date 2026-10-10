@@ -2,6 +2,7 @@
 import { experience } from '../data/experience';
 import { education } from '../data/profile';
 import SectionHeading from './SectionHeading.astro';
+import { techId } from '../data/graph';
 ---
 
 <section class="wrap section" id="experience" aria-labelledby="experience-title">
@@ -10,7 +11,7 @@ import SectionHeading from './SectionHeading.astro';
   <ol class="timeline">
     {
       experience.map((role) => (
-        <li class:list={['role', { current: role.current }]} data-reveal>
+        <li class:list={['role', { current: role.current }]} data-reveal data-role-id={`role:${role.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>
           <p class="dates">{role.dates}</p>
           <div class="what">
             <h3>
@@ -23,6 +24,9 @@ import SectionHeading from './SectionHeading.astro';
             </h3>
             <ul class="points">
               {role.points.map((p) => <li>{p}</li>)}
+            </ul>
+            <ul class="stack role-tech" aria-label="Technologies">
+              {role.tech.map((t) => <li><button type="button" class="tech-link" data-tech-link={techId(t)}>{t}</button></li>)}
             </ul>
             {role.link && (
               <a class="arrow-link more" href={role.link.href}>
@@ -143,6 +147,19 @@ import SectionHeading from './SectionHeading.astro';
     width: 6px;
     height: 1px;
     background: var(--color-faint);
+  }
+
+  .role-tech {
+    margin-top: var(--space-3);
+  }
+
+  /* The entry being read: its dates take the accent color. */
+  .dates {
+    transition: color var(--duration-base) var(--ease-out);
+  }
+
+  .role.is-current .dates {
+    color: var(--color-accent-ink);
   }
 
   .more {

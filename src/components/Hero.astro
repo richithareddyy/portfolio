@@ -3,6 +3,7 @@ import { profile } from '../data/profile';
 import { projects } from '../data/projects';
 import { experience } from '../data/experience';
 import { techs } from '../data/graph';
+import HeroConstellation from './HeroConstellation.astro';
 
 const demos = projects.filter((p) => p.demo).length;
 const technologies = techs.length;
@@ -11,16 +12,16 @@ const technologies = techs.length;
 <section class="hero wrap" id="top" aria-labelledby="hero-title">
   <div class="intro">
     <p class="readout enter" style="--d: 0ms">
-      <a href="#skills">
-        <span>{projects.length} projects</span>
-        <span>{demos} live demos</span>
-        <span>{technologies} technologies</span>
-        <span>{experience.length} roles</span>
-      </a>
+      <a href="#work" data-explore="projects">{projects.length} projects</a>
+      <a href="#work" data-explore="demos">{demos} live demos</a>
+      <a href="#skills" data-explore="skills">{technologies} technologies</a>
+      <a href="#experience" data-explore="experience">{experience.length} roles</a>
     </p>
     <h1 id="hero-title" class="name enter" style="--d: 80ms">
       <span>Richitha</span> <span>Rekula<span class="dot" aria-hidden="true">.</span></span>
     </h1>
+    <div class="body">
+      <div class="body-main">
     <p class="lede enter" style="--d: 200ms">Software engineer building applied AI systems.</p>
 
     <div class="actions enter" style="--d: 300ms">
@@ -33,6 +34,11 @@ const technologies = techs.length;
         <li><a href={profile.links.linkedin} target="_blank" rel="me noopener">LinkedIn<span class="visually-hidden"> (opens in a new tab)</span></a></li>
         <li><a href={`mailto:${profile.email}`}>Email</a></li>
       </ul>
+    </div>
+      </div>
+      <div class="body-viz enter" style="--d: 520ms">
+        <HeroConstellation />
+      </div>
     </div>
   </div>
 
@@ -100,24 +106,49 @@ const technologies = techs.length;
     letter-spacing: 0.04em;
   }
 
-  .readout a {
-    display: inline-flex;
+  .readout {
+    display: flex;
     flex-wrap: wrap;
     gap: 0 var(--space-3);
-    color: var(--color-muted);
-    text-decoration: none;
-    transition: color var(--duration-fast) var(--ease-out);
   }
 
-  .readout span:not(:last-child)::after {
+  .readout a {
+    color: var(--color-muted);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.3em;
+    transition: color var(--duration-fast) var(--ease-out), text-decoration-color var(--duration-fast) var(--ease-out);
+  }
+
+  .readout a:not(:last-child)::after {
     content: '·';
+    display: inline-block;
     margin-left: var(--space-3);
     color: var(--color-rule-strong);
+    text-decoration: none;
   }
 
   .readout a:hover,
   .readout a:focus-visible {
     color: var(--color-accent-ink);
+    text-decoration-color: currentColor;
+  }
+
+  .body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-5) var(--space-8);
+    align-items: center;
+  }
+
+  @media (min-width: 60rem) {
+    .body {
+      grid-template-columns: minmax(0, 1fr) minmax(18rem, 22rem);
+    }
+  }
+
+  .body-viz {
+    min-width: 0;
   }
 
   .name {
