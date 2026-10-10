@@ -1,5 +1,4 @@
 import type { ImageMetadata } from 'astro';
-import zoomLensMeeting from '../assets/projects/zoom-lens-meeting.webp';
 import codeatlasImpact from '../assets/projects/codeatlas-impact.png';
 import codeatlasGraph from '../assets/projects/codeatlas-graph.png';
 import codeatlasChanges from '../assets/projects/codeatlas-changes.png';
@@ -33,7 +32,8 @@ export type DataTable = { caption: string; columns: string[]; rows: string[][]; 
 export type Visual =
   | { kind: 'image'; src: ImageMetadata; alt: string; caption: string }
   | { kind: 'diagram'; id: 'etl'; caption: string }
-  | { kind: 'output'; id: 'streambox-loadtest'; caption: string };
+  | { kind: 'output'; id: 'streambox-loadtest'; caption: string }
+  | { kind: 'site'; url: string; caption: string };
 
 export type Project = {
   slug: string;
@@ -101,10 +101,9 @@ export const projects: Project[] = [
     github: gh('ZoomLens'),
     caseStudy: true,
     visual: {
-      kind: 'image',
-      src: zoomLensMeeting,
-      alt: 'Zoom Lens in a live Zoom meeting: a paper is shared on screen, and the Zoom Lens panel on the right shows a Describe answer naming the paper, its authors, and its venue, with an Ask a follow-up box and the note Only you see your answers.',
-      caption: 'Zoom Lens answering in a live meeting. Screenshot of the prototype.',
+      kind: 'site',
+      url: 'https://zoomlens.vercel.app/',
+      caption: 'Live preview of the Zoom Lens product site. Select it to open the site.',
     },
   },
   {
