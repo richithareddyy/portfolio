@@ -1,253 +1,131 @@
 ---
 import { domains, projects } from '../data/projects';
 
-// Domain positions in a 360 x 230 field; each project sits near the average of its domains.
-const W = 360;
-const H = 230;
-const pos: Record<string, { x: number; y: number }> = {
-  'applied-ai': { x: 70, y: 58 },
-  nlp: { x: 52, y: 168 },
-  ml: { x: 150, y: 196 },
-  data: { x: 262, y: 176 },
-  systems: { x: 300, y: 72 },
-  software: { x: 186, y: 34 },
+// Editorial placement only: these positions describe each project's emphasis, not a measured score.
+const placement: Record<string, { x: number; y: number; label: string }> = {
+  'zoom-lens': { x: 77, y: 80, label: 'Zoom Lens' },
+  codeatlas: { x: 78, y: 19, label: 'CodeAtlas' },
+  'reddit-data-pipeline': { x: 23, y: 49, label: 'Reddit ETL' },
+  streambox: { x: 83, y: 51, label: 'StreamBox' },
+  'ticket-triage': { x: 23, y: 17, label: 'Ticket triage' },
+  'research-paper-summarizer': { x: 48, y: 36, label: 'Paper summarizer' },
+  'meeting-insights': { x: 49, y: 65, label: 'Meeting insights' },
+  'smart-parking': { x: 20, y: 81, label: 'Smart parking' },
 };
-const nudges = [
-  [14, 12],
-  [-10, 16],
-  [12, -14],
-  [-16, -8],
-  [18, 4],
-  [-6, -18],
-  [8, 20],
-  [-18, 6],
-];
-const points = projects.map((p, i) => {
-  const ds = p.domains.map((d) => pos[d]);
-  const x = ds.reduce((a, d) => a + d.x, 0) / ds.length + nudges[i % nudges.length][0];
-  const y = ds.reduce((a, d) => a + d.y, 0) / ds.length + nudges[i % nudges.length][1];
-  return { slug: p.slug, title: p.title, domains: p.domains as string[], x, y };
-});
-const labelLeft = (x: number) => x > W * 0.6;
 ---
 
-<figure class="constellation" data-constellation>
-  <svg viewBox={`0 0 ${W} ${H}`} role="group" aria-label="Technical domains and the projects in each. Select a domain to filter the projects below.">
-    <defs>
-      <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-        <path d="M20 0H0V20" fill="none" class="grid-line"></path>
-      </pattern>
-    </defs>
-    <rect width={W} height={H} fill="url(#grid)" class="grid" aria-hidden="true"></rect>
-
-    <g class="edges" aria-hidden="true">
-      {
-        points.flatMap((p) =>
-          p.domains.map((d) => (
-            <line x1={pos[d].x} y1={pos[d].y} x2={p.x} y2={p.y} data-domain={d} data-proj={p.slug} />
-          )),
-        )
-      }
-    </g>
-
-    <g class="projects" aria-hidden="true">
-      {
-        points.map((p) => (
-          <g class="proj" data-proj={p.slug} data-domains={p.domains.join(' ')} transform={`translate(${p.x} ${p.y})`}>
-            <circle r="3" />
-            <text x={labelLeft(p.x) ? -7 : 7} dy="0.35em" text-anchor={labelLeft(p.x) ? 'end' : 'start'}>{p.title}</text>
-          </g>
-        ))
-      }
-    </g>
-
-    {
-      domains.map((d) => (
-        <g
-          class="domain"
-          data-domain-node={d.id}
-          data-explore={`domain:${d.id}`}
-          role="button"
-          tabindex="0"
-          aria-label={`${d.label}: filter projects`}
-          transform={`translate(${pos[d.id].x} ${pos[d.id].y})`}
-        >
-          <circle class="halo" r="14" />
-          <circle class="dot" r="5" />
-          <text y="-11" text-anchor="middle">{d.label}</text>
-        </g>
-      ))
-    }
-  </svg>
-  <figcaption>Domains × projects. Select a domain to filter the work below.</figcaption>
+<figure class="project-map" data-project-map aria-labelledby="map-title">
+  <div class="map-heading"><p id="map-title" class="lab-label">Field notes / project map</p><span class="lab-label">{String(projects.length).padStart(2, '0')} systems</span></div>
+  <div class="plot-wrap">
+    <span class="axis-y top">Research</span>
+    <div class="plot" role="group" aria-label="Conceptual project map. Select a project to inspect it; use arrow keys to move between projects.">
+      <span class="axis horizontal" aria-hidden="true"></span><span class="axis vertical" aria-hidden="true"></span>
+      {projects.map((p, i) => {
+        const point = placement[p.slug];
+        return <button type="button" class:list={['point', { 'label-left': point.x > 65 }]} style={`--x: ${point.x}%; --y: ${point.y}%`} data-map-point={p.slug} aria-pressed="false" aria-label={`Inspect ${p.title}`} aria-controls="map-detail">
+          <span class="point-id" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+          <span class="point-name" aria-hidden="true">{point.label}</span>
+        </button>;
+      })}
+    </div>
+    <div class="axis-bottom"><span>Data</span><span class="axis-product">Product</span><span>Software</span></div>
+  </div>
+  <div class="map-detail" id="map-detail" aria-live="polite" aria-atomic="true">
+    <div class="detail overview" data-map-detail="overview">
+      <p class="detail-title">A field guide to my work</p>
+      <p>Explore the space between data, research, and working software.</p>
+      <p class="map-help">Hover to preview · select to inspect</p>
+    </div>
+    {projects.map((p, i) => <div class="detail" data-map-detail={p.slug} aria-hidden="true" inert>
+      <div class="detail-top"><p class="detail-title"><span class="lab-id">{String(i + 1).padStart(2, '0')}</span> {p.title}</p><a href={`#project-${p.slug}`} aria-label={`View ${p.title}`}>View project <span aria-hidden="true">↗</span></a></div>
+      <p class="detail-domains">{p.domains.map(d => domains.find(v => v.id === d)?.label).join(' / ')}</p>
+      <p class="detail-stack">{p.tech.join(' · ')}</p>
+    </div>)}
+  </div>
+  <div class="map-footer"><figcaption>Conceptual positions, not measured scores.</figcaption><button class="reset-link" type="button" data-map-reset disabled>Reset map</button></div>
 </figure>
 
-
 <script>
-  function setupConstellation() {
-    const fig = document.querySelector<HTMLElement>('[data-constellation]');
-    if (!fig || fig.dataset.ready) return;
-    fig.dataset.ready = 'true';
-    const svg = fig.querySelector('svg')!;
-
-    const highlight = (domain: string | null, proj: string | null) => {
-      svg.classList.toggle('has-focus', !!(domain || proj));
-      for (const l of svg.querySelectorAll<SVGLineElement>('.edges line')) {
-        l.classList.toggle('is-on', (!!domain && l.dataset.domain === domain) || (!!proj && l.dataset.proj === proj));
-      }
-      for (const p of svg.querySelectorAll<SVGGElement>('.proj')) {
-        const on = (!!domain && (p.dataset.domains ?? '').split(' ').includes(domain)) || p.dataset.proj === proj;
-        p.classList.toggle('is-on', on);
-      }
-      for (const d of svg.querySelectorAll<SVGGElement>('.domain')) {
-        const projEl = proj ? svg.querySelector<SVGGElement>(`.proj[data-proj="${proj}"]`) : null;
-        const linked = projEl ? (projEl.dataset.domains ?? '').split(' ').includes(d.dataset.domainNode!) : false;
-        d.classList.toggle('is-on', d.dataset.domainNode === domain || linked);
-      }
-    };
-
-    for (const d of svg.querySelectorAll<SVGGElement>('.domain')) {
-      const id = d.dataset.domainNode!;
-      d.addEventListener('pointerenter', () => highlight(id, null));
-      d.addEventListener('pointerleave', () => highlight(null, null));
-      d.addEventListener('focus', () => highlight(id, null));
-      d.addEventListener('blur', () => highlight(null, null));
-      d.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          d.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-        }
+  function setupProjectMap() {
+    for (const fig of document.querySelectorAll<HTMLElement>('[data-project-map]:not([data-ready])')) {
+      fig.dataset.ready = 'true';
+      const points = Array.from(fig.querySelectorAll<HTMLButtonElement>('[data-map-point]'));
+      const panels = Array.from(fig.querySelectorAll<HTMLElement>('[data-map-detail]'));
+      const reset = fig.querySelector<HTMLButtonElement>('[data-map-reset]')!;
+      let selected: string | null = null;
+      const show = (id: string | null) => {
+        points.forEach(p => {
+          p.classList.toggle('is-preview', p.dataset.mapPoint === id);
+          p.setAttribute('aria-pressed', String(p.dataset.mapPoint === selected));
+        });
+        panels.forEach(p => {
+          const visible = p.dataset.mapDetail === (id ?? 'overview');
+          p.setAttribute('aria-hidden', String(!visible));
+          p.inert = !visible;
+        });
+        reset.disabled = !selected;
+      };
+      const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+      points.forEach((point, i) => {
+        const id = point.dataset.mapPoint!;
+        point.addEventListener('click', () => { selected = selected === id ? null : id; show(selected); });
+        point.addEventListener('focus', () => { if (!selected) show(id); });
+        if (fine) point.addEventListener('pointerenter', () => { if (!selected) show(id); });
+        point.addEventListener('keydown', e => {
+          const direction = ['ArrowRight', 'ArrowDown'].includes(e.key) ? 1 : ['ArrowLeft', 'ArrowUp'].includes(e.key) ? -1 : 0;
+          if (direction || ['Home', 'End'].includes(e.key)) {
+            e.preventDefault();
+            const next = e.key === 'Home' ? 0 : e.key === 'End' ? points.length - 1 : (i + direction + points.length) % points.length;
+            points[next].focus();
+          }
+        });
       });
-    }
-    for (const p of svg.querySelectorAll<SVGGElement>('.proj')) {
-      p.addEventListener('pointerenter', () => highlight(null, p.dataset.proj!));
-      p.addEventListener('pointerleave', () => highlight(null, null));
+      fig.addEventListener('pointerleave', () => { if (!selected && !fig.contains(document.activeElement)) show(null); });
+      fig.addEventListener('focusout', e => { if (!selected && !fig.contains(e.relatedTarget as Node)) show(null); });
+      const clear = () => {
+        const previous = points.find(p => p.dataset.mapPoint === selected);
+        selected = null;
+        previous?.focus({ preventScroll: true });
+        show(null);
+      };
+      reset.addEventListener('click', clear);
+      fig.addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); clear(); } });
     }
   }
-  document.addEventListener('astro:page-load', setupConstellation);
+  document.addEventListener('astro:page-load', setupProjectMap);
 </script>
 
 <style>
-  .constellation {
-    display: none;
-    margin: 0;
-  }
-
-  @media (min-width: 60rem) {
-    .constellation {
-      display: block;
-    }
-  }
-
-  svg {
-    display: block;
-    width: 100%;
-    height: auto;
-    overflow: visible;
-  }
-
-  .grid-line {
-    stroke: var(--color-rule);
-    stroke-width: 0.6;
-  }
-
-  .edges line {
-    stroke: var(--color-rule-strong);
-    stroke-width: 0.8;
-    opacity: 0.6;
-    transition: opacity var(--duration-base) var(--ease-out), stroke var(--duration-base) var(--ease-out);
-  }
-
-  .has-focus .edges line {
-    opacity: calc(var(--opacity-dim) / 2);
-  }
-
-  .has-focus .edges line.is-on {
-    stroke: var(--color-accent);
-    stroke-width: 1.2;
-    opacity: 1;
-  }
-
-  .proj circle {
-    fill: var(--color-ink-soft);
-    transition: fill var(--duration-fast) var(--ease-out), r var(--duration-fast) var(--ease-out);
-  }
-
-  .proj text {
-    font-family: var(--font-sans);
-    font-size: 9.5px;
-    fill: var(--color-ink);
-    opacity: 0;
-    transition: opacity var(--duration-base) var(--ease-out);
-    pointer-events: none;
-  }
-
-  .proj {
-    cursor: default;
-  }
-
-  .proj.is-on circle {
-    fill: var(--color-accent);
-  }
-
-  .proj.is-on text {
-    opacity: 1;
-  }
-
-  .domain {
-    cursor: pointer;
-    outline: none;
-  }
-
-  .domain .halo {
-    fill: var(--color-accent);
-    opacity: 0;
-    transform: scale(0.6);
-    transform-box: fill-box;
-    transform-origin: center;
-    transition: opacity var(--duration-base) var(--ease-out), transform var(--duration-base) var(--ease-out);
-  }
-
-  .domain .dot {
-    fill: var(--color-bg);
-    stroke: var(--color-ink);
-    stroke-width: 1.5;
-    transition: fill var(--duration-fast) var(--ease-out), stroke var(--duration-fast) var(--ease-out);
-  }
-
-  .domain text {
-    font-family: var(--font-mono);
-    font-size: 9px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    fill: var(--color-muted);
-    transition: fill var(--duration-fast) var(--ease-out);
-  }
-
-  .domain.is-on .halo,
-  .domain:focus-visible .halo,
-  .domain.is-active .halo {
-    opacity: 0.14;
-    transform: scale(1);
-  }
-
-  .domain.is-on .dot,
-  .domain.is-active .dot {
-    fill: var(--color-accent);
-    stroke: var(--color-accent);
-  }
-
-  .domain.is-on text,
-  .domain.is-active text,
-  .domain:focus-visible text {
-    fill: var(--color-ink);
-  }
-
-  figcaption {
-    margin-top: var(--space-2);
-    font-family: var(--font-mono);
-    font-size: var(--text-2xs);
-    color: var(--color-muted);
-  }
-
+  .project-map { margin: 0; min-width: 0; container-type: inline-size; }
+  .map-heading { display: flex; justify-content: space-between; gap: 1rem; padding-block: var(--space-3); border-block: var(--border-hairline); }
+  .plot-wrap { position: relative; padding-top: 2rem; }
+  .plot { position: relative; height: 280px; margin-inline: 1rem; border: var(--border-hairline); background-image: linear-gradient(var(--color-rule) 1px, transparent 1px), linear-gradient(90deg, var(--color-rule) 1px, transparent 1px); background-size: 25% 25%; }
+  .axis { position: absolute; background: var(--color-rule-strong); pointer-events: none; }
+  .horizontal { top: 50%; left: -6px; right: -6px; height: 1px; }
+  .vertical { left: 50%; top: -6px; bottom: -6px; width: 1px; }
+  .axis-y, .axis-bottom { font-family: var(--font-mono); text-transform: uppercase; font-size: 10px; letter-spacing: .06em; color: var(--color-muted); }
+  .axis-y { position: absolute; top: .45rem; left: 50%; transform: translateX(-50%); }
+  .axis-bottom { display: flex; justify-content: space-between; padding: .5rem 1rem 1rem; position: relative; }
+  .axis-product { position: absolute; left: 50%; transform: translateX(-50%); }
+  .point { position: absolute; left: var(--x); top: var(--y); transform: translate(-50%, -50%); display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; background: transparent; cursor: pointer; z-index: 1; }
+  .point-id { display: grid; place-items: center; width: 24px; height: 24px; border: 1px solid var(--color-rule-strong); border-radius: 50%; background: var(--color-bg); font-family: var(--font-mono); font-size: 10px; transition: background var(--duration-base) var(--ease-out), color var(--duration-base) var(--ease-out), border-color var(--duration-base) var(--ease-out); }
+  .point-name { position: absolute; left: 36px; white-space: nowrap; font-size: 11px; color: var(--color-ink-soft); background: var(--color-bg); padding: 0 3px; pointer-events: none; }
+  .label-left .point-name { left: auto; right: 36px; }
+  .is-preview { z-index: 2; }
+  .is-preview .point-id, .point[aria-pressed='true'] .point-id { background: var(--color-accent); color: var(--color-bg); border-color: var(--color-accent); }
+  .is-preview .point-name { color: var(--color-accent-ink); }
+  .map-detail { display: grid; border-top: var(--border-hairline); padding-block: var(--space-4); min-height: 8.5rem; }
+  .detail { grid-area: 1 / 1; align-self: start; font-size: var(--text-xs); color: var(--color-muted); }
+  .detail[aria-hidden='true'] { visibility: hidden; }
+  .detail-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0 var(--space-3); }
+  .detail-title { font-size: var(--text-base); font-weight: 500; color: var(--color-ink); margin-bottom: var(--space-2); }
+  .detail-title .lab-id { margin-right: .5rem; }
+  .detail a { color: var(--color-accent-ink); min-height: 44px; display: inline-flex; align-items: center; gap: .5rem; }
+  .detail-domains { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .03em; font-size: var(--text-2xs); margin-bottom: .35rem; }
+  .detail-stack { line-height: 1.6; }
+  .map-help { margin-top: .7rem; font-family: var(--font-mono); font-size: var(--text-2xs); }
+  .map-footer { border-top: var(--border-hairline); display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  figcaption { font-size: var(--text-2xs); color: var(--color-muted); }
+  .reset-link { white-space: nowrap; font-size: var(--text-2xs); }
+  @container (max-width: 400px) { .point-name { display: none; } .plot { height: 250px; } }
 </style>

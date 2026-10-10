@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import type { Project } from '../data/projects';
+import { projects, type Project } from '../data/projects';
 import { techId } from '../data/graph';
 import ProjectLinks from './ProjectLinks.astro';
 
@@ -8,6 +8,7 @@ interface Props {
   project: Project;
 }
 const { project } = Astro.props;
+const projectNumber = String(projects.findIndex(p => p.slug === project.slug) + 1).padStart(2, '0');
 const href = project.caseStudy ? `/work/${project.slug}` : (project.demo ?? project.github);
 const external = !project.caseStudy;
 const v = project.visual;
@@ -39,6 +40,7 @@ const v = project.visual;
   </a>
 
   <div class="main">
+    <p class="lab-id">PROJECT / {projectNumber}</p>
     <p class="meta">{[project.year, project.role].filter(Boolean).join(' · ')}</p>
     <h4 id={`${project.slug}-title`}>
       {project.caseStudy ? <a href={`/work/${project.slug}`} transition:name={`title-${project.slug}`}>{project.title}</a> : project.title}
@@ -51,10 +53,12 @@ const v = project.visual;
   </div>
 
   <p class="result">
+    <span class="lab-label">{project.evaluation ? 'Evaluation' : 'Observation'}</span>
     <strong>{project.result.headline}</strong>
     {project.result.qualifier && <span>{project.result.qualifier}</span>}
   </p>
 
+  {project.limitations?.length && <details class="limits"><summary>Limitations<span class="visually-hidden"> of {project.title}</span></summary><ul>{project.limitations.map(limit => <li>{limit}</li>)}</ul></details>}
   <div class="links-cell">
     <ProjectLinks project={project} />
   </div>
@@ -199,4 +203,12 @@ const v = project.visual;
     font-size: var(--text-xs);
     color: var(--color-muted);
   }
+
+  .result strong { margin-block: var(--space-2); }
+  .limits { font-size: var(--text-sm); color: var(--color-muted); }
+  .limits summary { min-height: 2.75rem; padding-block: var(--space-2); }
+  .limits ul { padding-left: var(--space-4); }
+  .limits li + li { margin-top: var(--space-2); }
+  @media (min-width: 40rem) { .limits { grid-column: 2 / -1; } }
+
 </style>

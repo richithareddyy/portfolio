@@ -1,5 +1,5 @@
 ---
-import type { Project } from '../data/projects';
+import { projects, type Project } from '../data/projects';
 import { techId } from '../data/graph';
 import { domains } from '../data/projects';
 import ProjectVisual from './ProjectVisual.astro';
@@ -13,6 +13,7 @@ interface Props {
 }
 
 const { project, emphasis = 'primary', flip = false, eager = false } = Astro.props;
+const projectNumber = String(projects.findIndex(p => p.slug === project.slug) + 1).padStart(2, '0');
 const href = project.caseStudy ? `/work/${project.slug}` : undefined;
 ---
 
@@ -26,6 +27,7 @@ const href = project.caseStudy ? `/work/${project.slug}` : undefined;
   data-demo={project.demo ? 'true' : 'false'}
 >
   <div class="text">
+    <p class="lab-id">PROJECT / {projectNumber}</p>
     <p class="year">
       {[project.year, project.role, project.domains.map((d) => domains.find((x) => x.id === d)?.label).join(', ')].filter(Boolean).join(' · ')}
     </p>
@@ -36,11 +38,7 @@ const href = project.caseStudy ? `/work/${project.slug}` : undefined;
 
     <dl class="facts">
       <div>
-        <dt>My contribution</dt>
-        <dd>{project.contribution}</dd>
-      </div>
-      <div>
-        <dt>{project.slug === 'zoom-lens' ? 'Status' : 'Result'}</dt>
+        <dt>{project.slug === 'zoom-lens' ? 'Status' : 'Observation'}</dt>
         <dd>
           <strong>{project.result.headline}</strong>
           {project.result.qualifier && <span class="qualifier">{project.result.qualifier}</span>}
@@ -52,6 +50,10 @@ const href = project.caseStudy ? `/work/${project.slug}` : undefined;
       {project.tech.map((t) => <li><button type="button" class="tech-link" data-tech-link={techId(t)}>{t}</button></li>)}
     </ul>
     <ProjectLinks project={project} />
+    <details class="contribution">
+      <summary>My contribution<span class="visually-hidden"> to {project.title}</span></summary>
+      <p>{project.contribution}</p>
+    </details>
   </div>
 
   <div class="media">
@@ -80,9 +82,6 @@ const href = project.caseStudy ? `/work/${project.slug}` : undefined;
       align-items: start;
     }
 
-    .flip .text {
-      order: 2;
-    }
 
     .secondary {
       grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
@@ -160,7 +159,18 @@ const href = project.caseStudy ? `/work/${project.slug}` : undefined;
     color: var(--color-muted);
   }
 
+  .contribution { max-width: 34rem; font-size: var(--text-sm); color: var(--color-ink-soft); }
+  .contribution summary { cursor: pointer; min-height: 2.75rem; padding-block: var(--space-2); color: var(--color-ink); }
+  .contribution summary:hover { color: var(--color-accent-ink); }
+  .contribution p { padding-bottom: var(--space-2); }
+
   .media {
     min-width: 0;
   }
+
+  .facts { width: 100%; border-left: 2px solid var(--color-accent); padding: var(--space-3) var(--space-4); background: var(--color-surface); }
+  dt { font-family: var(--font-mono); text-transform: uppercase; font-size: var(--text-2xs); letter-spacing: .08em; margin-bottom: var(--space-2); }
+  .summary { font-size: var(--text-md); line-height: 1.6; }
+  h3 { font-weight: 500; }
+
 </style>

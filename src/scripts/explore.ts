@@ -1,6 +1,6 @@
 /*
   Cross-section exploration: the portfolio treated as connected data.
-  - Domain filter (and the hero constellation) emphasize matching projects without hiding any.
+  - Domain filter (and the hero constellation) show matching projects, preserving their original order.
   - A skill selected in the Data Lab marks the projects that are evidence for it.
   - Readout items in the hero jump to, or highlight, the content they count.
   - The experience entry being read is highlighted.
@@ -32,8 +32,14 @@ export function applyFilter(id: FilterId) {
     const domains = (el.dataset.domains ?? '').split(' ');
     const hit = id === 'all' || (id === 'demo' ? el.dataset.demo === 'true' : domains.includes(id));
     if (hit) matches++;
-    el.classList.toggle('is-muted', !hit);
+    el.hidden = !hit;
+    el.classList.toggle("filter-match", hit && id !== "all");
   }
+  const moreHeading = document.querySelector<HTMLElement>('.more-title');
+  const moreRows = document.querySelector<HTMLElement>('.rows');
+  const hasMore = !!moreRows?.querySelector('[data-project-id]:not([hidden])');
+  if (moreHeading) moreHeading.hidden = !hasMore;
+  if (moreRows) moreRows.hidden = !hasMore;
   for (const b of document.querySelectorAll<HTMLElement>('[data-domain-filter]')) {
     b.setAttribute('aria-pressed', String(b.dataset.domainFilter === id));
   }
@@ -43,7 +49,7 @@ export function applyFilter(id: FilterId) {
   const status = document.querySelector<HTMLElement>('[data-filter-status]');
   if (status) {
     status.textContent =
-      id === 'all' ? '' : `Showing ${matches} of ${articles.length} projects: ${domainLabels[id] ?? id}. Others are faded, not hidden.`;
+      id === 'all' ? `All ${articles.length} projects` : `Showing ${matches} of ${articles.length} projects: ${domainLabels[id] ?? id}. Select All to reset.`;
   }
 }
 
@@ -55,6 +61,8 @@ function scrollToId(id: string) {
 document.addEventListener('click', (e) => {
   const t = e.target as HTMLElement;
 
+  const anchor = t.closest<HTMLAnchorElement>('a[href^="#project-"]');
+  if (anchor && document.getElementById(anchor.hash.slice(1))?.hidden) applyFilter('all');
   const filterBtn = t.closest<HTMLElement>('[data-domain-filter]');
   if (filterBtn) {
     applyFilter(filterBtn.dataset.domainFilter!);

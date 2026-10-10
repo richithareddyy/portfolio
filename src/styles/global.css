@@ -9,7 +9,7 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
   scroll-padding-top: calc(var(--header-height) + var(--space-5));
 }
 
@@ -34,7 +34,7 @@ h2,
 h3,
 h4 {
   margin: 0;
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-weight: 500;
   line-height: var(--leading-tight);
   letter-spacing: -0.012em;
@@ -189,12 +189,11 @@ button {
 
 /*
   Interaction system. One easing curve and three durations, used everywhere.
-  Reveal: the script marks only elements that start below the fold as pending, then reveals them as they
-  enter. Content already on screen, or any content when the script does not run, is never hidden.
+  Content is visible immediately; motion is reserved for intentional interactions.
 */
 :root {
   /* --ease-out and --duration-fast/base/slow live in tokens.css. */
-  --ease-press: cubic-bezier(0.3, 0, 0.2, 1);
+  --ease-press: var(--ease-out);
   --duration-reveal: var(--duration-slow);
 }
 
@@ -253,13 +252,10 @@ button {
   transition: opacity var(--duration-reveal) var(--ease-out), transform var(--duration-reveal) var(--ease-out);
 }
 
-[data-reveal].reveal-pending {
-  opacity: 0;
-  transform: translateY(16px);
-}
+
 
 /*
-  Exploration states for projects and roles. Muted = outside the chosen domain (faded, never hidden).
+  Exploration states for projects and roles. Filters hide nonmatching projects.
   Evidence = connected to the skill selected in the Data Lab, marked with a thin accent rule.
 */
 [data-project-id],
@@ -268,9 +264,14 @@ button {
   transition: opacity var(--duration-reveal) var(--ease-out), transform var(--duration-reveal) var(--ease-out);
 }
 
-[data-project-id].is-muted {
-  opacity: var(--opacity-dim);
-}
+[hidden] { display: none !important; }
+
+summary { cursor: pointer; }
+.tech-link, .reset-link { min-height: 2.75rem; }
+.reset-link:disabled { cursor: default; color: var(--color-muted); text-decoration: none; }
+.stack { font-family: var(--font-mono); }
+code { overflow-wrap: anywhere; }
+
 
 [data-project-id]::after,
 [data-role-id]::after {
@@ -318,9 +319,9 @@ a:focus-visible .ext-arrow {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { scroll-behavior: auto !important; }
+  .button:hover, .choice:active, .linked:hover img, a:hover .ext-arrow, .name:hover .dot { transform: none !important; }
 
   *,
   *::before,
@@ -330,3 +331,12 @@ a:focus-visible .ext-arrow {
     transition-duration: 0.01ms !important;
   }
 }
+
+@media (prefers-reduced-motion: no-preference) {
+  .filter-match { animation: filter-in var(--duration-base) var(--ease-out); }
+  @keyframes filter-in { from { opacity: 0.75; } to { opacity: 1; } }
+}
+
+/* Shared lab annotations: typography carries the structure, color carries selection. */
+.lab-label { font-family: var(--font-mono); font-size: var(--text-2xs); font-weight: 500; letter-spacing: .09em; text-transform: uppercase; color: var(--color-muted); }
+.lab-id { font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: .08em; color: var(--color-accent-ink); }

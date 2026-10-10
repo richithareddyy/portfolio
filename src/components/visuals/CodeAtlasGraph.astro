@@ -12,12 +12,12 @@ interface Props {
 const { compact = false } = Astro.props;
 
 const nodes = [
-  { id: 'test_checkout', label: 'test_checkout', full: 'test_checkout', kind: 'test', loc: 'tests/payment_tests.rs:14', x: 70, y: 22 },
-  { id: 'checkout', label: 'checkout', full: 'checkout', kind: 'symbol', loc: 'src/checkout.rs:3', x: 70, y: 82 },
-  { id: 'test_authorize_valid', label: 'test_authorize_valid', full: 'test_authorize_valid', kind: 'test', loc: 'tests/payment_tests.rs:8', x: 290, y: 82 },
-  { id: 'authorize', label: 'PaymentService::authorize', full: 'PaymentService::authorize', kind: 'symbol', loc: 'src/payments.rs:12', x: 180, y: 142 },
-  { id: 'gateway', label: 'Gateway::charge', full: 'Gateway::charge (trait method)', kind: 'symbol', loc: 'src/gateway.rs:2', x: 180, y: 202 },
-  { id: 'charge', label: 'StripeGateway::charge', full: '<StripeGateway as Gateway>::charge', kind: 'changed', loc: 'src/gateway.rs:9', x: 180, y: 262 },
+  { id: 'test_checkout', label: 'test_checkout', full: 'test_checkout', kind: 'test', loc: 'tests/payment_tests.rs:14', x: 24, y: 24 },
+  { id: 'checkout', label: 'checkout', full: 'checkout', kind: 'symbol', loc: 'src/checkout.rs:3', x: 24, y: 88 },
+  { id: 'test_authorize_valid', label: 'test_authorize_valid', full: 'test_authorize_valid', kind: 'test', loc: 'tests/payment_tests.rs:8', x: 224, y: 24 },
+  { id: 'authorize', label: 'PaymentService::authorize', full: 'PaymentService::authorize', kind: 'symbol', loc: 'src/payments.rs:12', x: 124, y: 142 },
+  { id: 'gateway', label: 'Gateway::charge', full: 'Gateway::charge (trait method)', kind: 'symbol', loc: 'src/gateway.rs:2', x: 124, y: 202 },
+  { id: 'charge', label: 'StripeGateway::charge', full: '<StripeGateway as Gateway>::charge', kind: 'changed', loc: 'src/gateway.rs:9', x: 124, y: 262 },
 ];
 // caller -> callee, with the evidence CodeAtlas reports for each relationship.
 const edges = [
@@ -33,13 +33,15 @@ const uid = compact ? 'ca-compact' : 'ca-full';
 ---
 
 <figure class:list={['ca', { compact }]} data-ca>
+  <p class="instrument-label lab-label">System model / change impact</p>
   <div class="tabs" role="tablist" aria-label="CodeAtlas view">
     <button type="button" class="choice" role="tab" id={`${uid}-tab-graph`} aria-controls={`${uid}-graph`} aria-selected="true" data-ca-tab="graph">Impact graph</button>
     <button type="button" class="choice" role="tab" id={`${uid}-tab-shot`} aria-controls={`${uid}-shot`} aria-selected="false" data-ca-tab="shot" tabindex="-1">Screenshot</button>
   </div>
 
   <div class="panel-graph" id={`${uid}-graph`} role="tabpanel" aria-labelledby={`${uid}-tab-graph`} data-ca-panel="graph">
-    <svg viewBox="0 0 360 286" role="group" aria-label="Impact graph. Select a symbol to see its evidence chain.">
+    <p class="graph-hint">Hover to preview connections. Select a symbol to trace its evidence.</p>
+    <svg viewBox="0 0 440 286" role="group" aria-label="Impact graph. Select a symbol to see its evidence chain.">
       <defs>
         <marker id={`${uid}-arrow`} viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
           <path d="M0 0L8 4L0 8z" class="arrowhead"></path>
@@ -74,22 +76,27 @@ const uid = compact ? 'ca-compact' : 'ca-full';
             aria-label={`${n.full}, ${n.kind === 'changed' ? 'changed symbol' : n.kind}, ${n.loc}`}
             transform={`translate(${n.x} ${n.y})`}
           >
-            <rect class="hit" x={n.x > 240 ? -170 : -16} y="-16" width="186" height="32" />
+            <rect class="hit" x="-16" y="-20" width={n.id === "checkout" ? 112 : n.id === "test_checkout" ? 174 : 212} height="40" />
             {n.kind === 'changed' ? <rect class="mark" x="-6" y="-6" width="12" height="12" rx="2" /> : <circle class="mark" r="6" />}
-            <text x={n.x > 240 ? -13 : 13} dy="0.35em" text-anchor={n.x > 240 ? 'end' : 'start'}>{n.label}</text>
+            <text x="13" dy="0.35em">{n.label}</text>
           </g>
         ))
       }
     </svg>
 
+    <div class="mobile-nodes" role="group" aria-label="Impact graph symbols">
+      <p>Change: <code>StripeGateway::charge</code>. Select a symbol to trace the calls connecting it to this change.</p>
+      {nodes.map(n => <button type="button" class="choice" data-ca-node={n.id} aria-pressed="false"><span>{n.label}</span><small>{n.kind === 'changed' ? 'changed symbol' : n.kind}</small></button>)}
+    </div>
     <div class="evidence" aria-live="polite" data-ca-evidence>
       <p class="summary">
         Changing <code>StripeGateway::charge</code> affects 5 symbols (1 direct, 4 indirect) in 4 files, including 2 tests.
         Select a symbol to see the chain of evidence back to the change.
       </p>
     </div>
+    <p class="selection-legend" aria-label="Selection legend"><span>● Selected</span><span>○ Connected</span><span>· Other symbols</span></p>
     <div class="ca-actions">
-      <button type="button" class="reset-link" data-ca-reset hidden>Reset</button>
+      <button type="button" class="reset-link" data-ca-reset disabled>Reset graph</button>
       <span class="legend"><i class="lg-changed"></i>changed <i class="lg-symbol"></i>affected <i class="lg-test"></i>test</span>
     </div>
   </div>
@@ -151,11 +158,12 @@ const uid = compact ? 'ca-compact' : 'ca-full';
         for (const p of svg.querySelectorAll<SVGPathElement>('.edge')) {
           p.classList.toggle('is-on', chain.some((e) => e.from === p.dataset.from && e.to === p.dataset.to));
         }
-        for (const n of svg.querySelectorAll<SVGGElement>('.node')) {
+        for (const n of fig.querySelectorAll<HTMLElement | SVGGElement>('[data-ca-node]')) {
           n.classList.toggle('is-on', onNodes.has(n.dataset.caNode!));
           n.setAttribute('aria-pressed', String(n.dataset.caNode === selected));
         }
-        reset.hidden = !selected;
+        reset.disabled = !selected;
+        if (id !== selected) return;
         if (!id) {
           ev.innerHTML = summary;
           return;
@@ -176,11 +184,12 @@ const uid = compact ? 'ca-compact' : 'ca-full';
       };
 
       const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-      for (const n of svg.querySelectorAll<SVGGElement>('.node')) {
+      for (const n of fig.querySelectorAll<HTMLElement | SVGGElement>('[data-ca-node]')) {
         const id = n.dataset.caNode!;
         n.addEventListener('click', () => select(id));
-        n.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
+        n.addEventListener('keydown', (event) => {
+          const e = event as KeyboardEvent;
+          if (n.tagName.toLowerCase() === 'g' && (e.key === 'Enter' || e.key === ' ')) {
             e.preventDefault();
             select(id);
           } else if (e.key === 'Escape') select(null);
@@ -192,7 +201,13 @@ const uid = compact ? 'ca-compact' : 'ca-full';
         n.addEventListener('focus', () => !selected && show(id));
         n.addEventListener('blur', () => !selected && show(null));
       }
-      reset.addEventListener('click', () => select(null));
+      reset.addEventListener('click', () => {
+        const previous = selected;
+        select(null);
+        const target = Array.from(fig.querySelectorAll<HTMLElement>('[data-ca-node]')).find(n => n.dataset.caNode === previous && n.getBoundingClientRect().width > 0);
+        target?.focus();
+        show(null);
+      });
 
       // Tabs: graph and screenshot.
       const tabs = Array.from(fig.querySelectorAll<HTMLButtonElement>('[data-ca-tab]'));
@@ -207,8 +222,9 @@ const uid = compact ? 'ca-compact' : 'ca-full';
       for (const t of tabs) {
         t.addEventListener('click', () => activate(t.dataset.caTab!));
         t.addEventListener('keydown', (e) => {
-          if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-            const next = tabs[(tabs.indexOf(t) + 1) % tabs.length];
+          if (['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(e.key)) {
+            e.preventDefault();
+            const next = tabs[e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : (tabs.indexOf(t) + 1) % tabs.length];
             next.focus();
             activate(next.dataset.caTab!);
           }
@@ -220,9 +236,15 @@ const uid = compact ? 'ca-compact' : 'ca-full';
 </script>
 
 <style>
+  .graph-hint { font-size: var(--text-xs); color: var(--color-muted); margin-bottom: var(--space-3); }
+  .mobile-nodes { display: none; }
+  .mobile-nodes .is-on { border-color: var(--color-accent); }
+  .node[aria-pressed="true"] .hit { fill: var(--color-accent-wash); stroke: var(--color-accent); }
+  .node .mark, .node text { pointer-events: none; }
   .ca {
     margin: 0;
     min-width: 0;
+    container-type: inline-size;
   }
 
   .tabs {
@@ -232,13 +254,14 @@ const uid = compact ? 'ca-compact' : 'ca-full';
   }
 
   .tabs button {
-    min-height: 2rem;
+    min-height: 2.75rem;
     padding: 0 var(--space-3);
     font-size: var(--text-xs);
   }
 
-  .ca:not(.compact) .panel-graph svg {
+  .ca .panel-graph svg {
     max-width: 30rem;
+    margin-inline: auto;
   }
 
   .panel-graph,
@@ -319,7 +342,7 @@ const uid = compact ? 'ca-compact' : 'ca-full';
 
   .node text {
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: 12px;
     fill: var(--color-ink-soft);
     transition: fill var(--duration-fast) var(--ease-out), opacity var(--duration-base) var(--ease-out);
   }
@@ -335,7 +358,7 @@ const uid = compact ? 'ca-compact' : 'ca-full';
   }
 
   .has-focus .node text {
-    opacity: var(--opacity-dim);
+    fill: var(--color-muted);
   }
 
   .has-focus .node.is-on text {
@@ -348,7 +371,7 @@ const uid = compact ? 'ca-compact' : 'ca-full';
   }
 
   .evidence {
-    min-height: 4.5rem;
+    min-height: 8.5rem;
     margin-top: var(--space-3);
     padding-top: var(--space-3);
     border-top: var(--border-hairline);
@@ -430,9 +453,23 @@ const uid = compact ? 'ca-compact' : 'ca-full';
     border-style: dashed;
   }
 
+  @container (max-width: 420px) {
+    .panel-graph svg, .graph-hint { display: none; }
+    .mobile-nodes { display: grid; gap: var(--space-2); }
+    .mobile-nodes p { font-size: var(--text-sm); margin-bottom: var(--space-2); }
+    .mobile-nodes button { min-height: 2.75rem; padding: var(--space-2); text-align: left; overflow-wrap: anywhere; }
+    .mobile-nodes small { display: block; color: var(--color-muted); }
+    .evidence { min-height: 0; }
+  }
   figcaption {
     margin-top: var(--space-2);
     font-size: var(--text-xs);
     color: var(--color-muted);
   }
+
+  .instrument-label { padding-bottom: var(--space-3); margin-bottom: var(--space-3); border-bottom: var(--border-hairline); }
+  .panel-graph svg { background-image: radial-gradient(var(--color-rule) .75px, transparent .75px); background-size: 20px 20px; }
+  .selection-legend { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-3); font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--color-muted); }
+  .selection-legend span:first-child { color: var(--color-accent-ink); }
+  .node[aria-pressed='true'] .mark { fill: var(--color-accent); stroke: var(--color-accent); }
 </style>

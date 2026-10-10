@@ -1,32 +1,11 @@
+import { applyFilter } from './explore';
+
 /*
-  Site-wide interactions: quick scroll reveals and technology links into the Data Lab.
+  Site-wide interactions: navigation and technology links into the Data Lab.
   Everything respects reduced motion.
 */
 
 const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-/* Reveal: hide only what starts below the fold, then reveal it quickly as it enters. */
-let revealObserver: IntersectionObserver | undefined;
-function setupReveal() {
-  revealObserver?.disconnect();
-  if (reduceMotion() || !('IntersectionObserver' in window)) return;
-  revealObserver = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) {
-        if (!entry.isIntersecting) continue;
-        entry.target.classList.remove('reveal-pending');
-        revealObserver?.unobserve(entry.target);
-      }
-    },
-    { rootMargin: '0px 0px -6% 0px', threshold: 0.06 },
-  );
-  for (const el of document.querySelectorAll<HTMLElement>('[data-reveal]')) {
-    if (el.getBoundingClientRect().top > window.innerHeight) {
-      el.classList.add('reveal-pending');
-      revealObserver.observe(el);
-    }
-  }
-}
 
 /* Technology names on project cards open the Data Lab with that technology selected. */
 document.addEventListener('click', (e) => {
@@ -42,6 +21,20 @@ document.addEventListener('click', (e) => {
   lab.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'start' });
 });
 
-document.addEventListener('astro:page-load', () => {
-  setupReveal();
+
+// Smooth intentional navigation; native focus and control scrolling stay immediate.
+document.addEventListener('click', (event) => {
+  if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+  const link = (event.target as Element).closest<HTMLAnchorElement>('a[href]');
+  if (!link || link.target || link.hasAttribute('data-explore')) return;
+  const url = new URL(link.href, location.href);
+  if (url.origin !== location.origin || url.pathname !== location.pathname || url.search !== location.search || !url.hash) return;
+  const target = document.getElementById(decodeURIComponent(url.hash.slice(1)));
+  if (!target) return;
+  event.preventDefault();
+  if (target.hidden && target.matches('[data-project-id]')) applyFilter('all');
+  history.pushState(null, '', url.hash);
+  if (!target.hasAttribute('tabindex')) target.tabIndex = -1;
+  target.focus({ preventScroll: true });
+  target.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'start' });
 });

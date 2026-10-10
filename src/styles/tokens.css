@@ -3,35 +3,35 @@
   used by the site is defined here.
 */
 :root {
-  /* Color: warm paper, near-black ink, one accent */
-  --color-bg: #f5f3ee;
-  --color-surface: #fbfaf7;
-  --color-surface-sunken: #ece9e2;
-  --color-ink: #191915;
-  --color-ink-soft: #3d3c36;
-  --color-muted: #64625a;
-  --color-faint: #8b887e;
-  --color-rule: #d9d5cb;
-  --color-rule-strong: #b9b4a7;
-  --color-accent: #b23c17;
-  --color-accent-ink: #8f2f10;
-  --color-accent-wash: #f3e3da;
+  /* Color: cool paper, graphite, scientific blue */
+  --color-bg: #f7f8fa;
+  --color-surface: #ffffff;
+  --color-surface-sunken: #eef1f6;
+  --color-ink: #111318;
+  --color-ink-soft: #374151;
+  --color-muted: #5c6678;
+  --color-faint: #727e90;
+  --color-rule: #dce2eb;
+  --color-rule-strong: #aab6c8;
+  --color-accent: #2563eb;
+  --color-accent-ink: #1d4ed8;
+  --color-accent-wash: #eaf0ff;
   --color-positive: #2f6b45;
   --color-positive-wash: #e1ece3;
   --color-pending: #7a5a12;
   --color-pending-wash: #f1e8d2;
   --color-focus: #1f5fbf;
-  --color-selection: #f0d7c8;
+  --color-selection: #dce7ff;
   --color-on-accent: #ffffff;
 
   /* Dark UI panels inside diagrams and sample output (same in both themes) */
-  --color-panel: #1f1f1b;
-  --color-panel-ink: #ece9e1;
-  --color-panel-muted: #a3a093;
-  --color-panel-line: #3a3933;
+  --color-panel: #1a202c;
+  --color-panel-ink: #e7ecf4;
+  --color-panel-muted: #a6b3c6;
+  --color-panel-line: #354052;
 
   /* Typography */
-  --font-serif: 'Newsreader Variable', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-serif: var(--font-sans); /* Compatibility for existing prose components. */
   --font-sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
 
@@ -71,8 +71,8 @@
 
   /* Radius: kept small on purpose */
   --radius-xs: 2px;
-  --radius-sm: 4px;
-  --radius-md: 6px;
+  --radius-sm: 2px;
+  --radius-md: 3px;
 
   /* Borders */
   --border-hairline: 1px solid var(--color-rule);
@@ -86,7 +86,7 @@
   /* Motion: one easing curve and three durations, used everywhere */
   --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
   --duration-fast: 150ms;
-  --duration-base: 240ms;
+  --duration-base: 250ms;
   --duration-slow: 400ms;
 
   /* Interaction states: anything unrelated to the current selection fades to this opacity */
@@ -97,24 +97,24 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-bg: #151513;
-    --color-surface: #1c1c19;
-    --color-surface-sunken: #11110f;
-    --color-ink: #ece9e1;
-    --color-ink-soft: #cfcbc0;
-    --color-muted: #a3a093;
-    --color-faint: #7d7a70;
-    --color-rule: #2f2e29;
-    --color-rule-strong: #4a4840;
-    --color-accent: #e5764f;
-    --color-accent-ink: #f09372;
-    --color-accent-wash: #3a2219;
+    --color-bg: #171c25;
+    --color-surface: #1e2531;
+    --color-surface-sunken: #131922;
+    --color-ink: #e7ecf4;
+    --color-ink-soft: #c7d1e0;
+    --color-muted: #a6b3c6;
+    --color-faint: #8998ac;
+    --color-rule: #323e50;
+    --color-rule-strong: #53657d;
+    --color-accent: #82adff;
+    --color-accent-ink: #a4c2ff;
+    --color-accent-wash: #243657;
     --color-positive: #7fbf93;
     --color-positive-wash: #1d2c22;
     --color-pending: #d9b35c;
     --color-pending-wash: #2f2817;
     --color-focus: #7fb0ff;
-    --color-selection: #4a2b1f;
+    --color-selection: #2b4268;
     --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
     --shadow-md: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 28px -12px rgb(0 0 0 / 0.6);
     color-scheme: dark;

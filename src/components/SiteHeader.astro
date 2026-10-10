@@ -9,9 +9,9 @@ const { isHome = false } = Astro.props;
 const base = isHome ? '' : '/';
 
 const nav = [
-  { id: 'work', label: 'Work' },
+  { id: 'work', label: 'Projects' },
   { id: 'experience', label: 'Experience' },
-  { id: 'skills', label: 'Skills' },
+  { id: 'skills', label: 'Stack' },
   { id: 'about', label: 'About' },
   { id: 'contact', label: 'Contact' },
 ];
@@ -21,7 +21,7 @@ const nav = [
   <div class="wrap bar">
     <a class="wordmark" href={isHome ? '#top' : '/'} aria-label={`${profile.name}, home`}>
       <span class="mark" aria-hidden="true">RR</span>
-      <span class="name">{profile.name}</span>
+      <span class="name">Richitha<span class="lab-word"> / data lab</span></span>
     </a>
 
     <nav class="nav" aria-label="Primary">
@@ -39,10 +39,10 @@ const nav = [
       <ul id="primary-menu" class="menu" data-menu>
         <li class="indicator-wrap" aria-hidden="true"><span class="indicator" data-nav-indicator></span></li>
         {
-          nav.map((item) => (
+          nav.map((item, index) => (
             <li>
               <a href={`${base}#${item.id}`} data-nav-link={item.id}>
-                {item.label}
+                <span class="nav-index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span> {item.label}
               </a>
             </li>
           ))
@@ -480,4 +480,11 @@ const nav = [
       border: var(--border-strong);
     }
   }
+
+  .lab-word { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-muted); }
+  .nav-index { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--color-faint); margin-right: 3px; }
+  .menu a[aria-current] .nav-index { color: var(--color-accent-ink); }
+  .menu a { min-height: 2.75rem; display: flex; align-items: center; }
+  @media (min-width: 48rem) and (max-width: 64rem) { .wordmark .name, .menu-ext { display: none; } }
+
 </style>
