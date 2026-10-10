@@ -1,0 +1,391 @@
+---
+/*
+  What Zoom Lens does, shown rather than described: someone shares a
+  spreadsheet, you ask privately, the answer comes back with the cells it is
+  about. The first answer is visible without waiting so the idea reads at a
+  glance; the other questions can be tried. Example answers, labelled as such.
+*/
+interface Props {
+  /** Smaller type and no caption detail, for the home page card. */
+  compact?: boolean;
+}
+const { compact = false } = Astro.props;
+
+const rows = [
+  { id: 'ent', label: 'Enterprise', v: [412, 438, 491], c: '+12%' },
+  { id: 'mid', label: 'Mid-market', v: [286, 301, 309], c: '+3%' },
+  { id: 'self', label: 'Self-serve', v: [174, 169, 163], c: '−4%' },
+];
+
+const asks = [
+  {
+    q: 'What am I looking at?',
+    a: 'A quarterly revenue table: three customer segments from Q1 to Q3. The last column compares Q3 with Q2.',
+    lit: '',
+  },
+  {
+    q: 'What changed this quarter?',
+    a: 'Enterprise grew the most, up 12% on Q2. Mid-market grew 3%, and self-serve fell 4%.',
+    lit: 'change',
+  },
+  {
+    q: 'Which segment is shrinking?',
+    a: 'Self-serve: 174k, then 169k, now 163k. It is the only segment getting smaller.',
+    lit: 'self',
+  },
+];
+const first = 1;
+const firstLit = asks[first].lit;
+const litIf = (key: string) => (key === firstLit ? 'lit' : undefined);
+---
+
+<figure class:list={['story', { compact, focusing: !!firstLit }]} data-zl-story>
+  <div class="win">
+    <div class="bar" aria-hidden="true">
+      <span>Weekly review</span>
+      <span class="sharing">MK is sharing their screen</span>
+    </div>
+    <div class="body">
+      <div class="screen" role="img" aria-label="The shared screen: a table of Q3 revenue by segment, in thousands of dollars.">
+        <p class="doc">Q3 revenue by segment, $k</p>
+        <table aria-hidden="true">
+          <thead>
+            <tr><th>Segment</th><th>Q1</th><th>Q2</th><th>Q3</th><th data-k="change" class={litIf('change')}>Change</th></tr>
+          </thead>
+          <tbody>
+            {
+              rows.map((r) => (
+                <tr data-k={r.id} class={litIf(r.id)}>
+                  <td>{r.label}</td>
+                  {r.v.map((v) => <td>{v}</td>)}
+                  <td data-k="change" class:list={[r.c.startsWith('+') ? 'up' : 'down', litIf('change')]}>{r.c}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <aside class="panel" aria-label="Zoom Lens panel">
+        <p class="p-head"><b>Zoom Lens</b><span>Only you see this</span></p>
+        <div class="thread" aria-live="polite">
+          <p class="q" data-q>{asks[first].q}</p>
+          <p class="thinking" data-thinking hidden>Looking at the shared screen…</p>
+          <p class="a" data-a>{asks[first].a}</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="asks" role="group" aria-label="Example questions">
+    <span class="asks-label">Try a question</span>
+    {
+      asks.map((x, i) => (
+        <button type="button" aria-pressed={i === first ? 'true' : 'false'} data-ask={i} data-answer={x.a} data-lit={x.lit}>
+          {x.q}
+        </button>
+      ))
+    }
+  </div>
+
+  <figcaption>
+    <span>Illustration.</span>{' '}
+    {compact
+      ? 'Example question and answer.'
+      : 'Example questions and answers. In the product, Claude writes each answer from a capture of the screen at the moment you ask.'}
+  </figcaption>
+</figure>
+
+<script>
+  const reduce = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function setupStory() {
+    for (const story of document.querySelectorAll<HTMLElement>('[data-zl-story]:not([data-ready])')) {
+      story.dataset.ready = 'true';
+      const q = story.querySelector<HTMLElement>('[data-q]')!;
+      const a = story.querySelector<HTMLElement>('[data-a]')!;
+      const thinking = story.querySelector<HTMLElement>('[data-thinking]')!;
+      const buttons = [...story.querySelectorAll<HTMLButtonElement>('[data-ask]')];
+      let timer = 0;
+
+      const light = (key: string) => {
+        story.querySelectorAll('.lit').forEach((el) => el.classList.remove('lit'));
+        if (key) story.querySelectorAll(`[data-k="${key}"]`).forEach((el) => el.classList.add('lit'));
+        story.classList.toggle('focusing', Boolean(key));
+      };
+
+      for (const b of buttons) {
+        b.addEventListener('click', () => {
+          window.clearTimeout(timer);
+          buttons.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+          q.textContent = b.textContent!.trim();
+          light(b.dataset.lit!);
+          if (reduce()) {
+            a.textContent = b.dataset.answer!;
+            return;
+          }
+          a.hidden = true;
+          thinking.hidden = false;
+          timer = window.setTimeout(() => {
+            thinking.hidden = true;
+            a.textContent = b.dataset.answer!;
+            a.hidden = false;
+          }, 650);
+        });
+      }
+    }
+  }
+  document.addEventListener('astro:page-load', setupStory);
+</script>
+
+<style>
+  .story {
+    margin: 0;
+    min-width: 0;
+    /* The illustrated product keeps its own colours in both site themes. */
+    --zl-screen: #fbfaf7;
+    --zl-screen-ink: #191915;
+    --zl-screen-muted: #64625a;
+    --zl-screen-rule: #e3dfd6;
+    --zl-blue: #0b5cff;
+    --zl-wash: #dcebff;
+    --zl-panel: #101319;
+    --zl-panel-2: #171b23;
+    --zl-panel-line: #262c38;
+    --zl-panel-ink: #e9ecf1;
+    --zl-panel-muted: #8b95a3;
+    --zl-accent: #6ea8fe;
+  }
+
+  .win {
+    overflow: hidden;
+    background: var(--color-panel);
+    border: 1px solid var(--color-panel-line);
+    border-radius: var(--radius-md);
+  }
+
+  .bar {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-2xs);
+    color: var(--color-panel-muted);
+    border-bottom: 1px solid var(--color-panel-line);
+  }
+
+  .sharing {
+    color: #8fd19e;
+  }
+
+  .body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  }
+
+  .screen {
+    margin: var(--space-3);
+    padding: var(--space-3);
+    background: var(--zl-screen);
+    color: var(--zl-screen-ink);
+    border-radius: var(--radius-sm);
+    min-width: 0;
+  }
+
+  .doc {
+    margin-bottom: var(--space-2);
+    font-size: var(--text-xs);
+    font-weight: 600;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-xs);
+    font-variant-numeric: tabular-nums;
+  }
+
+  th,
+  td {
+    padding: 5px 4px;
+    text-align: right;
+    border-bottom: 1px solid var(--zl-screen-rule);
+    white-space: nowrap;
+    transition: background var(--duration-base) var(--ease-out), opacity var(--duration-base) var(--ease-out);
+  }
+
+  th:first-child,
+  td:first-child {
+    text-align: left;
+  }
+
+  th {
+    font-weight: 600;
+    color: var(--zl-screen-muted);
+  }
+
+  .up {
+    color: #2f6b45;
+  }
+
+  .down {
+    color: #a33a1a;
+  }
+
+  /* What the answer is about stays clear; everything else steps back. */
+  .focusing tbody tr:not(.lit) td:not(.lit),
+  .focusing thead th:not(.lit) {
+    opacity: 0.45;
+  }
+
+  .lit,
+  .lit > * {
+    background: var(--zl-wash);
+  }
+
+  td.lit,
+  th.lit {
+    box-shadow: inset 2px 0 0 var(--zl-blue);
+    color: var(--zl-blue);
+    font-weight: 600;
+  }
+
+  tr.lit > :first-child {
+    box-shadow: inset 2px 0 0 var(--zl-blue);
+  }
+
+  .panel {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    background: var(--zl-panel);
+    border-left: 1px solid var(--zl-panel-line);
+    color: var(--zl-panel-ink);
+    min-width: 0;
+  }
+
+  .p-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-2);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--zl-panel-line);
+    font-size: var(--text-xs);
+  }
+
+  .p-head span {
+    font-size: var(--text-2xs);
+    color: var(--zl-panel-muted);
+  }
+
+  .thread {
+    display: grid;
+    gap: var(--space-2);
+    min-height: 7.5rem;
+    align-content: start;
+  }
+
+  .q {
+    justify-self: end;
+    max-width: 92%;
+    padding: 4px 8px;
+    font-size: var(--text-xs);
+    color: #c3cad4;
+    background: #1c2029;
+    border: 1px solid var(--zl-panel-line);
+    border-radius: var(--radius-md);
+  }
+
+  .a {
+    padding: 6px 8px;
+    font-size: var(--text-xs);
+    line-height: 1.5;
+    background: var(--zl-panel-2);
+    border: 1px solid var(--zl-panel-line);
+    border-left: 2px solid var(--zl-accent);
+    border-radius: var(--radius-md);
+  }
+
+  .thinking {
+    font-size: var(--text-xs);
+    color: var(--zl-panel-muted);
+  }
+
+  .asks {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+  }
+
+  .asks-label {
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+    margin-right: var(--space-1);
+  }
+
+  .asks button {
+    min-height: 2.25rem;
+    padding: 0 var(--space-3);
+    font: inherit;
+    font-size: var(--text-xs);
+    color: var(--color-ink-soft);
+    background: transparent;
+    border: var(--border-strong);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
+  }
+
+  .asks button:hover {
+    color: var(--color-ink);
+    border-color: var(--color-ink);
+  }
+
+  .asks button[aria-pressed='true'] {
+    color: var(--color-ink);
+    border-color: var(--color-ink);
+    background: var(--color-surface);
+  }
+
+  figcaption {
+    margin-top: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+
+  figcaption span {
+    font-weight: 600;
+    color: var(--color-ink-soft);
+  }
+
+  .compact .thread {
+    min-height: 6.5rem;
+  }
+
+  @media (max-width: 34rem) {
+    .body {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .panel {
+      border-left: 0;
+      border-top: 1px solid var(--zl-panel-line);
+    }
+
+    .bar .sharing {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    th,
+    td,
+    .asks button {
+      transition: none;
+    }
+  }
+</style>

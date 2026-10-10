@@ -1,34 +1,34 @@
 ---
-/* Simplified architecture of the Zoom Lens prototype, from the project description. */
+/* Architecture of the Zoom Lens prototype, from the repository. */
 ---
 
 <figure class="arch">
-  <div class="grid" role="img" aria-label="Diagram: each participant's Zoom Apps panel sends a request to a Python server, which holds session-scoped requests and recipient rules. The screen, currently captured from the participant's display, is sent with the request to Claude. The answer is routed back to the requesting session only.">
+  <div class="grid" role="img" aria-label="Diagram: each participant's Zoom Apps panel sends a request over a WebSocket to a Node.js server, which binds the connection to that participant and applies rate limits. The server takes one still of the shared screen, from the meeting's screen-share stream decoded with ffmpeg, or from the participant's display while that stream is unavailable. The image and the request go to Claude. The answer is routed back to the requesting session only.">
     <div class="node panel" aria-hidden="true">
-      <span class="k">Client</span>
-      <b>Zoom Apps panel</b>
-      <span>One per participant. Describe, Explain, Follow-up.</span>
+      <span class="k">Client · Zoom Apps SDK</span>
+      <b>Panel in the meeting</b>
+      <span>One per participant. Describe, Explain, questions, follow-ups.</span>
     </div>
-    <span class="arrow a1" aria-hidden="true">request →</span>
+    <span class="arrow a1" aria-hidden="true">WebSocket →</span>
     <div class="node server" aria-hidden="true">
-      <span class="k">Server · Python</span>
-      <b>Request pipeline</b>
-      <span>Session-scoped requests. One recipient per message, no broadcast, replies must match a request.</span>
+      <span class="k">Server · Node.js</span>
+      <b>Relay</b>
+      <span>Connection bound to one participant. One recipient per message, no broadcast, replies must match a request. Rate limits.</span>
     </div>
-    <span class="arrow a2" aria-hidden="true">screen + task →</span>
+    <span class="arrow a2" aria-hidden="true">image + task →</span>
     <div class="node model" aria-hidden="true">
       <span class="k">Model</span>
       <b>Claude</b>
-      <span>Generates the answer for the chosen action.</span>
+      <span>A prompt per kind of request. Follow-ups get the previous answer.</span>
     </div>
     <div class="node source" aria-hidden="true">
-      <span class="k">Screen source</span>
-      <b>Now: participant’s display</b>
-      <span>Planned: direct meeting feed, which needs a capability not yet enabled on the account.</span>
+      <span class="k">Screen source, at the moment of asking</span>
+      <b>Meeting stream → H.264 buffer → ffmpeg</b>
+      <span>Built; the stream is not yet delivering on the account. Used meanwhile: the participant’s own display, labelled as such in every answer.</span>
     </div>
     <p class="return" aria-hidden="true">← answer to the requesting session only</p>
   </div>
-  <figcaption><span>Diagram.</span> Simplified architecture of the prototype. Not a screenshot.</figcaption>
+  <figcaption><span>Diagram.</span> Architecture of the prototype, drawn from the repository. Not a screenshot.</figcaption>
 </figure>
 
 <style>

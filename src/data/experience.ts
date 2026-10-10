@@ -21,9 +21,9 @@ export const experience: Role[] = [
     current: true,
     points: [
       'Selected from 200+ applicants for a Zoom-sponsored fellowship, building the Zoom Lens prototype described above.',
-      'Built participant-specific request pipelines in Python that route each answer only to the person who asked, without interrupting the presenter.',
+      'Built a Node.js WebSocket server that routes each answer only to the participant who asked, without interrupting the presenter, and verified the isolation with automated tests.',
     ],
-    tech: ['Python', 'Zoom Video SDK', 'Zoom Realtime Media Streams API', 'Claude'],
+    tech: ['Node.js', 'Zoom Apps SDK', 'Zoom Realtime Media Streams API', 'Claude'],
     link: { label: 'Zoom Lens case study', href: '/work/zoom-lens' },
   },
   {
