@@ -2,24 +2,23 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CaseHeader from '../../components/CaseHeader.astro';
 import CaseSection from '../../components/CaseSection.astro';
-import BulletList from '../../components/BulletList.astro';
-import DecisionList from '../../components/DecisionList.astro';
-import ZoomLensDelivery from '../../components/ZoomLensDelivery.astro';
 import ZoomLensStatus from '../../components/ZoomLensStatus.astro';
 import ZoomLensArchitecture from '../../components/visuals/ZoomLensArchitecture.astro';
-import ProjectVisual from '../../components/ProjectVisual.astro';
+import ZoomLensStory from '../../components/visuals/ZoomLensStory.astro';
 import NextProject from '../../components/NextProject.astro';
 import { projects, zoomLens } from '../../data/projects';
 
 const project = projects.find((p) => p.slug === 'zoom-lens')!;
+const repo = (file: string) => `https://github.com/richithareddyy/ZoomLens/blob/main/${file}`;
 const sections = [
   { id: 'problem', label: 'Problem' },
-  { id: 'interaction', label: 'Product' },
+  { id: 'how', label: 'How it works' },
+  { id: 'product', label: 'What you can ask' },
   { id: 'architecture', label: 'Architecture' },
-  { id: 'routing', label: 'Routing and privacy' },
-  { id: 'challenges', label: 'Challenges' },
-  { id: 'evaluation', label: 'Evaluation' },
-  { id: 'status', label: 'Limitations and next steps' },
+  { id: 'built', label: 'What I built' },
+  { id: 'decisions', label: 'Decisions' },
+  { id: 'stack', label: 'Stack' },
+  { id: 'status', label: 'Limitations' },
 ];
 ---
 
@@ -36,21 +35,46 @@ const sections = [
               <figcaption>Zoom Lens running in a live meeting.</figcaption>
             </figure>
           ) : (
-            <ProjectVisual visual={project.visual} size="full" eager />
+            <ZoomLensStory />
           )
         }
+        <p class="built-with">
+          <span>Built with</span>
+          {project.tech.join(' · ')}
+        </p>
       </div>
 
       <CaseSection title="The problem" id="problem">
-        {zoomLens.problem.map((p) => <p>{p}</p>)}
-        <h3>Constraints</h3>
-        <BulletList items={zoomLens.constraints} />
+        <p>{zoomLens.problem.intro}</p>
+        <ul class="plain">
+          {zoomLens.problem.points.map((p) => <li>{p}</li>)}
+        </ul>
+        <p class="close">{zoomLens.problem.close}</p>
       </CaseSection>
 
-      <CaseSection title="Product interaction" id="interaction">
+      <CaseSection title="How it works" id="how">
         <ol class="steps">
-          {zoomLens.interaction.map((step) => <li>{step}</li>)}
+          {
+            zoomLens.steps.map((s, i) => (
+              <li>
+                <span class="n">{String(i + 1).padStart(2, '0')}</span>
+                <h3>{s.title}</h3>
+                <p>{s.body}</p>
+                <p class="files">
+                  {s.files.map((f) => (
+                    <a href={repo(f)} target="_blank" rel="noopener">
+                      {f}
+                      <span class="visually-hidden"> on GitHub (opens in a new tab)</span>
+                    </a>
+                  ))}
+                </p>
+              </li>
+            ))
+          }
         </ol>
+      </CaseSection>
+
+      <CaseSection title="What you can ask" id="product">
         <dl class="modes">
           {
             zoomLens.modes.map((m) => (
@@ -59,48 +83,91 @@ const sections = [
                   {m.name} <span class="ui">“{m.label}”</span>
                 </dt>
                 <dd>{m.body}</dd>
+                <dd class="est">{m.estimate}</dd>
+              </div>
+            ))
+          }
+        </dl>
+        <p class="note">{zoomLens.timingContext}</p>
+        <p>
+          <a class="cta" href={project.site} target="_blank" rel="noopener">
+            Try the interactive demo on the product site<span class="visually-hidden"> (opens in a new tab)</span>
+            <span aria-hidden="true"> ↗</span>
+          </a>
+        </p>
+      </CaseSection>
+
+      <CaseSection title="Architecture" id="architecture">
+        <ZoomLensArchitecture />
+      </CaseSection>
+
+      <CaseSection title="What I built" id="built">
+        <p>Everything in the repository, end to end, in JavaScript on Node.js.</p>
+        <dl class="built">
+          {
+            zoomLens.built.map((b) => (
+              <div>
+                <dt>{b.title}</dt>
+                <dd>
+                  {b.body}
+                  <span class="files">
+                    {b.files.map((f) => (
+                      <a href={repo(f)} target="_blank" rel="noopener">
+                        {f}
+                        <span class="visually-hidden"> on GitHub (opens in a new tab)</span>
+                      </a>
+                    ))}
+                  </span>
+                </dd>
               </div>
             ))
           }
         </dl>
       </CaseSection>
 
-      <CaseSection title="System architecture" id="architecture">
-        <p>{project.contribution}</p>
-        <ZoomLensArchitecture />
-        <h3>AI integration</h3>
-        <BulletList items={zoomLens.ai} />
-      </CaseSection>
-
-      <CaseSection title="Routing and privacy boundaries" id="routing">
-        <ZoomLensDelivery />
-        <div class="bounds">
-          <div>
-            <h3>What the routing protects</h3>
-            <BulletList items={zoomLens.boundaries.covered} />
-          </div>
-          <div>
-            <h3>What it does not cover</h3>
-            <BulletList items={zoomLens.boundaries.notCovered} />
-          </div>
+      <CaseSection title="Engineering decisions" id="decisions">
+        <div class="decisions">
+          {
+            zoomLens.decisions.map((d) => (
+              <article>
+                <h3>{d.heading}</h3>
+                <dl>
+                  <dt>Problem</dt>
+                  <dd>{d.problem}</dd>
+                  <dt>Decision</dt>
+                  <dd>{d.decision}</dd>
+                  <dt>Why</dt>
+                  <dd>{d.why}</dd>
+                </dl>
+              </article>
+            ))
+          }
         </div>
       </CaseSection>
 
-      <CaseSection title="Engineering challenges and decisions" id="challenges">
-        <BulletList items={zoomLens.challenges} />
-        <DecisionList items={zoomLens.decisions} />
-      </CaseSection>
-
-      <CaseSection title="Evaluation" id="evaluation">
-        <p>
-          There is no formal evaluation yet. Interface estimates the panel displayed:{' '}
-          {zoomLens.modes.map((m) => `${m.name} ${m.estimate}`).join(', ')}.
-        </p>
-        <p class="note">{zoomLens.timingContext}</p>
+      <CaseSection title="Stack" id="stack">
+        <dl class="stack">
+          {
+            zoomLens.stack.map((t) => (
+              <div>
+                <dt>{t.name}</dt>
+                <dd>{t.use}</dd>
+              </div>
+            ))
+          }
+        </dl>
       </CaseSection>
 
       <CaseSection title="Limitations and next steps" id="status">
         <ZoomLensStatus />
+        <p class="links">
+          <a href={project.site} target="_blank" rel="noopener">
+            Product site and interactive demo<span class="visually-hidden"> (opens in a new tab)</span><span aria-hidden="true"> ↗</span>
+          </a>
+          <a href={project.github} target="_blank" rel="noopener">
+            Source on GitHub<span class="visually-hidden"> (opens in a new tab)</span><span aria-hidden="true"> ↗</span>
+          </a>
+        </p>
       </CaseSection>
     </div>
 
@@ -112,6 +179,18 @@ const sections = [
   .lead-visual {
     max-width: 60rem;
     padding-bottom: var(--space-6);
+  }
+
+  .built-with {
+    margin-top: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-ink-soft);
+  }
+
+  .built-with span {
+    margin-right: var(--space-2);
+    color: var(--color-muted);
   }
 
   .video {
@@ -130,15 +209,68 @@ const sections = [
     color: var(--color-muted);
   }
 
-  .steps {
+  .plain {
     display: grid;
-    gap: var(--space-2);
+    gap: var(--space-1);
     max-width: var(--width-prose);
     padding-left: var(--space-5);
   }
 
-  .steps li::marker {
+  .close {
+    color: var(--color-ink);
+    font-weight: 500;
+  }
+
+  /* How it works: four steps, read left to right on wide screens. */
+  .steps {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-5);
+    list-style: none;
+    padding: 0;
+  }
+
+  @media (min-width: 64rem) {
+    .steps {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-4);
+    }
+  }
+
+  .steps li {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+    padding-top: var(--space-3);
+    border-top: var(--border-ink);
+  }
+
+  .n {
     font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-accent-ink);
+  }
+
+  .steps p {
+    font-size: var(--text-sm);
+  }
+
+  .files {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
+  }
+
+  .files a {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--color-muted);
+    text-decoration: underline;
+    text-decoration-color: var(--color-rule-strong);
+    text-underline-offset: 0.2em;
+  }
+
+  .files a:hover {
     color: var(--color-accent-ink);
   }
 
@@ -149,15 +281,31 @@ const sections = [
 
   .modes > div {
     display: grid;
-    gap: 2px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2px var(--space-4);
     padding-block: var(--space-3);
     border-bottom: var(--border-hairline);
     font-size: var(--text-sm);
   }
 
   .modes dt {
+    grid-column: 1;
     font-weight: 600;
     color: var(--color-ink);
+  }
+
+  .modes dd {
+    grid-column: 1;
+    margin: 0;
+  }
+
+  .modes .est {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: start;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-muted);
   }
 
   .ui {
@@ -165,30 +313,106 @@ const sections = [
     color: var(--color-muted);
   }
 
-  .modes dd {
-    margin: 0;
+  .note {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
   }
 
-  .bounds {
+  .cta,
+  .links a {
+    font-weight: 500;
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--color-rule-strong);
+    text-underline-offset: 0.2em;
+  }
+
+  .cta:hover,
+  .links a:hover {
+    color: var(--color-accent-ink);
+  }
+
+  .built,
+  .stack {
+    margin: 0;
+    border-top: var(--border-hairline);
+  }
+
+  .built > div,
+  .stack > div {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-5) var(--space-7);
+    gap: 2px var(--space-5);
+    padding-block: var(--space-3);
+    border-bottom: var(--border-hairline);
+    font-size: var(--text-sm);
   }
 
   @media (min-width: 48rem) {
-    .bounds {
+    .built > div,
+    .stack > div {
+      grid-template-columns: 15rem minmax(0, 1fr);
+    }
+  }
+
+  .built dt,
+  .stack dt {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .built dd,
+  .stack dd {
+    margin: 0;
+  }
+
+  .built .files {
+    margin-top: var(--space-1);
+  }
+
+  .decisions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6) var(--space-7);
+  }
+
+  @media (min-width: 56rem) {
+    .decisions {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
-  .bounds > div {
+  .decisions article {
     display: grid;
-    gap: var(--space-2);
     align-content: start;
+    gap: var(--space-2);
+    padding-top: var(--space-3);
+    border-top: var(--border-ink);
   }
 
-  .note {
+  .decisions dl {
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    gap: var(--space-2) var(--space-3);
+    margin: 0;
     font-size: var(--text-sm);
-    color: var(--color-muted);
+  }
+
+  .decisions dt {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    padding-top: 0.2rem;
+    color: var(--color-accent-ink);
+  }
+
+  .decisions dd {
+    margin: 0;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-6);
+    padding-top: var(--space-3);
   }
 </style>

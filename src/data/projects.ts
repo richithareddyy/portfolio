@@ -86,18 +86,19 @@ export const projects: Project[] = [
   {
     slug: 'zoom-lens',
     title: 'Zoom Lens',
-    summary: 'An assistant inside Zoom that privately explains a shared screen to the participant who asks.',
+    summary:
+      'Privately ask AI about whatever someone is sharing in a Zoom meeting: a spreadsheet, a chart, a slide, a paper or code. The presenter is never interrupted, and only you see the answer.',
     tier: 'featured',
     domains: ['applied-ai', 'software'],
     year: '2026 – present',
     role: 'Zoom Fellow, ASU Next Lab',
     contribution:
-      'Built the prototype on Zoom APIs/SDKs and Claude: Describe, Explain, and Follow-up actions, with participant-specific request pipelines in Python that return each answer only to the requester.',
+      'Built it end to end in Node.js: the in-meeting panel on the Zoom Apps SDK, a WebSocket server that addresses every answer to the one participant who asked, screen capture and H.264 decoding, and Claude vision prompts for Describe, Explain, questions and follow-ups.',
     result: {
       headline: 'Working prototype in live Zoom meetings',
       qualifier: 'Captures the participant’s display for now, not the meeting feed',
     },
-    tech: ['Python', 'Zoom Video SDK', 'Zoom Realtime Media Streams API', 'Claude'],
+    tech: ['Node.js', 'Zoom Apps SDK', 'Zoom Realtime Media Streams API', 'WebSockets', 'Claude', 'ffmpeg'],
     site: 'https://zoomlens.vercel.app/',
     github: gh('ZoomLens'),
     caseStudy: true,
@@ -572,91 +573,142 @@ export const featured = projects.filter((p) => p.tier === 'featured');
 export const more = projects.filter((p) => p.tier === 'more');
 export const caseStudies = projects.filter((p) => p.caseStudy);
 
-/** Zoom Lens case-study details that do not fit the shared shape. */
+/** Zoom Lens case-study details that do not fit the shared shape. Every claim here is checked against the repository. */
 export const zoomLens = {
   role: 'Zoom Fellow, ASU Next Lab (a fellowship in partnership with Zoom)',
   /** Demo recording. Put the file in public/ and set the path, e.g. '/zoom-lens-demo.mp4'. */
   demoVideo: null as string | null,
-  problem: [
-    'Someone is presenting a spreadsheet, a chart, a slide, a paper, or a page of code. You looked away, joined late, or the material is outside what you know.',
-    'The usual options are to interrupt the presenter or to wait and hope it becomes clear. Zoom Lens adds a third: ask privately, without interrupting the presenter or other participants.',
+  oneLiner: 'An AI assistant inside Zoom that privately explains whatever someone is sharing on screen.',
+  problem: {
+    intro: 'During a screen share, people often:',
+    points: [
+      'join late, after the explanation has started',
+      'miss part of it while answering a message',
+      'face a chart, spreadsheet or diagram outside what they know',
+      'need one thing clarified, not the whole talk repeated',
+      'would rather not interrupt the presenter in front of everyone',
+    ],
+    close: 'Zoom Lens gives them a private way to understand what is on screen right now.',
+  },
+  steps: [
+    {
+      title: 'Ask',
+      body: 'Open Zoom Lens from the Apps panel during a meeting. Press Describe screen or Explain this, or type a question. The panel knows which meeting and which participant it belongs to through the Zoom Apps SDK.',
+      files: ['public/panel.js'],
+    },
+    {
+      title: 'Capture',
+      body: 'At that moment the server takes one still of the shared screen: the latest frame of the meeting’s screen-share stream, decoded with ffmpeg, or, while that stream is unavailable, the asking participant’s own display. Every answer says which source it used.',
+      files: ['framebuffer.js', 'decode.js', 'screen.js'],
+    },
+    {
+      title: 'Understand',
+      body: 'The image and the request go to Claude with instructions for that kind of request: describe what is there, explain what it means, answer a question, or follow up on the previous answer.',
+      files: ['answer.js'],
+    },
+    {
+      title: 'Answer',
+      body: 'The answer is sent to the one session that asked. Nobody else in the meeting sees the question or the answer, and the presenter is not notified.',
+      files: ['relay.js'],
+    },
   ],
-  constraints: [
-    'Asking must not interrupt the meeting or signal anything to the room.',
-    'Recipient rules must hold even if someone modifies the panel.',
-    'Capturing the shared screen directly from the meeting feed needs a capability that is not yet enabled on the Zoom account.',
-  ],
-  howItWorks:
-    'Zoom Lens opens from the Apps panel during a meeting and appears as a narrow panel beside the meeting window with three actions.',
   modes: [
-    { name: 'Describe', label: 'Describe screen', estimate: '≈ 6 s', body: 'Summarizes what is shared, naming the content type and reporting the actual numbers and headings.' },
-    { name: 'Explain', label: 'Explain this', estimate: '≈ 12 s', body: 'Explains what a chart implies, why a diagram is laid out as it is, or what a piece of code is for.' },
-    { name: 'Follow-up', label: 'Ask a follow-up…', estimate: '≈ 3 s', body: 'One question about the previous answer, so you do not have to start over.' },
+    { name: 'Describe', label: 'Describe screen', estimate: '≈ 6 s', body: 'What is on screen, naming the kind of content and quoting the real numbers and headings.' },
+    { name: 'Explain', label: 'Explain this', estimate: '≈ 12 s', body: 'What it means: what a chart implies, why a diagram is laid out as it is, what a piece of code is for.' },
+    { name: 'Question', label: 'Ask about the shared screen…', estimate: '≈ 7 s', body: 'Any question about what is on screen, answered from the image.' },
+    { name: 'Follow-up', label: 'Ask a follow-up…', estimate: '≈ 3 s', body: 'A question about the previous answer, which is sent along so the answer has context.' },
   ],
   timingContext:
-    'The times are the typical waits the prototype’s panel displayed while working, for example “This usually takes about 6 seconds.” They are interface estimates, not results from a formal benchmark.',
-  interaction: [
-    'Open Zoom Lens from the Apps panel during a meeting. It appears as a narrow panel beside the meeting window, visible only to you.',
-    'Choose Describe screen or Explain this. The answer appears in the panel, marked “Only you see your answers.”',
-    'Type one follow-up about that answer, or run Describe or Explain again when the shared content changes.',
+    'Times are what the panel’s waiting state is set to expect, not results from a benchmark.',
+  built: [
+    {
+      title: 'The panel inside Zoom',
+      body: 'Runs in the Zoom client, reads the meeting and participant identity through the Zoom Apps SDK, talks to the server over a WebSocket, shows how long each kind of request usually takes, and keeps a short thread for follow-ups.',
+      files: ['public/panel.js'],
+    },
+    {
+      title: 'A server that answers one person at a time',
+      body: 'Every WebSocket connection is bound to one participant. A single function is the only way a message leaves the server, and it takes a session, not a socket, so there is no broadcast path. A reply is refused unless that session made the request.',
+      files: ['relay.js'],
+    },
+    {
+      title: 'Screen capture from the meeting stream',
+      body: 'Handling for Zoom’s Realtime Media Streams webhooks, including the signed URL validation; an in-memory H.264 buffer that always holds a decodable clip; and decoding to a still image with ffmpeg only when someone asks, which took 25 to 110 ms in testing.',
+      files: ['index.js', 'framebuffer.js', 'decode.js'],
+    },
+    {
+      title: 'Prompts per kind of request',
+      body: 'Separate instructions and reasoning effort for describe, explain, questions and follow-ups. Follow-ups carry the previous answer for scope, and every prompt tells the model to ignore Zoom Lens’s own panel in the image.',
+      files: ['answer.js'],
+    },
+    {
+      title: 'Limits that a reload cannot reset',
+      body: 'A minimum gap between one participant’s questions and a daily cap, counted per participant rather than per connection. The panel says how long to wait instead of failing silently.',
+      files: ['relay.js'],
+    },
+    {
+      title: 'Zoom sign-in and stream control',
+      body: 'OAuth authorization-code sign-in with refresh-token rotation, used to start the meeting’s media stream through Zoom’s REST API.',
+      files: ['zoom-auth.js', 'refresh-token.js', 'start-rtms.js'],
+    },
+    {
+      title: 'Tests for the privacy claim',
+      body: 'Seven isolation cases run against the real server, including ten participants asking at the same moment. The protection was deliberately broken to confirm the tests fail when it does.',
+      files: ['test-isolation.js'],
+    },
   ],
-  ai: [
-    'Each action sends the captured screen to Claude with a different job.',
-    'Describe reports what is on screen, naming the content type and quoting real numbers and headings instead of describing them vaguely.',
-    'Explain reasons about what the content means, such as what a chart’s shape implies or what a piece of code is for, so it is allowed to take longer.',
-    'Follow-up is scoped to the previous answer, so a question like “why does that matter?” has context.',
-  ],
-  boundaries: {
-    covered: [
-      'Other participants do not see that you asked, or the answer.',
-      'Nothing appears in the meeting, and the presenter is not notified.',
-      'The server has no broadcast path and refuses replies that do not match a request.',
-    ],
-    notCovered: [
-      'The captured screen is sent to Claude to produce each answer.',
-      'The capture includes whatever is on the participant’s display, not only the shared content.',
-    ],
-  },
-  challenges: [
-    'A meeting app is shared by everyone in the meeting, but each answer must reach exactly one person.',
-    'The panel runs on the participant’s machine, so it cannot be trusted to enforce who sees what.',
-    'Direct capture from the meeting feed is not enabled on the account, so the prototype needs a working capture path now without treating it as the final design.',
-    'Answers have to be specific enough to help and fast enough to use while the meeting continues.',
-  ],
-  delivery: {
-    rules: [
-      { title: 'One recipient per message', body: 'Every message the server sends is addressed to exactly one session.' },
-      { title: 'No broadcast path', body: 'The server has no way to send a message to the whole meeting.' },
-      { title: 'Replies must match a request', body: 'A reply is refused unless it matches a request that the same session made.' },
-    ],
-  },
   decisions: [
     {
-      heading: 'Enforce answer delivery on the server',
-      body: 'Recipient rules live on the server, where the person running the panel cannot change them. Other participants do not see the request or the answer.',
-      tradeoff:
-        'This controls who sees answers inside the meeting. It is not an end-to-end privacy guarantee: the captured screen is still sent to Claude to produce each answer.',
+      heading: 'Enforce privacy on the server, not in the panel',
+      problem: 'Every participant runs their own copy of the panel, so anything the panel enforces can be changed by whoever runs it.',
+      decision: 'Bind each connection to one participant, make a session-addressed send the only way out of the server, and refuse replies that match no request from that session.',
+      why: 'A modified panel still cannot receive someone else’s answer. It covers who sees answers inside the meeting; the image itself still goes to Claude.',
     },
     {
-      heading: 'Read the participant’s display for now',
-      body: 'Until direct meeting-feed capture is enabled, the prototype captures the requesting participant’s display.',
-      tradeoff:
-        'This is not the same as capturing the meeting feed. An answer can mention anything visible on that screen; in testing, a Describe answer also listed browser tabs and participant names that were on screen.',
+      heading: 'Keep a decodable clip, not single frames',
+      problem: 'Shared screens arrive as H.264, where only a keyframe is a whole picture and every other packet is a change to it. A single packet usually cannot be decoded.',
+      decision: 'Buffer the latest parameter sets plus everything since the latest keyframe, capped by size, and decode with ffmpeg only when someone asks.',
+      why: 'An image is ready within about a tenth of a second, without decoding video nobody asked about. Building it surfaced two bugs: keyframes split across several units were cut to their last piece, and data arriving in chunks broke wherever a boundary fell between two.',
     },
     {
-      heading: 'Do not notify the presenter',
-      body: 'People use Zoom Lens because they do not want to interrupt or admit they lost track, and a notification would remove that.',
-      tradeoff: 'It is a real asymmetry, and whether it is acceptable is a judgement for people to make, not something the code can settle.',
+      heading: 'Fall back, and say so',
+      problem: 'Reading the meeting’s media stream needs a capability that is not delivering on the account: starting the stream succeeds, but no video arrives.',
+      decision: 'Try sources in order of how close they are to the real thing (the meeting stream, then the participant’s own display, then a recording) and label every answer with the source it used.',
+      why: 'The product works and can be demonstrated now, and no one mistakes a display capture for the meeting feed. The cost is that a display capture sees everything on that screen, not only the shared content.',
     },
+    {
+      heading: 'Count limits per person, not per connection',
+      problem: 'Every question costs money and several seconds, and nothing stopped someone pressing the button repeatedly or reopening the panel to start again.',
+      decision: 'A cooldown and a daily cap keyed on the participant’s identity, checked last so a refused request reveals nothing else.',
+      why: 'Reloading does not reset the count, and a second genuine question a few seconds later gets a clear wait time instead of a silent failure.',
+    },
+  ],
+  stack: [
+    { name: 'Node.js, Express', use: 'Server, Zoom webhooks, and serving the panel' },
+    { name: 'WebSockets (ws)', use: 'One connection per participant, answers addressed to one session' },
+    { name: 'Zoom Apps SDK', use: 'The panel inside the Zoom client, and who is asking' },
+    { name: 'Zoom Realtime Media Streams', use: 'Screen-share video from the meeting' },
+    { name: 'Zoom OAuth and REST API', use: 'Signing in and starting the media stream' },
+    { name: 'ffmpeg', use: 'H.264 video to one still image' },
+    { name: 'Claude API', use: 'Reading the image and writing the answer' },
+    { name: 'HTML, CSS, JavaScript', use: 'The panel interface, with no framework' },
   ],
   progress: {
     built: [
       'Runs inside a live Zoom meeting, opened from the Apps panel',
-      'Describe, Explain, and Follow-up on shared-screen content',
-      'Each answer returns only to the requester',
-      'Server-side recipient rules: single recipient, no broadcast, request matching',
+      'Describe, Explain, typed questions and follow-ups',
+      'Each answer reaches only the person who asked',
+      'Isolation and rate limits covered by automated tests',
     ],
-    notYet: ['Capture directly from the meeting feed'],
+    notYet: [
+      'The meeting’s media stream is not delivering on the current Zoom account, so answers come from the asking participant’s display, which can include anything else on it, such as browser tabs or names.',
+      'It runs from a laptop for now; permanent hosting is planned but not done.',
+      'Isolation is proven by automated tests against the real server, not yet by several people in one live meeting.',
+      'Closing and reopening the panel loses the conversation, so a follow-up after that has no context.',
+      'Answers take seconds, and the screen image goes to a third-party model without filtering.',
+      'The presenter is not told that someone is asking. That is deliberate, and it is the main open question for ethical review.',
+      'There is no formal evaluation of answer quality yet.',
+    ],
     exploring: [
       'Continuous screen understanding instead of on-demand snapshots',
       'Reasoning over the transcript and the screen together',

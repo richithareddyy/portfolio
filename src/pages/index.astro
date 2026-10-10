@@ -10,9 +10,9 @@ import About from '../components/About.astro';
 import Contact from '../components/Contact.astro';
 import { featured, more } from '../data/projects';
 import DomainFilter from '../components/DomainFilter.astro';
-import ProjectVisual from '../components/ProjectVisual.astro';
 import CodeAtlasGraph from '../components/visuals/CodeAtlasGraph.astro';
 import EtlPipeline from '../components/visuals/EtlPipeline.astro';
+import ZoomLensStory from '../components/visuals/ZoomLensStory.astro';
 ---
 
 <BaseLayout isHome>
@@ -26,7 +26,7 @@ import EtlPipeline from '../components/visuals/EtlPipeline.astro';
       {
         featured.map((p, i) => (
           <FeaturedProject project={p} emphasis={i < 2 ? 'primary' : 'secondary'} flip={i === 1} eager={i === 0}>
-            {p.slug === 'zoom-lens' && <ProjectVisual slot="visual" visual={p.visual} size="feature" />}
+            {p.slug === 'zoom-lens' && <ZoomLensStory slot="visual" compact />}
             {p.slug === 'codeatlas' && <CodeAtlasGraph slot="visual" compact />}
             {p.slug === 'reddit-data-pipeline' && <EtlPipeline slot="visual" />}
           </FeaturedProject>
