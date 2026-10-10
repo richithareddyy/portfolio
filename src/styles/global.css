@@ -202,3 +202,137 @@ button {
     transition-duration: 0.01ms !important;
   }
 }
+
+/*
+  Lens theme: viewfinder corner brackets.
+  Add .viewfinder to a positioned element; the corners are drawn by ::before so the element keeps its own background.
+  --vf-inset moves the corners in (positive) or out (negative); --vf-len and --vf-weight size them.
+*/
+.viewfinder {
+  position: relative;
+  --vf-color: var(--color-accent);
+  --vf-len: 18px;
+  --vf-weight: 1.5px;
+  --vf-inset: 0px;
+}
+
+.viewfinder::before {
+  content: '';
+  position: absolute;
+  inset: var(--vf-inset);
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--vf-color) 0 0) top left / var(--vf-len) var(--vf-weight),
+    linear-gradient(var(--vf-color) 0 0) top left / var(--vf-weight) var(--vf-len),
+    linear-gradient(var(--vf-color) 0 0) top right / var(--vf-len) var(--vf-weight),
+    linear-gradient(var(--vf-color) 0 0) top right / var(--vf-weight) var(--vf-len),
+    linear-gradient(var(--vf-color) 0 0) bottom left / var(--vf-len) var(--vf-weight),
+    linear-gradient(var(--vf-color) 0 0) bottom left / var(--vf-weight) var(--vf-len),
+    linear-gradient(var(--vf-color) 0 0) bottom right / var(--vf-len) var(--vf-weight),
+    linear-gradient(var(--vf-color) 0 0) bottom right / var(--vf-weight) var(--vf-len);
+  background-repeat: no-repeat;
+  transition: inset var(--duration-slow) var(--ease-out);
+}
+
+/* Lens theme: a short focus pull, used once on the hero name. */
+@media (prefers-reduced-motion: no-preference) {
+  .focus-pull {
+    animation: focus-pull 900ms var(--ease-out) both;
+  }
+
+  @keyframes focus-pull {
+    from {
+      filter: blur(10px);
+      opacity: 0.35;
+    }
+    to {
+      filter: none;
+      opacity: 1;
+    }
+  }
+}
+
+/*
+  Lens theme: scroll-linked motion. Only in browsers with scroll-driven animations and when the visitor
+  has not asked for reduced motion; everywhere else the page is static and fully visible.
+*/
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /*
+      Written as longhands on purpose: the CSS minifier would otherwise fold animation-timeline into the
+      animation shorthand, a form some browsers reject.
+    */
+    .hero .intro,
+    .viewfinder img,
+    .viewfinder::before,
+    .reticle {
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+    }
+
+    /* The intro drifts up and defocuses as it scrolls away. */
+    .hero .intro {
+      animation-name: lens-defocus;
+      animation-range: exit 0% exit 100%;
+    }
+
+    /* Project images come into focus as they enter... */
+    .viewfinder img {
+      animation-name: lens-focus;
+      animation-range: entry 0% entry 80%;
+    }
+
+    /* ...while the viewfinder corners close in around them. */
+    .viewfinder::before {
+      animation-name: lens-close;
+      animation-range: entry 10% cover 40%;
+    }
+
+    /* Section reticles turn into place. */
+    .reticle {
+      animation-name: lens-turn;
+      animation-range: entry 0% cover 35%;
+    }
+
+    @keyframes lens-defocus {
+      to {
+        opacity: 0.15;
+        filter: blur(8px);
+        transform: translateY(-12%) scale(0.97);
+      }
+    }
+
+    @keyframes lens-focus {
+      from {
+        filter: blur(10px);
+        transform: scale(1.06);
+      }
+      to {
+        filter: none;
+        transform: none;
+      }
+    }
+
+    @keyframes lens-close {
+      from {
+        scale: 1.08;
+        opacity: 0;
+      }
+      to {
+        scale: 1;
+        opacity: 1;
+      }
+    }
+
+    @keyframes lens-turn {
+      from {
+        rotate: -120deg;
+      }
+      to {
+        rotate: 0deg;
+      }
+    }
+  }
+}

@@ -24,7 +24,7 @@ const kindLabel = visual.kind === 'image' ? null : visual.kind === 'diagram' ? '
 ---
 
 <figure class:list={['visual', size, visual.kind]}>
-  <div class:list={['frame', { linked: !!href }]}>
+  <div class:list={['frame', { linked: !!href, viewfinder: size !== 'card' }]}>
     {
       visual.kind === 'image' && (
         <Image
@@ -75,7 +75,7 @@ const kindLabel = visual.kind === 'image' ? null : visual.kind === 'diagram' ? '
   }
 
   .image .frame {
-    overflow: hidden;
+    overflow: clip;
   }
 
   .linked {
@@ -92,6 +92,15 @@ const kindLabel = visual.kind === 'image' ? null : visual.kind === 'diagram' ? '
     border-color: var(--color-rule-strong);
   }
 
+  .frame.viewfinder {
+    --vf-inset: 12px;
+    --vf-len: 20px;
+  }
+
+  .linked.viewfinder:hover {
+    --vf-inset: 6px;
+  }
+
   .linked :global(img) {
     transition: transform var(--duration-slow) var(--ease-out);
   }
@@ -101,7 +110,7 @@ const kindLabel = visual.kind === 'image' ? null : visual.kind === 'diagram' ? '
   }
 
   .output .frame {
-    overflow: hidden;
+    overflow: clip;
     border-radius: var(--radius-md);
   }
 

@@ -59,6 +59,7 @@ const nav = [
       </ul>
     </nav>
   </div>
+  <div class="progress" aria-hidden="true"><span data-progress></span></div>
 </header>
 
 <script>
@@ -94,8 +95,21 @@ const nav = [
     if (e.matches) setOpen(false);
   });
 
-  const onScroll = () => getHeader()?.classList.toggle('is-scrolled', window.scrollY > 8);
+  // Header border appears once scrolled; the progress line shows how far down the page you are.
+  let ticking = false;
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      getHeader()?.classList.toggle('is-scrolled', window.scrollY > 8);
+      const bar = document.querySelector<HTMLElement>('[data-progress]');
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      if (bar) bar.style.transform = `scaleX(${max > 0 ? Math.min(window.scrollY / max, 1) : 0})`;
+    });
+  };
   window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
 
   // Active section highlighting. On the home page the link for the section
   // in view is marked; on case-study pages "Work" stays marked.
@@ -153,6 +167,23 @@ const nav = [
     -webkit-backdrop-filter: saturate(1.2) blur(8px);
     border-bottom: 1px solid transparent;
     transition: border-color var(--duration-base) var(--ease-out);
+  }
+
+  .progress {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    pointer-events: none;
+  }
+
+  .progress span {
+    display: block;
+    height: 100%;
+    background: var(--color-accent);
+    transform: scaleX(0);
+    transform-origin: left;
   }
 
   .site-header.is-scrolled,
