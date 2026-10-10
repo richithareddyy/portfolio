@@ -76,7 +76,8 @@ const href = project.caseStudy ? `/work/${project.slug}` : undefined;
     .featured {
       grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
       gap: var(--space-8);
-      align-items: center;
+      /* Top-aligned so the text stays put when an interactive visual changes height. */
+      align-items: start;
     }
 
     .flip .text {
