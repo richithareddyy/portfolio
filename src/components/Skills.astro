@@ -20,10 +20,9 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
 ---
 
 <section class="wrap section" id="skills" aria-labelledby="skills-title" data-lab>
-  <SectionHeading id="skills">Skills</SectionHeading>
+  <SectionHeading id="skills">Technical stack</SectionHeading>
   <p class="intro" data-reveal>
-    Every technology here links to the projects and roles that used it. Select one, or a project on the map, to trace the
-    connections.
+    Select an underlined technology to see the projects and roles that used it. Explore the full relationship map for more detail.
   </p>
 
   <dl class="groups" data-reveal>
@@ -33,7 +32,7 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
           <dt>{group.name}</dt>
           <dd>
             <ul class="items">
-              {group.items.map((item) => {
+              {group.items.filter(item => techIds.has(techId(item))).map((item) => {
                 const id = techId(item);
                 return (
                   <li>
@@ -55,7 +54,19 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
     }
   </dl>
 
-  <div class="lab" data-reveal>
+  <aside class="panel" aria-live="polite" data-panel tabindex="-1" aria-label="Technology evidence">
+    <p class="panel-empty">Select a technology to see its project and experience evidence.</p>
+  </aside>
+  <details class="map-disclosure">
+    <summary>Explore all technologies and relationships</summary>
+    <ul class="additional" aria-label="All evidenced technologies">
+      {techs.map(t => <li><button class="chip" type="button" data-node={t.id} aria-pressed="false">{t.label}</button></li>)}
+    </ul>
+    <p class="additional-label">Additional skills</p>
+    <ul class="additional">
+      {skills.flatMap(group => group.items).filter(item => !techIds.has(techId(item))).map(item => <li>{item}</li>)}
+    </ul>
+  <div class="lab">
     <figure class="map" aria-label="Connection map of projects, roles, and technologies">
       <svg viewBox={`0 0 ${W} ${H}`} role="group" aria-label="Connection map. Each node is a button.">
         <g class="edges" aria-hidden="true">
@@ -114,10 +125,8 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
       <figcaption>Projects and roles on the left, technologies on the right. Lines show where each was used.</figcaption>
     </figure>
 
-    <aside class="panel" aria-live="polite" data-panel>
-      <p class="panel-empty">Select a technology, project, or role to see what it connects to.</p>
-    </aside>
   </div>
+  </details>
 
   <p class="more">
     The <a class="text-link" href={profile.links.resume} target="_blank" rel="noopener">résumé<span class="visually-hidden"> (PDF, opens in a new tab)</span></a> has the full list.
@@ -157,7 +166,7 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
         el.setAttribute('aria-pressed', String(nid === locked));
       }
       for (const p of paths) p.classList.toggle('is-on', !!id && (p.dataset.from === id || p.dataset.to === id));
-      renderPanel(id);
+      if (id === locked) renderPanel(id);
       const evidence = !id ? [] : graph.nodes[id].kind === 'tech' ? (graph.links[id] ?? []) : [id];
       document.dispatchEvent(new CustomEvent('lab:change', { detail: { ids: locked ? evidence : [] } }));
     }
@@ -201,7 +210,12 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
     const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     for (const el of nodes) {
       const id = el.dataset.node!;
-      el.addEventListener('click', () => select(id));
+      el.addEventListener('click', () => {
+        select(id);
+        if (locked && window.matchMedia('(max-width: 59.99rem)').matches) {
+          panel.scrollIntoView({ block: 'nearest', behavior: 'auto' });
+        }
+      });
       if (el.tagName.toLowerCase() === 'g') {
         el.addEventListener('keydown', (e) => {
           if (e.key === 'Enter' || e.key === ' ') {
@@ -225,7 +239,12 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
         locked = null;
         select(sel.dataset.select!);
       }
-      if (t.closest('[data-clear]')) select(null);
+      if (t.closest('[data-clear]')) {
+        const previous = locked;
+        select(null);
+        nodes.find(n => n.dataset.node === previous && n.getBoundingClientRect().width > 0)?.focus();
+        show(null);
+      }
     });
 
     lab.addEventListener('keydown', (e) => {
@@ -304,14 +323,15 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
 
   /* Chips look like the text they replaced; interaction shows on hover, focus, and selection. */
   .chip {
-    padding: 0;
+    padding: var(--space-2) 0;
+    min-height: 2.75rem;
     border: 0;
     background: none;
     font: inherit;
     color: var(--color-ink);
     cursor: pointer;
     text-decoration: underline;
-    text-decoration-color: transparent;
+    text-decoration-color: var(--color-rule-strong);
     text-underline-offset: 0.25em;
     transition: color var(--duration-fast) var(--ease-out), text-decoration-color var(--duration-fast) var(--ease-out);
   }
@@ -327,6 +347,7 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
   }
 
   .count {
+    display: none;
     margin-left: 0.2em;
     font-family: var(--font-mono);
     font-size: 0.65em;
@@ -353,7 +374,7 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
 
   @media (min-width: 60rem) {
     .lab {
-      grid-template-columns: minmax(0, 1fr) 17rem;
+      grid-template-columns: minmax(0, 1fr);
       align-items: start;
     }
   }
@@ -405,7 +426,7 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
 
   .node text {
     font-family: var(--font-sans);
-    font-size: 13px;
+    font-size: 14px;
     fill: var(--color-ink-soft);
     transition: fill var(--duration-fast) var(--ease-out), opacity var(--duration-base) var(--ease-out);
   }
@@ -444,7 +465,7 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
   }
 
   .has-focus .node text {
-    opacity: var(--opacity-dim);
+    fill: var(--color-muted);
   }
 
   .has-focus .node.is-focus text,
@@ -466,7 +487,12 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
   }
 
   /* Panel content is injected by the script, so its inner styles use :global. */
+  .additional-label { margin-top: var(--space-4); color: var(--color-muted); font-size: var(--text-xs); }
+  .additional { display: flex; flex-wrap: wrap; gap: 0 var(--space-4); list-style: none; font-size: var(--text-sm); }
+  .map-disclosure { margin-top: var(--space-4); }
+  .map-disclosure summary { min-height: 2.75rem; padding-block: var(--space-2); font-size: var(--text-sm); }
   .panel {
+    margin-top: var(--space-4);
     padding: var(--space-4);
     border: var(--border-hairline);
     border-radius: var(--radius-md);
@@ -475,9 +501,13 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
   }
 
   @media (min-width: 60rem) {
-    .panel {
-      position: sticky;
-      top: calc(var(--header-height) + var(--space-5));
+    .additional-label { margin-top: var(--space-4); color: var(--color-muted); font-size: var(--text-xs); }
+  .additional { display: flex; flex-wrap: wrap; gap: 0 var(--space-4); list-style: none; font-size: var(--text-sm); }
+  .map-disclosure { margin-top: var(--space-4); }
+  .map-disclosure summary { min-height: 2.75rem; padding-block: var(--space-2); font-size: var(--text-sm); }
+  .panel {
+    margin-top: var(--space-4);
+
     }
   }
 
@@ -514,7 +544,8 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
     display: inline-flex;
     gap: var(--space-2);
     align-items: baseline;
-    padding: var(--space-1) 0;
+    min-height: 2.75rem;
+    padding: var(--space-2) 0;
     border: 0;
     background: none;
     font: inherit;

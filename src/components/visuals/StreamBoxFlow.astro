@@ -61,10 +61,10 @@ const requests = [
     </div>
   </div>
 
-  <div class="guards" role="tablist" aria-label="Concurrency safeguards">
+  <div class="guards" role="group" aria-label="Concurrency safeguards">
     {
       guards.map((g) => (
-        <button type="button" role="tab" class="choice" aria-selected="false" data-guard={g.id} data-on={g.on.join(' ')}>
+        <button type="button" class="choice" aria-pressed="false" data-guard={g.id} data-on={g.on.join(' ')}>
           {g.name}
         </button>
       ))
@@ -74,7 +74,7 @@ const requests = [
     <p class="empty">Select a safeguard to see the race condition it prevents.</p>
     {
       guards.map((g) => (
-        <div data-guard-detail={g.id} hidden>
+        <div data-guard-detail={g.id} aria-hidden="true">
           <p class="race">
             <b>Race:</b> {g.race}
           </p>
@@ -101,11 +101,11 @@ const requests = [
         b.addEventListener('click', () => {
           current = current === b.dataset.guard ? null : b.dataset.guard!;
           const on = new Set(current ? (b.dataset.on ?? '').split(' ') : []);
-          for (const x of buttons) x.setAttribute('aria-selected', String(x.dataset.guard === current));
+          for (const x of buttons) x.setAttribute('aria-pressed', String(x.dataset.guard === current));
           for (const t of fig.querySelectorAll<HTMLElement>('[data-target]')) t.classList.toggle('is-on', on.has(t.dataset.target!));
           fig.classList.toggle('has-guard', !!current);
-          empty.hidden = !!current;
-          for (const d of fig.querySelectorAll<HTMLElement>('[data-guard-detail]')) d.hidden = d.dataset.guardDetail !== current;
+          empty.setAttribute("aria-hidden", String(!!current));
+          for (const d of fig.querySelectorAll<HTMLElement>('[data-guard-detail]')) d.setAttribute('aria-hidden', String(d.dataset.guardDetail !== current));
         });
       }
     }
@@ -191,7 +191,7 @@ const requests = [
   .has-guard .req,
   .has-guard .api,
   .has-guard .db {
-    opacity: var(--opacity-dim);
+    color: var(--color-muted);
   }
 
   .has-guard .is-on {
@@ -208,13 +208,16 @@ const requests = [
   }
 
   .guards button {
-    min-height: 2.25rem;
+    min-height: 2.75rem;
     padding: var(--space-1) var(--space-3);
     font-size: var(--text-xs);
     font-weight: 500;
   }
 
+  .guard-detail > * { grid-area: 1 / 1; }
+  .guard-detail [aria-hidden="true"] { visibility: hidden; }
   .guard-detail {
+    display: grid;
     min-height: 4.5em;
     margin-top: var(--space-3);
     font-size: var(--text-sm);

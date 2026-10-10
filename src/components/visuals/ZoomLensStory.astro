@@ -40,15 +40,16 @@ const litIf = (key: string) => (key === firstLit ? 'lit' : undefined);
 ---
 
 <figure class:list={['story', { compact, focusing: !!firstLit }]} data-zl-story>
+  <p class="system-label lab-label">Product system / private screen context</p>
   <div class="win">
     <div class="bar" aria-hidden="true">
       <span>Weekly review</span>
       <span class="sharing">MK is sharing their screen</span>
     </div>
     <div class="body">
-      <div class="screen" role="img" aria-label="The shared screen: a table of Q3 revenue by segment, in thousands of dollars.">
+      <div class="screen" role="group" aria-label="The shared screen: a table of Q3 revenue by segment, in thousands of dollars.">
         <p class="doc">Q3 revenue by segment, $k</p>
-        <table aria-hidden="true">
+        <table>
           <thead>
             <tr><th>Segment</th><th>Q1</th><th>Q2</th><th>Q3</th><th data-k="change" class={litIf('change')}>Change</th></tr>
           </thead>
@@ -70,8 +71,9 @@ const litIf = (key: string) => (key === firstLit ? 'lit' : undefined);
         <p class="p-head"><b>Zoom Lens</b><span>Only you see this</span></p>
         <div class="thread" aria-live="polite">
           <p class="q" data-q>{asks[first].q}</p>
-          <p class="thinking" data-thinking hidden>Looking at the shared screen…</p>
-          <p class="a" data-a>{asks[first].a}</p>
+          <div class="answers">
+            {asks.map((ask, i) => <p class="a" data-answer-panel={i} aria-hidden={i === first ? undefined : 'true'}>{ask.a}</p>)}
+          </div>
         </div>
       </aside>
     </div>
@@ -81,13 +83,19 @@ const litIf = (key: string) => (key === firstLit ? 'lit' : undefined);
     <span class="asks-label">Try a question</span>
     {
       asks.map((x, i) => (
-        <button type="button" aria-pressed={i === first ? 'true' : 'false'} data-ask={i} data-answer={x.a} data-lit={x.lit}>
+        <button class="choice" type="button" aria-pressed={i === first ? 'true' : 'false'} data-ask={i} data-answer={x.a} data-lit={x.lit}>
           {x.q}
         </button>
       ))
     }
   </div>
 
+  <ol class="system-path" aria-label="Zoom Lens request path">
+    <li><span>01 / Capture</span>Participant display</li>
+    <li><span>02 / Context</span>Image + question</li>
+    <li><span>03 / Model</span>Claude</li>
+    <li><span>04 / Response</span>Private answer</li>
+  </ol>
   <figcaption>
     <span>Illustration.</span>{' '}
     {compact
@@ -97,16 +105,12 @@ const litIf = (key: string) => (key === firstLit ? 'lit' : undefined);
 </figure>
 
 <script>
-  const reduce = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
   function setupStory() {
     for (const story of document.querySelectorAll<HTMLElement>('[data-zl-story]:not([data-ready])')) {
       story.dataset.ready = 'true';
       const q = story.querySelector<HTMLElement>('[data-q]')!;
-      const a = story.querySelector<HTMLElement>('[data-a]')!;
-      const thinking = story.querySelector<HTMLElement>('[data-thinking]')!;
+      const answers = [...story.querySelectorAll<HTMLElement>('[data-answer-panel]')];
       const buttons = [...story.querySelectorAll<HTMLButtonElement>('[data-ask]')];
-      let timer = 0;
 
       const light = (key: string) => {
         story.querySelectorAll('.lit').forEach((el) => el.classList.remove('lit'));
@@ -116,21 +120,13 @@ const litIf = (key: string) => (key === firstLit ? 'lit' : undefined);
 
       for (const b of buttons) {
         b.addEventListener('click', () => {
-          window.clearTimeout(timer);
           buttons.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
           q.textContent = b.textContent!.trim();
           light(b.dataset.lit!);
-          if (reduce()) {
-            a.textContent = b.dataset.answer!;
-            return;
+          for (const answer of answers) {
+            if (answer.dataset.answerPanel === b.dataset.ask) answer.removeAttribute('aria-hidden');
+            else answer.setAttribute('aria-hidden', 'true');
           }
-          a.hidden = true;
-          thinking.hidden = false;
-          timer = window.setTimeout(() => {
-            thinking.hidden = true;
-            a.textContent = b.dataset.answer!;
-            a.hidden = false;
-          }, 650);
         });
       }
     }
@@ -142,6 +138,7 @@ const litIf = (key: string) => (key === firstLit ? 'lit' : undefined);
   .story {
     margin: 0;
     min-width: 0;
+    container-type: inline-size;
     /* The illustrated product keeps its own colours in both site themes. */
     --zl-screen: #fbfaf7;
     --zl-screen-ink: #191915;
@@ -235,7 +232,7 @@ const litIf = (key: string) => (key === firstLit ? 'lit' : undefined);
   /* What the answer is about stays clear; everything else steps back. */
   .focusing tbody tr:not(.lit) td:not(.lit),
   .focusing thead th:not(.lit) {
-    opacity: 0.45;
+    color: var(--zl-screen-muted);
   }
 
   .lit,
@@ -288,6 +285,8 @@ const litIf = (key: string) => (key === firstLit ? 'lit' : undefined);
   }
 
   .q {
+    min-height: calc(3.2em + 10px);
+    align-content: center;
     justify-self: end;
     max-width: 92%;
     padding: 4px 8px;
@@ -298,6 +297,13 @@ const litIf = (key: string) => (key === firstLit ? 'lit' : undefined);
     border-radius: var(--radius-md);
   }
 
+  .answers { display: grid; }
+  .answers .a { grid-area: 1 / 1; }
+  .answers [aria-hidden="true"] { visibility: hidden; }
+  @media (prefers-reduced-motion: no-preference) {
+    .answers .a:not([aria-hidden]) { animation: answer-in var(--duration-base) var(--ease-out); }
+    @keyframes answer-in { from { opacity: 0.6; } to { opacity: 1; } }
+  }
   .a {
     padding: 6px 8px;
     font-size: var(--text-xs);
@@ -308,10 +314,6 @@ const litIf = (key: string) => (key === firstLit ? 'lit' : undefined);
     border-radius: var(--radius-md);
   }
 
-  .thinking {
-    font-size: var(--text-xs);
-    color: var(--zl-panel-muted);
-  }
 
   .asks {
     display: flex;
@@ -328,7 +330,7 @@ const litIf = (key: string) => (key === firstLit ? 'lit' : undefined);
   }
 
   .asks button {
-    min-height: 2.25rem;
+    min-height: 2.75rem;
     padding: 0 var(--space-3);
     font: inherit;
     font-size: var(--text-xs);
@@ -347,8 +349,8 @@ const litIf = (key: string) => (key === firstLit ? 'lit' : undefined);
 
   .asks button[aria-pressed='true'] {
     color: var(--color-ink);
-    border-color: var(--color-ink);
-    background: var(--color-surface);
+    border-color: var(--color-accent);
+    background: var(--color-accent-wash);
   }
 
   figcaption {
@@ -366,7 +368,7 @@ const litIf = (key: string) => (key === firstLit ? 'lit' : undefined);
     min-height: 6.5rem;
   }
 
-  @media (max-width: 34rem) {
+  @container (max-width: 440px) {
     .body {
       grid-template-columns: minmax(0, 1fr);
     }
@@ -376,9 +378,7 @@ const litIf = (key: string) => (key === firstLit ? 'lit' : undefined);
       border-top: 1px solid var(--zl-panel-line);
     }
 
-    .bar .sharing {
-      display: none;
-    }
+    .bar { flex-wrap: wrap; gap: var(--space-1); }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -388,4 +388,11 @@ const litIf = (key: string) => (key === firstLit ? 'lit' : undefined);
       transition: none;
     }
   }
+
+  .system-label { padding-bottom: var(--space-3); margin-bottom: var(--space-3); border-bottom: var(--border-hairline); }
+  .system-path { list-style: none; display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); margin-top: var(--space-4); padding-block: var(--space-3); border-block: var(--border-hairline); gap: var(--space-3); }
+  .system-path li { position: relative; font-size: var(--text-2xs); color: var(--color-ink-soft); }
+  .system-path span { display: block; font-family: var(--font-mono); font-size: 10px; color: var(--color-muted); margin-bottom: 3px; }
+  .system-path li:not(:last-child)::after { content: '→'; position: absolute; right: -.6rem; top: 0; color: var(--color-faint); }
+  @container (max-width: 440px) { .system-path { grid-template-columns: repeat(2,minmax(0,1fr)); } .system-path li:nth-child(2)::after { content: '↓'; } }
 </style>

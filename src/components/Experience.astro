@@ -186,4 +186,11 @@ import { techId } from '../data/graph';
     font-size: var(--text-xs);
     color: var(--color-muted);
   }
+
+  .timeline { border-left: var(--border-hairline); margin-left: 4px; }
+  .role { position: relative; padding-left: var(--space-5); }
+  .role::before { content: ''; position: absolute; left: -4px; top: 2rem; width: 7px; height: 7px; border-radius: 50%; background: var(--color-bg); border: 1px solid var(--color-rule-strong); }
+  .role:first-child::before { top: .6rem; border-color: var(--color-accent); background: var(--color-accent); }
+  .current .dates::before { display: none; }
+
 </style>

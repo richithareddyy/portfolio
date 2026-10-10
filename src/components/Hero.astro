@@ -11,11 +11,10 @@ const technologies = techs.length;
 
 <section class="hero wrap" id="top" aria-labelledby="hero-title">
   <div class="intro">
-    <h1 id="hero-title" class="name enter" style="--d: 0ms">
-      <span>Richitha</span> <span>Rekula<span class="dot" aria-hidden="true">.</span></span>
-    </h1>
     <div class="body">
       <div class="body-main">
+    <p class="lab-label entry-label"><span aria-hidden="true"></span> Personal data lab / portfolio</p>
+    <h1 id="hero-title" class="name"><span>Richitha</span> <span>Rekula<span class="dot" aria-hidden="true">.</span></span></h1>
     <p class="lede enter" style="--d: 60ms">Software engineer building applied AI systems.</p>
     <p class="desc enter" style="--d: 120ms">
       I build useful AI, engineer the systems around it, and can explain exactly how I know they work.
@@ -33,10 +32,10 @@ const technologies = techs.length;
       </ul>
     </div>
     <p class="readout enter" style="--d: 240ms" aria-label="Portfolio at a glance">
-      <a href="#work" data-explore="projects">{projects.length} projects</a>
-      <a href="#work" data-explore="demos">{demos} live demos</a>
-      <a href="#skills" data-explore="skills">{technologies} technologies</a>
-      <a href="#experience" data-explore="experience">{experience.length} roles</a>
+      <a href="#work" data-explore="projects"><span>Projects</span> <b>{String(projects.length).padStart(2, '0')}</b></a>
+      <a href="#work" data-explore="demos"><span>Live demos</span> <b>{String(demos).padStart(2, '0')}</b></a>
+      <a href="#skills" data-explore="skills"><span>Tools</span> <b>{technologies}</b></a>
+      <a href="#experience" data-explore="experience"><span>Roles</span> <b>{String(experience.length).padStart(2, '0')}</b></a>
     </p>
       </div>
       <div class="body-viz enter" style="--d: 300ms">
@@ -64,7 +63,7 @@ const technologies = techs.length;
       </div>
     </dl>
     <a class="scroll" href="#work">
-      Selected work <span class="arrow" aria-hidden="true">↓</span>
+      Project index <span class="arrow" aria-hidden="true">↓</span>
     </a>
   </div>
 </section>
@@ -85,21 +84,6 @@ const technologies = techs.length;
     flex-direction: column;
     justify-content: center;
     padding-block: var(--space-7);
-  }
-
-  /* Staggered entrance: about 0.7s from first to last item. Content is visible immediately with reduced motion. */
-  @media (prefers-reduced-motion: no-preference) {
-    .enter {
-      animation: enter var(--duration-slow) var(--ease-out) both;
-      animation-delay: var(--d, 0ms);
-    }
-
-    @keyframes enter {
-      from {
-        opacity: 0;
-        transform: translateY(14px);
-      }
-    }
   }
 
   .desc {
@@ -340,4 +324,24 @@ const technologies = techs.length;
       width: 100%;
     }
   }
+
+  .hero { min-height: auto; padding-top: var(--space-6); }
+  .intro { padding-block: var(--space-6) var(--space-8); }
+  .entry-label { display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-5); }
+  .entry-label span { width: 6px; height: 6px; background: var(--color-accent); }
+  .name { font-size: clamp(3.5rem, 2rem + 4.7vw, 6.5rem); line-height: .98; letter-spacing: -.055em; font-weight: 500; }
+  .name > span { display: block; }
+  .lede { font-size: clamp(1.3rem, 1rem + .8vw, 1.7rem); max-width: 27rem; line-height: 1.35; }
+  .desc { max-width: 27rem; }
+  .body { gap: var(--space-7) var(--space-8); }
+  .body-main { min-width: 0; }
+  .button.primary { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-bg); }
+  .readout { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 0; margin-top: var(--space-6); border-block: var(--border-hairline); }
+  .readout a { display: flex; flex-direction: column; padding-block: var(--space-3); font-size: 10px; text-transform: uppercase; }
+  .readout a::after { display: none !important; }
+  .readout b { color: var(--color-ink); font-size: var(--text-md); font-weight: 500; }
+  dt { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .06em; font-size: var(--text-2xs); margin-bottom: var(--space-2); }
+  .band { border-top: var(--border-hairline); padding-bottom: var(--space-8); }
+  @media (min-width: 60rem) { .body { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+  @media (max-width: 40rem) { .hero { padding-top: var(--space-3); } .intro { padding-top: var(--space-5); } }
 </style>

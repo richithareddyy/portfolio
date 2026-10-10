@@ -3,6 +3,9 @@
 const stages = [
   {
     id: 'extract',
+    input: 'Plain, gzip, or Zstandard NDJSON',
+    output: 'Parsed records, one line at a time',
+    validation: 'Source line numbers carried into validation',
     name: 'Extract',
     does: 'Streams plain, gzip, or Zstandard NDJSON line by line, parsing with orjson, so memory stays constant.',
     tech: ['Python', 'orjson'],
@@ -10,6 +13,9 @@ const stages = [
   },
   {
     id: 'validate',
+    input: 'Parsed records',
+    output: 'Valid rows; rejected lines with reasons',
+    validation: 'Shape, required fields, IDs, names, and ranges',
     name: 'Validate',
     does: 'Checks JSON shape, required fields, base-36 IDs, name rules, timestamp and integer ranges. Every rejected line is kept with its source line number and reason.',
     tech: ['Python'],
@@ -17,6 +23,9 @@ const stages = [
   },
   {
     id: 'stage',
+    input: 'Validated rows',
+    output: 'Unlogged staging tables',
+    validation: 'Constraints deliberately deferred to merge and check',
     name: 'Stage',
     does: 'Valid rows land in unlogged, constraint-free staging tables through one COPY per entity, in 50K-row chunks.',
     tech: ['PostgreSQL', 'COPY'],
@@ -24,6 +33,9 @@ const stages = [
   },
   {
     id: 'merge',
+    input: 'Staged entities',
+    output: 'Upserted rows; duplicates and orphans recorded',
+    validation: 'Only strictly newer data updates existing rows',
     name: 'Merge',
     does: 'One window-function pass finds superseded duplicates and orphans; the upsert anti-joins against that small set and applies only strictly newer data.',
     tech: ['SQL', 'PostgreSQL'],
@@ -31,6 +43,9 @@ const stages = [
   },
   {
     id: 'check',
+    input: 'Merged PostgreSQL tables',
+    output: 'Rebuilt indexes and a data-quality report',
+    validation: '5 foreign keys and 13 checks; errors fail the run',
     name: 'Check',
     does: 'Rebuilds 7 secondary indexes, validates 5 foreign keys, then runs 13 data-quality checks. A failed error-level check fails the run.',
     tech: ['SQL', 'GitHub Actions'],
@@ -41,6 +56,7 @@ const uid = `etl-${Math.random().toString(36).slice(2, 7)}`;
 ---
 
 <figure class="etl" data-etl>
+  <p class="source-label lab-label">Data source / Reddit-format NDJSON archives</p>
   <ol class="stages" role="tablist" aria-label="Pipeline stages">
     {
       stages.map((s, i) => (
@@ -70,11 +86,16 @@ const uid = `etl-${Math.random().toString(36).slice(2, 7)}`;
     }
   </ol>
 
-  <div class="detail" id={`${uid}-panel`} role="tabpanel" aria-live="polite">
+  <div class="detail" id={`${uid}-panel`} role="tabpanel" tabindex="0" aria-labelledby={`${uid}-extract`} aria-live="polite">
     {
       stages.map((s, i) => (
-        <div class="stage-detail" data-detail={s.id} hidden={i !== 0}>
-          <p class="does">{s.does}</p>
+        <div class="stage-detail" data-detail={s.id} aria-hidden={i !== 0 ? "true" : undefined}>
+          <dl class="stage-record">
+            <div><dt>Input</dt><dd>{s.input}</dd></div>
+            <div><dt>Process</dt><dd>{s.does}</dd></div>
+            <div><dt>Output</dt><dd>{s.output}</dd></div>
+            <div><dt>Validation</dt><dd>{s.validation}</dd></div>
+          </dl>
           <p class="metric">{s.metric}</p>
           <ul class="stack" aria-label="Tools">
             {s.tech.map((t) => (
@@ -116,12 +137,19 @@ const uid = `etl-${Math.random().toString(36).slice(2, 7)}`;
           }
           t.closest('li')?.classList.toggle('is-done', tabs.findIndex((x) => x.dataset.stage === id) > i);
         });
-        for (const d of fig.querySelectorAll<HTMLElement>('[data-detail]')) d.hidden = d.dataset.detail !== id;
+        for (const d of fig.querySelectorAll<HTMLElement>('[data-detail]')) {
+          if (d.dataset.detail === id) d.removeAttribute('aria-hidden');
+          else d.setAttribute('aria-hidden', 'true');
+        }
+        fig.querySelector('[role="tabpanel"]')?.setAttribute('aria-labelledby', tabs.find(t => t.dataset.stage === id)!.id);
       };
       tabs.forEach((t, i) => {
         t.addEventListener('click', () => select(t.dataset.stage!));
         t.addEventListener('keydown', (e) => {
-          const dir = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+          if (e.key === 'Home' || e.key === 'End') {
+            e.preventDefault(); select(tabs[e.key === 'Home' ? 0 : tabs.length - 1].dataset.stage!, true); return;
+          }
+          const dir = ['ArrowRight', 'ArrowDown'].includes(e.key) ? 1 : ['ArrowLeft', 'ArrowUp'].includes(e.key) ? -1 : 0;
           if (!dir) return;
           e.preventDefault();
           select(tabs[(i + dir + tabs.length) % tabs.length].dataset.stage!, true);
@@ -173,10 +201,7 @@ const uid = `etl-${Math.random().toString(36).slice(2, 7)}`;
     color: var(--color-accent-ink);
   }
 
-  .is-done button .i::after {
-    content: ' ✓';
-    color: var(--color-positive);
-  }
+
 
   /* Connector between stages; dots travel along it once when the stage before it is selected. */
   .pipe {
@@ -201,7 +226,7 @@ const uid = `etl-${Math.random().toString(36).slice(2, 7)}`;
 
   @media (prefers-reduced-motion: no-preference) {
     .pipe.is-flowing i {
-      animation: flow calc(var(--duration-slow) * 1.5) var(--ease-out) forwards;
+      animation: flow var(--duration-slow) var(--ease-out) forwards;
     }
 
     .pipe.is-flowing i:nth-child(2) {
@@ -231,7 +256,10 @@ const uid = `etl-${Math.random().toString(36).slice(2, 7)}`;
     margin-right: var(--space-2);
   }
 
+  .stage-detail { grid-area: 1 / 1; }
+  .stage-detail[aria-hidden="true"] { visibility: hidden; }
   .detail {
+    display: grid;
     min-height: 7.5rem;
     margin-top: var(--space-4);
   }
@@ -300,5 +328,18 @@ const uid = `etl-${Math.random().toString(36).slice(2, 7)}`;
     .pipe {
       display: none;
     }
+  }
+
+  .source-label { margin-bottom: var(--space-4); padding-bottom: var(--space-3); border-bottom: var(--border-hairline); }
+  .stage-record { margin: 0; display: grid; gap: var(--space-2); font-size: var(--text-xs); }
+  .stage-record > div { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); gap: var(--space-2); }
+  .stage-record dt { font-family: var(--font-mono); font-size: var(--text-2xs); text-transform: uppercase; color: var(--color-muted); }
+  .stage-record dd { margin: 0; color: var(--color-ink-soft); }
+  .metric { border-top: var(--border-hairline); padding-top: var(--space-3); color: var(--color-accent-ink); }
+  @media (max-width: 34rem) {
+    .stages { padding-left: var(--space-3); border-left: var(--border-hairline); }
+    .stages li::before { content: ''; position: absolute; left: -16px; width: 7px; height: 7px; border: 1px solid var(--color-rule-strong); background: var(--color-bg); border-radius: 50%; }
+    .stages li:has([aria-selected='true'])::before { background: var(--color-accent); border-color: var(--color-accent); }
+    .stage-record > div { grid-template-columns: minmax(0,1fr); gap: 2px; }
   }
 </style>
