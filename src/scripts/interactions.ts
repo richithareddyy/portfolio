@@ -56,6 +56,41 @@ if (marks.length && 'IntersectionObserver' in window) {
   marks.forEach((m) => m.classList.add('is-drawn'));
 }
 
+/* Soft arrival: sections below the first screen fade up once. Skipped entirely with reduced motion. */
+if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+  const groups: [string, number][] = [
+    ['.section-heading', 0],
+    ['.featured .text, .featured .media', 90],
+    ['.more-head, .rows .row', 60],
+    ['.timeline .role, .edu li', 70],
+    ['.skill-groups > div, .map-disclosure', 50],
+    ['#about .prose, #about .margin', 90],
+    ['#contact .invite, #contact .email, #contact .others', 70],
+    ['.case-section, .lead-visual', 0],
+  ];
+  const revealObserver = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        entry.target.classList.add('is-in');
+        revealObserver.unobserve(entry.target);
+      }
+    },
+    { rootMargin: '0px 0px -8% 0px' },
+  );
+  for (const [selector, step] of groups) {
+    document.querySelectorAll<HTMLElement>(selector).forEach((el, i, all) => {
+      // Content already on screen at load stays put; only what arrives later animates.
+      if (el.getBoundingClientRect().top < innerHeight) return;
+      // Siblings arriving together are staggered a little, capped so nothing waits long.
+      const siblings = Array.from(all).filter((x) => x.parentElement === el.parentElement);
+      el.style.setProperty('--reveal-delay', `${Math.min(siblings.indexOf(el), 4) * step}ms`);
+      el.classList.add('reveal');
+      revealObserver.observe(el);
+    });
+  }
+}
+
 /* Copy the email address, with a moment of confirmation. */
 for (const button of document.querySelectorAll<HTMLButtonElement>('[data-copy]')) {
   const idle = button.textContent;
