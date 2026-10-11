@@ -14,7 +14,7 @@ interface Props {
 
 const { project, emphasis = 'primary', flip = false, eager = false } = Astro.props;
 const projectNumber = String(projects.findIndex(p => p.slug === project.slug) + 1).padStart(2, '0');
-const scanSummary = project.slug === 'zoom-lens' ? 'Privately ask AI about shared screens in Zoom, without interrupting the presenter.' : project.summary;
+const scanSummary = project.slug === 'zoom-lens' ? 'Privately ask AI about shared screens in Zoom, without interrupting the presenter.' : project.slug === 'codeatlas' ? 'Change a function in a Rust repository and see which functions and tests could be affected, with source-code evidence for each connection.' : project.summary;
 const scanResult = project.slug === 'reddit-data-pipeline' ? project.result.headline.split(';')[0] : project.result.headline;
 const href = project.caseStudy ? `/work/${project.slug}` : undefined;
 ---

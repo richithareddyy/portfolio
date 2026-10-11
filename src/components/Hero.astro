@@ -2,11 +2,9 @@
 import { profile } from '../data/profile';
 import { projects } from '../data/projects';
 import { experience } from '../data/experience';
-import { techs } from '../data/graph';
 import HeroConstellation from './HeroConstellation.astro';
 
 const demos = projects.filter((p) => p.demo).length;
-const technologies = techs.length;
 ---
 
 <section class="hero wrap" id="top" aria-labelledby="hero-title">
@@ -16,7 +14,7 @@ const technologies = techs.length;
     <h1 id="hero-title" class="name"><span>Richitha</span> <span>Rekula<span class="dot" aria-hidden="true">.</span></span></h1>
     <p class="lede enter" style="--d: 60ms">Software engineer building applied AI systems.</p>
     <p class="desc enter" style="--d: 120ms">
-      I build useful AI, engineer the systems around it, and can explain exactly how I know they work.
+      ASU master’s student and Zoom Fellow at Next Lab. I build AI products and backend systems, from an in-meeting assistant to a Rust code analysis engine.
     </p>
 
     <div class="actions enter" style="--d: 180ms">
@@ -33,7 +31,6 @@ const technologies = techs.length;
     <p class="readout enter" style="--d: 240ms" aria-label="Portfolio at a glance">
       <a href="#work" data-explore="projects"><span>Projects</span> <b>{String(projects.length).padStart(2, '0')}</b></a>
       <a href="#work" data-explore="demos"><span>Live demos</span> <b>{String(demos).padStart(2, '0')}</b></a>
-      <a href="#skills" data-explore="skills"><span>Tools</span> <b>{technologies}</b></a>
       <a href="#experience" data-explore="experience"><span>Roles</span> <b>{String(experience.length).padStart(2, '0')}</b></a>
     </p>
       </div>
