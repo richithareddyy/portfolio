@@ -1,13 +1,11 @@
 export type SkillGroup = { name: string; items: string[] };
 
-/** Taken from the résumé, limited to what the projects on this site demonstrate. The résumé has the full list. */
+/** Grouped from the résumé and existing project evidence. Additional skills remain available in the expanded list. */
 export const skills: SkillGroup[] = [
-  { name: 'Languages', items: ['Python', 'Rust', 'TypeScript', 'SQL', 'JavaScript', 'Java', 'C++', 'MATLAB'] },
-  { name: 'Applied AI & ML', items: ['Scikit-learn', 'XGBoost', 'SHAP', 'NLTK', 'VADER'] },
-  {
-    name: 'Backend & APIs',
-    items: ['Flask', 'Node.js', 'Express.js', 'REST APIs', 'Streamlit', 'Claude', 'Google Gemini API', 'Zoom Video SDK', 'Zoom Realtime Media Streams API'],
-  },
-  { name: 'Databases & data engineering', items: ['PostgreSQL', 'Neo4j', 'MongoDB', 'SQLite', 'PySpark', 'Pandas', 'NumPy'] },
-  { name: 'Developer tools', items: ['Docker', 'Git', 'GitHub Actions'] },
+  { name: 'Languages', items: ['Python', 'Rust', 'TypeScript', 'SQL', 'MATLAB', 'JavaScript', 'Java', 'C++'] },
+  { name: 'AI / ML', items: ['Claude', 'Scikit-learn', 'XGBoost', 'SHAP', 'Google Gemini API', 'NLTK', 'VADER'] },
+  { name: 'Data', items: ['PostgreSQL', 'Neo4j', 'MongoDB', 'PySpark', 'SQLite', 'Pandas', 'NumPy'] },
+  { name: 'Backend', items: ['Node.js', 'Express.js', 'Flask', 'Streamlit', 'REST APIs', 'Zoom Video SDK', 'Zoom Realtime Media Streams API'] },
+  { name: 'Frontend', items: ['SvelteKit', 'Cytoscape.js'] },
+  { name: 'Infrastructure / tools', items: ['Docker', 'GitHub Actions', 'Git'] },
 ];

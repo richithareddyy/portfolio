@@ -57,6 +57,7 @@ const uid = `etl-${Math.random().toString(36).slice(2, 7)}`;
 
 <figure class="etl" data-etl>
   <p class="source-label lab-label">Data source / Reddit-format NDJSON archives</p>
+  <p class="stage-instruction">Choose a stage to explore the data flow.</p>
   <ol class="stages" role="tablist" aria-label="Pipeline stages">
     {
       stages.map((s, i) => (
@@ -90,13 +91,16 @@ const uid = `etl-${Math.random().toString(36).slice(2, 7)}`;
     {
       stages.map((s, i) => (
         <div class="stage-detail" data-detail={s.id} aria-hidden={i !== 0 ? "true" : undefined}>
-          <dl class="stage-record">
-            <div><dt>Input</dt><dd>{s.input}</dd></div>
-            <div><dt>Process</dt><dd>{s.does}</dd></div>
-            <div><dt>Output</dt><dd>{s.output}</dd></div>
-            <div><dt>Validation</dt><dd>{s.validation}</dd></div>
-          </dl>
-          <p class="metric">{s.metric}</p>
+          <p class="does">{s.does}</p>
+          <details class="reading-detail stage-more">
+            <summary>Input, output & validation<span class="visually-hidden"> for {s.name}</span></summary>
+            <dl class="stage-record">
+              <div><dt>Input</dt><dd>{s.input}</dd></div>
+              <div><dt>Output</dt><dd>{s.output}</dd></div>
+              <div><dt>Validation</dt><dd>{s.validation}</dd></div>
+            </dl>
+            <p class="metric">{s.metric}</p>
+          </details>
           <ul class="stack" aria-label="Tools">
             {s.tech.map((t) => (
               <li>{t}</li>
@@ -139,7 +143,7 @@ const uid = `etl-${Math.random().toString(36).slice(2, 7)}`;
         });
         for (const d of fig.querySelectorAll<HTMLElement>('[data-detail]')) {
           if (d.dataset.detail === id) d.removeAttribute('aria-hidden');
-          else d.setAttribute('aria-hidden', 'true');
+          else { d.setAttribute('aria-hidden', 'true'); const detail = d.querySelector('details'); if (detail) detail.open = false; }
         }
         fig.querySelector('[role="tabpanel"]')?.setAttribute('aria-labelledby', tabs.find(t => t.dataset.stage === id)!.id);
       };
@@ -342,4 +346,15 @@ const uid = `etl-${Math.random().toString(36).slice(2, 7)}`;
     .stages li:has([aria-selected='true'])::before { background: var(--color-accent); border-color: var(--color-accent); }
     .stage-record > div { grid-template-columns: minmax(0,1fr); gap: 2px; }
   }
+
+  .source-label { border: 0; padding: 0; margin-bottom: var(--space-2); }
+  .stage-instruction { font-size: var(--text-sm); color: var(--color-muted); margin-bottom: var(--space-4); }
+  .does { font-size: var(--text-base); line-height: 1.65; }
+  .stage-record { font-size: var(--text-sm); }
+  .stage-more { margin-top: var(--space-2); }
+  .detail { min-height: 12rem; }
+  .ledger { font-size: var(--text-xs); gap: var(--space-2) var(--space-4); }
+  .ledger span { display: grid; }
+  .ledger b { font-size: var(--text-sm); }
+
 </style>

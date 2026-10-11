@@ -12,7 +12,6 @@ import { techId } from '../data/graph';
     {
       experience.map((role) => (
         <li class:list={['role', { current: role.current }]} data-reveal data-role-id={`role:${role.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>
-          <p class="dates">{role.dates}</p>
           <div class="what">
             <h3>
               {role.title}
@@ -22,6 +21,7 @@ import { techId } from '../data/graph';
                 <span class="detail"> · {role.place}</span>
               </span>
             </h3>
+            <p class="dates">{role.dates}</p>
             <ul class="points">
               {role.points.map((p) => <li>{p}</li>)}
             </ul>
@@ -192,5 +192,21 @@ import { techId } from '../data/graph';
   .role::before { content: ''; position: absolute; left: -4px; top: 2rem; width: 7px; height: 7px; border-radius: 50%; background: var(--color-bg); border: 1px solid var(--color-rule-strong); }
   .role:first-child::before { top: .6rem; border-color: var(--color-accent); background: var(--color-accent); }
   .current .dates::before { display: none; }
+
+
+  .points { font-size: var(--text-base); line-height: 1.7; max-width: 68ch; gap: var(--space-3); }
+  .org { font-size: var(--text-base); line-height: 1.5; margin-top: var(--space-2); }
+  .role-tech { font-family: var(--font-sans); }
+  .role { padding-block: var(--space-6); }
+  .dates { color: var(--color-muted); }
+  .role { display: block; }
+  .what { display: grid; grid-template-columns: minmax(0,1fr); }
+  .what .dates { margin-top: var(--space-2); }
+  .what .more { justify-self: start; }
+  @media (min-width: 48rem) {
+    .what { grid-template-columns: 11rem minmax(0,1fr); column-gap: var(--space-7); }
+    .what > * { grid-column: 2; }
+    .what .dates { grid-column: 1; grid-row: 1; margin: 0; }
+  }
 
 </style>

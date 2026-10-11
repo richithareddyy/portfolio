@@ -22,7 +22,7 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
 <section class="wrap section" id="skills" aria-labelledby="skills-title" data-lab>
   <SectionHeading id="skills">Technical stack</SectionHeading>
   <p class="intro" data-reveal>
-    Select an underlined technology to see the projects and roles that used it. Explore the full relationship map for more detail.
+    Tools behind the projects above. Select a technology to see where I used it.
   </p>
 
   <dl class="groups" data-reveal>
@@ -32,7 +32,7 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
           <dt>{group.name}</dt>
           <dd>
             <ul class="items">
-              {group.items.filter(item => techIds.has(techId(item))).map((item) => {
+              {group.items.filter(item => techIds.has(techId(item))).slice(0, 4).map((item) => {
                 const id = techId(item);
                 return (
                   <li>
@@ -55,7 +55,7 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
   </dl>
 
   <aside class="panel" aria-live="polite" data-panel tabindex="-1" aria-label="Technology evidence">
-    <p class="panel-empty">Select a technology to see its project and experience evidence.</p>
+    <p class="panel-empty">Python for data and NLP projects. Rust for CodeAtlas. Node.js for Zoom Lens and StreamBox.</p>
   </aside>
   <details class="map-disclosure">
     <summary>Explore all technologies and relationships</summary>
@@ -500,16 +500,6 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
     font-size: var(--text-sm);
   }
 
-  @media (min-width: 60rem) {
-    .additional-label { margin-top: var(--space-4); color: var(--color-muted); font-size: var(--text-xs); }
-  .additional { display: flex; flex-wrap: wrap; gap: 0 var(--space-4); list-style: none; font-size: var(--text-sm); }
-  .map-disclosure { margin-top: var(--space-4); }
-  .map-disclosure summary { min-height: 2.75rem; padding-block: var(--space-2); font-size: var(--text-sm); }
-  .panel {
-    margin-top: var(--space-4);
-
-    }
-  }
 
   .panel :global(.panel-empty) {
     color: var(--color-muted);
@@ -594,4 +584,15 @@ const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
     font-size: var(--text-sm);
     color: var(--color-muted);
   }
+
+  .groups { display: grid; gap: var(--space-5) var(--space-7); border: 0; grid-template-columns: minmax(0,1fr); }
+  .group { display: block; border: 0; padding: 0; }
+  .group dt { color: var(--color-muted); font-size: var(--text-sm); font-weight: 500; margin-bottom: var(--space-1); }
+  .items { font-size: var(--text-base); }
+  .panel { max-width: 68ch; margin-top: var(--space-6); }
+  .panel:has(.panel-empty) { border: 0; border-left: 2px solid var(--color-rule-strong); padding: var(--space-2) var(--space-4); background: none; }
+  .panel :global(.panel-empty) { font-size: var(--text-base); color: var(--color-ink-soft); }
+  .map-disclosure { padding-top: var(--space-3); border-top: var(--border-hairline); margin-top: var(--space-5); }
+  @media (min-width: 40rem) { .groups { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+  @media (min-width: 68rem) { .groups { grid-template-columns: repeat(3,minmax(0,1fr)); } }
 </style>

@@ -4,7 +4,7 @@ import CaseHeader from '../../components/CaseHeader.astro';
 import CaseSection from '../../components/CaseSection.astro';
 import ZoomLensStatus from '../../components/ZoomLensStatus.astro';
 import ZoomLensArchitecture from '../../components/visuals/ZoomLensArchitecture.astro';
-import ZoomLensStory from '../../components/visuals/ZoomLensStory.astro';
+import ZoomLensPreview from '../../components/ZoomLensPreview.astro';
 import NextProject from '../../components/NextProject.astro';
 import { projects, zoomLens } from '../../data/projects';
 
@@ -35,7 +35,7 @@ const sections = [
               <figcaption>Zoom Lens running in a live meeting.</figcaption>
             </figure>
           ) : (
-            <ZoomLensStory />
+            <ZoomLensPreview />
           )
         }
         <p class="built-with">

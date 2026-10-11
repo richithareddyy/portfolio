@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import { projects, type Project } from '../data/projects';
-import { techId } from '../data/graph';
+import ProjectTech from './ProjectTech.astro';
 import ProjectLinks from './ProjectLinks.astro';
 
 interface Props {
@@ -9,6 +9,7 @@ interface Props {
 }
 const { project } = Astro.props;
 const projectNumber = String(projects.findIndex(p => p.slug === project.slug) + 1).padStart(2, '0');
+const scanResult = project.slug === 'ticket-triage' ? project.result.headline.split(';')[0] : project.result.headline;
 const href = project.caseStudy ? `/work/${project.slug}` : (project.demo ?? project.github);
 const external = !project.caseStudy;
 const v = project.visual;
@@ -41,27 +42,30 @@ const v = project.visual;
 
   <div class="main">
     <p class="lab-id">PROJECT / {projectNumber}</p>
-    <p class="meta">{[project.year, project.role].filter(Boolean).join(' · ')}</p>
     <h4 id={`${project.slug}-title`}>
       {project.caseStudy ? <a href={`/work/${project.slug}`} transition:name={`title-${project.slug}`}>{project.title}</a> : project.title}
     </h4>
-    {project.problemShort && <p class="problem">{project.problemShort}</p>}
-    <p class="contribution">{project.contribution}</p>
-    <ul class="stack" aria-label="Technologies">
-      {project.tech.map((t) => <li><button type="button" class="tech-link" data-tech-link={techId(t)}>{t}</button></li>)}
-    </ul>
+    <p class="project-description">{project.summary}</p>
+    <ProjectTech project={project} />
   </div>
 
   <p class="result">
     <span class="lab-label">{project.evaluation ? 'Evaluation' : 'Observation'}</span>
-    <strong>{project.result.headline}</strong>
+    <strong>{scanResult}</strong>
     {project.result.qualifier && <span>{project.result.qualifier}</span>}
   </p>
 
-  {project.limitations?.length && <details class="limits"><summary>Limitations<span class="visually-hidden"> of {project.title}</span></summary><ul>{project.limitations.map(limit => <li>{limit}</li>)}</ul></details>}
   <div class="links-cell">
     <ProjectLinks project={project} />
   </div>
+  <details class="reading-detail implementation">
+    <summary>Approach & limitations<span class="visually-hidden"> for {project.title}</span></summary>
+    <p class="meta">{[project.year, project.role].filter(Boolean).join(' · ')}</p>
+    {project.problemShort && <p>{project.problemShort}</p>}
+    <p>{project.contribution}</p>
+    {scanResult !== project.result.headline && <p><strong>Evaluation:</strong> {project.result.headline}. {project.result.qualifier}.</p>}
+    {project.limitations?.length && <div><p class="detail-heading">Limitations</p><ul>{project.limitations.map(limit => <li>{limit}</li>)}</ul></div>}
+  </details>
 </article>
 
 <style>
@@ -210,5 +214,18 @@ const v = project.visual;
   .limits ul { padding-left: var(--space-4); }
   .limits li + li { margin-top: var(--space-2); }
   @media (min-width: 40rem) { .limits { grid-column: 2 / -1; } }
+
+
+  .project-description { font-size: var(--text-base); line-height: 1.65; max-width: 65ch; color: var(--color-ink-soft); }
+  .main { gap: var(--space-3); }
+  .result { border: 0; font-size: var(--text-base); }
+  .result > span:not(.lab-label) { font-size: var(--text-sm); line-height: 1.5; }
+  .implementation { grid-column: 1 / -1; }
+  .implementation .meta { font-family: var(--font-sans); }
+  .detail-heading { font-weight: 600; margin-block: var(--space-4) var(--space-2); }
+  .row { padding-block: var(--space-6); }
+  .thumb { grid-row: 1; }
+  .links-cell { grid-row: auto; }
+  @media (min-width: 40rem) { .implementation { grid-column: 2 / -1; } }
 
 </style>

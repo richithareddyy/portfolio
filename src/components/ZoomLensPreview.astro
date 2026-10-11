@@ -1,0 +1,24 @@
+---
+import { Image } from 'astro:assets';
+import preview from '../assets/zoomlens-website.png';
+---
+
+<a class="website-preview" href="https://zoomlens.vercel.app/" target="_blank" rel="noopener">
+  <Image src={preview} alt="ZoomLens website: Ask AI about anything shared in your Zoom meeting." widths={[480, 800, 1280]} sizes="(max-width: 768px) 100vw, 800px" loading="lazy" />
+  <span class="preview-caption">
+    <span><strong>Explore Zoom Lens <span aria-hidden="true">↗</span></strong><span class="domain">zoomlens.vercel.app</span></span>
+    <span class="visit">Visit website<span class="new-tab">Opens in a new tab</span></span>
+  </span>
+</a>
+
+<style>
+  .website-preview { display: block; overflow: hidden; border: var(--border-hairline); background: var(--color-surface); color: var(--color-ink); text-decoration: none; transition: border-color var(--duration-base) var(--ease-out); }
+  .website-preview:hover { border-color: var(--color-accent); }
+  img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; }
+  .preview-caption { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-3); padding: var(--space-4); border-top: var(--border-hairline); }
+  strong { font-size: var(--text-lg); font-weight: 500; }
+  strong span, .visit { color: var(--color-accent-ink); }
+  .domain, .new-tab { display: block; margin-top: var(--space-1); color: var(--color-muted); font-size: var(--text-xs); }
+  .domain { font-family: var(--font-mono); }
+  .visit { font-size: var(--text-sm); }
+</style>

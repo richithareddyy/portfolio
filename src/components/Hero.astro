@@ -13,7 +13,6 @@ const technologies = techs.length;
   <div class="intro">
     <div class="body">
       <div class="body-main">
-    <p class="lab-label entry-label"><span aria-hidden="true"></span> Personal data lab / portfolio</p>
     <h1 id="hero-title" class="name"><span>Richitha</span> <span>Rekula<span class="dot" aria-hidden="true">.</span></span></h1>
     <p class="lede enter" style="--d: 60ms">Software engineer building applied AI systems.</p>
     <p class="desc enter" style="--d: 120ms">
@@ -327,8 +326,6 @@ const technologies = techs.length;
 
   .hero { min-height: auto; padding-top: var(--space-6); }
   .intro { padding-block: var(--space-6) var(--space-8); }
-  .entry-label { display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-5); }
-  .entry-label span { width: 6px; height: 6px; background: var(--color-accent); }
   .name { font-size: clamp(3.5rem, 2rem + 4.7vw, 6.5rem); line-height: .98; letter-spacing: -.055em; font-weight: 500; }
   .name > span { display: block; }
   .lede { font-size: clamp(1.3rem, 1rem + .8vw, 1.7rem); max-width: 27rem; line-height: 1.35; }
@@ -344,4 +341,13 @@ const technologies = techs.length;
   .band { border-top: var(--border-hairline); padding-bottom: var(--space-8); }
   @media (min-width: 60rem) { .body { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
   @media (max-width: 40rem) { .hero { padding-top: var(--space-3); } .intro { padding-top: var(--space-5); } }
+
+  .quiet { width: 100%; margin-left: 0; gap: var(--space-5); }
+  .quiet a { min-height: 44px; }
+  .readout { margin-top: var(--space-4); border-bottom: 0; }
+  .readout a { font-family: var(--font-sans); font-size: var(--text-xs); text-transform: none; }
+  .readout b { font-family: var(--font-mono); font-size: var(--text-base); }
+  .desc { color: var(--color-ink-soft); max-width: 45ch; }
+  .band { padding-bottom: var(--space-6); }
+
 </style>

@@ -1,0 +1,26 @@
+---
+import type { Project } from '../data/projects';
+import { techId } from '../data/graph';
+interface Props { project: Project }
+const { project } = Astro.props;
+const primary = project.slug === 'zoom-lens'
+  ? ['Node.js', 'Zoom Apps SDK', 'Claude', 'WebSockets']
+  : project.tech.slice(0, 5);
+const additional = project.tech.filter(t => !primary.includes(t));
+---
+<div class="project-tech">
+  <ul class="stack" aria-label={`${project.title} primary technologies`}>
+    {primary.map(t => <li><button type="button" class="tech-link" data-tech-link={techId(t)}>{t}</button></li>)}
+  </ul>
+  {additional.length > 0 && <details class="extra-tools">
+    <summary>+ {additional.length} more<span class="visually-hidden"> technologies for {project.title}</span></summary>
+    <ul class="stack" aria-label={`${project.title} additional technologies`}>
+      {additional.map(t => <li><button type="button" class="tech-link" data-tech-link={techId(t)}>{t}</button></li>)}
+    </ul>
+  </details>}
+</div>
+<style>
+  .project-tech { min-width: 0; }
+  .extra-tools summary { min-height: 44px; padding-block: var(--space-2); font-size: var(--text-xs); color: var(--color-muted); }
+  .extra-tools summary:hover { color: var(--color-accent-ink); }
+</style>

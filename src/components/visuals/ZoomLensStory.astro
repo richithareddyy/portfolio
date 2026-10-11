@@ -40,7 +40,7 @@ const litIf = (key: string) => (key === firstLit ? 'lit' : undefined);
 ---
 
 <figure class:list={['story', { compact, focusing: !!firstLit }]} data-zl-story>
-  <p class="system-label lab-label">Product system / private screen context</p>
+  <p class="system-label lab-label">Product walkthrough</p>
   <div class="win">
     <div class="bar" aria-hidden="true">
       <span>Weekly review</span>
@@ -90,12 +90,15 @@ const litIf = (key: string) => (key === firstLit ? 'lit' : undefined);
     }
   </div>
 
+  <details class="reading-detail request-flow">
+  <summary>How the private answer works</summary>
   <ol class="system-path" aria-label="Zoom Lens request path">
     <li><span>01 / Capture</span>Participant display</li>
     <li><span>02 / Context</span>Image + question</li>
     <li><span>03 / Model</span>Claude</li>
     <li><span>04 / Response</span>Private answer</li>
   </ol>
+  </details>
   <figcaption>
     <span>Illustration.</span>{' '}
     {compact
@@ -395,4 +398,13 @@ const litIf = (key: string) => (key === firstLit ? 'lit' : undefined);
   .system-path span { display: block; font-family: var(--font-mono); font-size: 10px; color: var(--color-muted); margin-bottom: 3px; }
   .system-path li:not(:last-child)::after { content: '→'; position: absolute; right: -.6rem; top: 0; color: var(--color-faint); }
   @container (max-width: 440px) { .system-path { grid-template-columns: repeat(2,minmax(0,1fr)); } .system-path li:nth-child(2)::after { content: '↓'; } }
+
+  .system-label { border: 0; padding-bottom: 0; }
+  .request-flow { margin-top: var(--space-3); }
+  .system-path { margin-top: 0; border: 0; }
+  .system-path span { font-size: var(--text-2xs); }
+  .a { font-size: var(--text-sm); line-height: 1.6; }
+  .screen { overflow-x: auto; }
+  @container (max-width: 560px) { .body { grid-template-columns: minmax(0,1fr); } .panel { border-left: 0; border-top: 1px solid var(--zl-panel-line); } }
+
 </style>

@@ -1,6 +1,6 @@
 ---
 import { projects, type Project } from '../data/projects';
-import { techId } from '../data/graph';
+import ProjectTech from './ProjectTech.astro';
 import { domains } from '../data/projects';
 import ProjectVisual from './ProjectVisual.astro';
 import ProjectLinks from './ProjectLinks.astro';
@@ -14,6 +14,8 @@ interface Props {
 
 const { project, emphasis = 'primary', flip = false, eager = false } = Astro.props;
 const projectNumber = String(projects.findIndex(p => p.slug === project.slug) + 1).padStart(2, '0');
+const scanSummary = project.slug === 'zoom-lens' ? 'Privately ask AI about shared screens in Zoom, without interrupting the presenter.' : project.summary;
+const scanResult = project.slug === 'reddit-data-pipeline' ? project.result.headline.split(';')[0] : project.result.headline;
 const href = project.caseStudy ? `/work/${project.slug}` : undefined;
 ---
 
@@ -28,31 +30,30 @@ const href = project.caseStudy ? `/work/${project.slug}` : undefined;
 >
   <div class="text">
     <p class="lab-id">PROJECT / {projectNumber}</p>
-    <p class="year">
-      {[project.year, project.role, project.domains.map((d) => domains.find((x) => x.id === d)?.label).join(', ')].filter(Boolean).join(' · ')}
-    </p>
     <h3 id={`${project.slug}-title`}>
       {href ? <a href={href} transition:name={`title-${project.slug}`}>{project.title}</a> : project.title}
     </h3>
-    <p class="summary">{project.summary}</p>
+    <p class="summary">{scanSummary}</p>
 
     <dl class="facts">
       <div>
         <dt>{project.slug === 'zoom-lens' ? 'Status' : 'Observation'}</dt>
         <dd>
-          <strong>{project.result.headline}</strong>
+          <strong>{scanResult}</strong>
           {project.result.qualifier && <span class="qualifier">{project.result.qualifier}</span>}
         </dd>
       </div>
     </dl>
 
-    <ul class="stack" aria-label="Technologies">
-      {project.tech.map((t) => <li><button type="button" class="tech-link" data-tech-link={techId(t)}>{t}</button></li>)}
-    </ul>
+    <ProjectTech project={project} />
     <ProjectLinks project={project} />
-    <details class="contribution">
-      <summary>My contribution<span class="visually-hidden"> to {project.title}</span></summary>
+    <details class="reading-detail contribution">
+      <summary>Implementation & context<span class="visually-hidden"> for {project.title}</span></summary>
+      <p class="year">{[project.year, project.role, project.domains.map(d => domains.find(x => x.id === d)?.label).join(', ')].filter(Boolean).join(' · ')}</p>
+      {scanSummary !== project.summary && <p>{project.summary}</p>}
       <p>{project.contribution}</p>
+      {scanResult !== project.result.headline && <p><strong>Benchmark:</strong> {project.result.headline}. {project.result.qualifier}.</p>}
+      {project.limitations?.length && <div class="limit-notes"><p class="detail-heading">Limitations</p><ul>{project.limitations.map(limit => <li>{limit}</li>)}</ul></div>}
     </details>
   </div>
 
@@ -172,5 +173,19 @@ const href = project.caseStudy ? `/work/${project.slug}` : undefined;
   dt { font-family: var(--font-mono); text-transform: uppercase; font-size: var(--text-2xs); letter-spacing: .08em; margin-bottom: var(--space-2); }
   .summary { font-size: var(--text-md); line-height: 1.6; }
   h3 { font-weight: 500; }
+
+
+  .text { gap: var(--space-4); }
+  .text > .lab-id { margin-bottom: calc(var(--space-2) * -1); }
+  .summary { font-size: var(--text-lg); max-width: 62ch; }
+  .facts { background: transparent; padding: var(--space-1) 0 var(--space-1) var(--space-4); font-size: var(--text-base); }
+  .qualifier { margin-top: var(--space-1); font-size: var(--text-sm); line-height: 1.5; }
+  .year { font-family: var(--font-sans); font-size: var(--text-sm); }
+  .contribution { font-size: var(--text-sm); width: 100%; border-top: var(--border-hairline); padding-top: var(--space-2); }
+  .contribution summary { color: var(--color-muted); }
+  .contribution p { padding: 0; }
+  .limit-notes { margin-top: var(--space-4); }
+  .detail-heading { font-weight: 600; margin-bottom: var(--space-2); }
+  .featured { padding-block: var(--space-8); }
 
 </style>

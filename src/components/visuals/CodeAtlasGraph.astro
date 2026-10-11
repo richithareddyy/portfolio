@@ -33,14 +33,14 @@ const uid = compact ? 'ca-compact' : 'ca-full';
 ---
 
 <figure class:list={['ca', { compact }]} data-ca>
-  <p class="instrument-label lab-label">System model / change impact</p>
+  <p class="instrument-label lab-label">Interactive impact graph</p>
   <div class="tabs" role="tablist" aria-label="CodeAtlas view">
     <button type="button" class="choice" role="tab" id={`${uid}-tab-graph`} aria-controls={`${uid}-graph`} aria-selected="true" data-ca-tab="graph">Impact graph</button>
     <button type="button" class="choice" role="tab" id={`${uid}-tab-shot`} aria-controls={`${uid}-shot`} aria-selected="false" data-ca-tab="shot" tabindex="-1">Screenshot</button>
   </div>
 
   <div class="panel-graph" id={`${uid}-graph`} role="tabpanel" aria-labelledby={`${uid}-tab-graph`} data-ca-panel="graph">
-    <p class="graph-hint">Hover to preview connections. Select a symbol to trace its evidence.</p>
+    <p class="graph-hint">Select a symbol to inspect its impact chain.</p>
     <svg viewBox="0 0 440 286" role="group" aria-label="Impact graph. Select a symbol to see its evidence chain.">
       <defs>
         <marker id={`${uid}-arrow`} viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -90,14 +90,12 @@ const uid = compact ? 'ca-compact' : 'ca-full';
     </div>
     <div class="evidence" aria-live="polite" data-ca-evidence>
       <p class="summary">
-        Changing <code>StripeGateway::charge</code> affects 5 symbols (1 direct, 4 indirect) in 4 files, including 2 tests.
-        Select a symbol to see the chain of evidence back to the change.
+        This change can reach <strong>5 symbols in 4 files</strong>, including 2 tests (1 direct, 4 indirect).
       </p>
     </div>
-    <p class="selection-legend" aria-label="Selection legend"><span>● Selected</span><span>○ Connected</span><span>· Other symbols</span></p>
     <div class="ca-actions">
       <button type="button" class="reset-link" data-ca-reset disabled>Reset graph</button>
-      <span class="legend"><i class="lg-changed"></i>changed <i class="lg-symbol"></i>affected <i class="lg-test"></i>test</span>
+      <span class="legend"><i class="lg-selected"></i>selected <i class="lg-changed"></i>changed <i class="lg-symbol"></i>affected <i class="lg-test"></i>test</span>
     </div>
   </div>
 
@@ -472,4 +470,12 @@ const uid = compact ? 'ca-compact' : 'ca-full';
   .selection-legend { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-3); font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--color-muted); }
   .selection-legend span:first-child { color: var(--color-accent-ink); }
   .node[aria-pressed='true'] .mark { fill: var(--color-accent); stroke: var(--color-accent); }
+
+  .instrument-label { border: 0; padding-bottom: 0; }
+  .evidence { font-size: var(--text-sm); line-height: 1.6; min-height: 11rem; }
+  .legend { font-family: var(--font-sans); font-size: var(--text-xs); gap: var(--space-1); }
+  .legend .lg-selected { background: var(--color-accent); border-color: var(--color-accent); }
+  .mobile-nodes p { font-size: var(--text-sm); }
+  @container (max-width: 420px) { .evidence { min-height: 0; } }
+
 </style>
