@@ -1,598 +1,131 @@
 ---
 import { skills } from '../data/skills';
 import { profile } from '../data/profile';
-import { sources, techs, edges, graphData, techId } from '../data/graph';
+import { sources, techs, edges, graphData } from '../data/graph';
 import SectionHeading from './SectionHeading.astro';
-
-const techIds = new Set(techs.map((t) => t.id));
-const countOf = Object.fromEntries(techs.map((t) => [t.id, t.count]));
-
-// Connection map layout (SVG units): sources on the left, technologies on the right.
-const W = 1000;
-const rowH = 20;
-const H = Math.max(techs.length * rowH, sources.length * 40) + 24;
-const yLeft = (i: number) => 12 + ((i + 0.5) * (H - 24)) / sources.length;
-const yRight = (j: number) => 12 + ((j + 0.5) * (H - 24)) / techs.length;
-const xL = 330;
-const xR = 670;
-const ySource = Object.fromEntries(sources.map((s, i) => [s.id, yLeft(i)]));
-const yTech = Object.fromEntries(techs.map((t, j) => [t.id, yRight(j)]));
+const orderedSources = sources;
+const mapHeight = techs.length * 28 + 24;
+const sourceY = Object.fromEntries(orderedSources.map((s, i) => [s.id, (i + .5) / orderedSources.length * 100]));
+const techY = Object.fromEntries(techs.map((t, i) => [t.id, (i + .5) / techs.length * 100]));
 ---
-
 <section class="wrap section" id="skills" aria-labelledby="skills-title" data-lab>
   <SectionHeading id="skills">Technical stack</SectionHeading>
-  <p class="intro" data-reveal>
-    Tools behind the projects above. Select a technology to see where I used it.
-  </p>
-
-  <dl class="groups" data-reveal>
-    {
-      skills.map((group) => (
-        <div class="group">
-          <dt>{group.name}</dt>
-          <dd>
-            <ul class="items">
-              {group.items.filter(item => techIds.has(techId(item))).slice(0, 4).map((item) => {
-                const id = techId(item);
-                return (
-                  <li>
-                    {techIds.has(id) ? (
-                      <button type="button" class="chip" data-node={id} aria-pressed="false">
-                        {item}
-                        <span class="count" aria-label={`, ${countOf[id]} connection${countOf[id] === 1 ? '' : 's'}`}>{countOf[id]}</span>
-                      </button>
-                    ) : (
-                      <span class="chip plain">{item}</span>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </dd>
-        </div>
-      ))
-    }
+  <p class="intro">My full technical stack, grouped as listed in my résumé.</p>
+  <dl class="skill-groups">
+    {skills.map(group => <div><dt>{group.name}</dt><dd><ul>{group.items.map(item => <li>{item}</li>)}</ul></dd></div>)}
   </dl>
-
-  <aside class="panel" aria-live="polite" data-panel tabindex="-1" aria-label="Technology evidence">
-    <p class="panel-empty">Python for data and NLP projects. Rust for CodeAtlas. Node.js for Zoom Lens and StreamBox.</p>
-  </aside>
-  <details class="map-disclosure">
-    <summary>Explore all technologies and relationships</summary>
-    <ul class="additional" aria-label="All evidenced technologies">
-      {techs.map(t => <li><button class="chip" type="button" data-node={t.id} aria-pressed="false">{t.label}</button></li>)}
-    </ul>
-    <p class="additional-label">Additional skills</p>
-    <ul class="additional">
-      {skills.flatMap(group => group.items).filter(item => !techIds.has(techId(item))).map(item => <li>{item}</li>)}
-    </ul>
-  <div class="lab">
-    <figure class="map" aria-label="Connection map of projects, roles, and technologies">
-      <svg viewBox={`0 0 ${W} ${H}`} role="group" aria-label="Connection map. Each node is a button.">
-        <g class="edges" aria-hidden="true">
-          {
-            edges.map((e) => {
-              const y1 = ySource[e.from];
-              const y2 = yTech[e.to];
-              return (
-                <path
-                  data-from={e.from}
-                  data-to={e.to}
-                  d={`M${xL + 12} ${y1} C ${(xL + xR) / 2} ${y1}, ${(xL + xR) / 2} ${y2}, ${xR - 12} ${y2}`}
-                />
-              );
-            })
-          }
-        </g>
-        {
-          sources.map((s) => (
-            <g
-              class:list={['node', 'source', s.kind]}
-              data-node={s.id}
-              role="button"
-              tabindex="0"
-              aria-pressed="false"
-              aria-label={`${s.label}, ${s.kind}, ${s.tech.length} technologies`}
-              transform={`translate(${xL} ${ySource[s.id]})`}
-            >
-              <rect class="hit" x={-xL + 8} y="-14" width={xL + 12} height="28" rx="4" />
-              <text x="-14" dy="0.35em" text-anchor="end">
-                {s.label}
-                {s.kind === 'role' && <tspan class="kind"> · role</tspan>}
-              </text>
-              <circle r="5" />
+  <details class="map-disclosure" data-map-disclosure>
+    <summary>Explore connections <span class="summary-note">Projects ↔ technologies</span></summary>
+    <div class="explorer" id="technology-map">
+      <div class="toolbar">
+        <p>Click a name to highlight its connections. Click again or reset to see all.</p>
+        <button type="button" data-reset>Reset map</button>
+      </div>
+      <p class="selection-status" data-status aria-live="polite">All projects, roles, and technologies</p>
+      <div class="column-labels" aria-hidden="true"><span>Projects & roles</span><span>Technologies</span></div>
+      <div class="map-scroll" tabindex="0" role="region" aria-label="Scrollable technology connection map">
+        <div class="map-canvas">
+          <svg viewBox={`0 0 1100 ${mapHeight}`} role="group" aria-label="Projects and roles connected to technologies. Select a name to highlight its connections.">
+            <g aria-hidden="true">
+              {edges.map(e => <path data-from={e.from} data-to={e.to} d={`M 352 ${sourceY[e.from] / 100 * mapHeight} C 500 ${sourceY[e.from] / 100 * mapHeight}, 540 ${techY[e.to] / 100 * mapHeight}, 678 ${techY[e.to] / 100 * mapHeight}`} />)}
             </g>
-          ))
-        }
-        {
-          techs.map((t) => (
-            <g
-              class="node tech"
-              data-node={t.id}
-              role="button"
-              tabindex="0"
-              aria-pressed="false"
-              aria-label={`${t.label}, used in ${t.count}`}
-              transform={`translate(${xR} ${yTech[t.id]})`}
-            >
-              <rect class="hit" x="-12" y="-10" width={W - xR} height="20" rx="4" />
-              <circle r="4" />
-              <text x="14" dy="0.35em">{t.label}</text>
-            </g>
-          ))
-        }
-      </svg>
-      <figcaption>Projects and roles on the left, technologies on the right. Lines show where each was used.</figcaption>
-    </figure>
-
-  </div>
+            {orderedSources.map(s => <g class="map-node source" transform={`translate(340 ${sourceY[s.id] / 100 * mapHeight})`} data-node={s.id} role="button" tabindex="0" aria-pressed="false" aria-label={`${s.label}, ${s.kind}`}>
+              <rect class="hit" x="-332" y="-13" width="345" height="26" rx="3" />
+              <text x="-14" dy=".35em" text-anchor="end">{s.label}{s.kind === 'role' && <tspan class="kind"> · role</tspan>}</text><circle r="5" />
+            </g>)}
+            {techs.map(t => <g class="map-node technology" transform={`translate(690 ${techY[t.id] / 100 * mapHeight})`} data-node={t.id} role="button" tabindex="0" aria-pressed="false" aria-label={t.label}>
+              <rect class="hit" x="-12" y="-13" width="410" height="26" rx="3" />
+              <circle r="4" /><text x="14" dy=".35em">{t.label}</text>
+            </g>)}
+          </svg>
+        </div>
+      </div>
+      <p class="map-note">Projects and roles on the left, technologies on the right. Lines show where each was used.</p>
+    </div>
   </details>
-
-  <p class="more">
-    The <a class="text-link" href={profile.links.resume} target="_blank" rel="noopener">résumé<span class="visually-hidden"> (PDF, opens in a new tab)</span></a> has the full list.
-  </p>
-
+  <p class="more">The <a class="text-link" href={profile.links.resume} target="_blank" rel="noopener">résumé<span class="visually-hidden"> (PDF, opens in a new tab)</span></a> has the full list.</p>
   <script type="application/json" data-graph set:html={JSON.stringify(graphData)} />
 </section>
-
 <script>
-  type Graph = {
-    nodes: Record<string, { label: string; kind: 'project' | 'role' | 'tech'; href?: string; count?: number }>;
-    links: Record<string, string[]>;
-  };
-
   function setupLab() {
     const lab = document.querySelector<HTMLElement>('[data-lab]');
     if (!lab || lab.dataset.ready) return;
     lab.dataset.ready = 'true';
-
-    const graph: Graph = JSON.parse(lab.querySelector('[data-graph]')!.textContent!);
-    const panel = lab.querySelector<HTMLElement>('[data-panel]')!;
-    const emptyHtml = panel.innerHTML;
-    const nodes = Array.from(lab.querySelectorAll<HTMLElement>('[data-node]'));
-    const paths = Array.from(lab.querySelectorAll<SVGPathElement>('.edges path'));
-    let locked: string | null = null;
-
-    const esc = (s: string) =>
-      s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
-
-    function show(id: string | null) {
-      lab!.classList.toggle('has-focus', !!id);
-      const linked = new Set(id ? (graph.links[id] ?? []) : []);
-      for (const el of nodes) {
-        const nid = el.dataset.node!;
-        el.classList.toggle('is-focus', nid === id);
-        el.classList.toggle('is-linked', linked.has(nid));
-        el.setAttribute('aria-pressed', String(nid === locked));
-      }
-      for (const p of paths) p.classList.toggle('is-on', !!id && (p.dataset.from === id || p.dataset.to === id));
-      if (id === locked) renderPanel(id);
-      const evidence = !id ? [] : graph.nodes[id].kind === 'tech' ? (graph.links[id] ?? []) : [id];
-      document.dispatchEvent(new CustomEvent('lab:change', { detail: { ids: locked ? evidence : [] } }));
-    }
-
-    function renderPanel(id: string | null) {
-      if (!id) {
-        panel.innerHTML = emptyHtml;
-        return;
-      }
-      const node = graph.nodes[id];
-      const related = (graph.links[id] ?? []).map((rid) => ({ id: rid, ...graph.nodes[rid] }));
-      const heading =
-        node.kind === 'tech'
-          ? `Used in ${related.length} ${related.length === 1 ? 'place' : 'places'}`
-          : `${related.length} technologies`;
-      const items = related
-        .map((r) =>
-          r.kind === 'tech'
-            ? `<li><button type="button" class="panel-link" data-select="${r.id}">${esc(r.label)}</button></li>`
-            : `<li><a class="panel-link" href="${r.href}">${esc(r.label)}${r.kind === 'role' ? ' <span>role</span>' : ''}</a></li>`,
-        )
-        .join('');
-      const open =
-        node.kind !== 'tech' && node.href
-          ? `<a class="panel-open" href="${node.href}">${node.kind === 'role' ? 'See experience' : 'Open project'} →</a>`
-          : '';
-      panel.innerHTML = `
-        <p class="panel-kind">${node.kind === 'tech' ? 'Technology' : node.kind === 'role' ? 'Role' : 'Project'}</p>
-        <h3 class="panel-title">${esc(node.label)}</h3>
-        <p class="panel-sub">${heading}</p>
-        <ul class="panel-list">${items}</ul>
-        <div class="panel-actions">${open}<button type="button" class="reset-link" data-clear>Reset</button></div>`;
-    }
-
-    const select = (id: string | null) => {
-      locked = id && id !== locked ? id : null;
-      show(locked);
-    };
-
-    // Hover previews for fine pointers; selection is click, tap, Enter, or Space.
-    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-    for (const el of nodes) {
-      const id = el.dataset.node!;
-      el.addEventListener('click', () => {
-        select(id);
-        if (locked && window.matchMedia('(max-width: 59.99rem)').matches) {
-          panel.scrollIntoView({ block: 'nearest', behavior: 'auto' });
-        }
+    const graph: {nodes: Record<string,{label:string;kind:string}>;links:Record<string,string[]>} = JSON.parse(lab.querySelector('[data-graph]')!.textContent!);
+    const map = lab.querySelector<HTMLElement>('.map-canvas')!;
+    const nodes = Array.from(map.querySelectorAll<SVGGElement>('[data-node]'));
+    const paths = Array.from(map.querySelectorAll<SVGPathElement>('path'));
+    const status = lab.querySelector<HTMLElement>('[data-status]')!;
+    let selected: string | null = null;
+    function select(id: string | null) {
+      selected = id;
+      const linked = new Set(id ? graph.links[id] : []);
+      map.classList.toggle('has-selection', !!id);
+      nodes.forEach(button => {
+        const active = button.dataset.node === id;
+        button.setAttribute('aria-pressed', String(active));
+        button.classList.toggle('connected', linked.has(button.dataset.node!));
       });
-      if (el.tagName.toLowerCase() === 'g') {
-        el.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            select(id);
-          }
-        });
-      }
-      if (finePointer) {
-        el.addEventListener('pointerenter', () => !locked && show(id));
-        el.addEventListener('pointerleave', () => !locked && show(null));
-      }
-      el.addEventListener('focus', () => !locked && show(id));
-      el.addEventListener('blur', () => !locked && show(null));
+      paths.forEach(path => path.classList.toggle('connected', !!id && (path.dataset.from === id || path.dataset.to === id)));
+      status.textContent = id ? `${graph.nodes[id].label} · ${linked.size} ${linked.size === 1 ? 'connection' : 'connections'}` : 'All projects, roles, and technologies';
     }
-
-    panel.addEventListener('click', (e) => {
-      const t = e.target as HTMLElement;
-      const sel = t.closest<HTMLElement>('[data-select]');
-      if (sel) {
-        locked = null;
-        select(sel.dataset.select!);
-      }
-      if (t.closest('[data-clear]')) {
-        const previous = locked;
-        select(null);
-        nodes.find(n => n.dataset.node === previous && n.getBoundingClientRect().width > 0)?.focus();
-        show(null);
-      }
+    nodes.forEach(button => {
+      const toggle = () => select(selected === button.dataset.node ? null : button.dataset.node!);
+      button.addEventListener('click', toggle);
+      button.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+      });
     });
-
-    lab.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && locked) select(null);
-    });
-
-    // Technology names elsewhere on the page jump here with that technology selected.
-    document.addEventListener('lab:select', ((e: CustomEvent<string>) => {
-      locked = null;
+    lab.querySelector('[data-reset]')!.addEventListener('click', () => select(null));
+    map.addEventListener('keydown', e => { if(e.key === 'Escape') select(null); });
+    document.addEventListener('lab:select', ((e:CustomEvent<string>) => {
+      if (!graph.nodes[e.detail]) return;
+      lab.querySelector<HTMLDetailsElement>('[data-map-disclosure]')!.open = true;
       select(e.detail);
     }) as EventListener);
-
-    const fromUrl = new URLSearchParams(location.search).get('tech');
-    if (fromUrl && graph.nodes[fromUrl]) {
-      select(fromUrl);
-      requestAnimationFrame(() => lab.scrollIntoView({ block: 'start' }));
+    const id = new URLSearchParams(location.search).get('tech');
+    if (id && graph.nodes[id]) {
+      lab.querySelector<HTMLDetailsElement>('[data-map-disclosure]')!.open = true;
+      select(id);
     }
   }
-
   document.addEventListener('astro:page-load', setupLab);
 </script>
-
 <style>
-  .section {
-    padding-top: var(--section-gap);
-  }
-
-  .intro {
-    max-width: var(--width-prose);
-    margin-bottom: var(--space-5);
-    color: var(--color-ink-soft);
-  }
-
-  .groups {
-    margin: 0;
-    border-top: var(--border-hairline);
-  }
-
-  .group {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-1) var(--space-7);
-    padding-block: var(--space-3);
-    border-bottom: var(--border-hairline);
-  }
-
-  @media (min-width: 48rem) {
-    .group {
-      grid-template-columns: 14rem minmax(0, 1fr);
-      align-items: baseline;
-    }
-  }
-
-  dt {
-    font-size: var(--text-sm);
-    font-weight: 600;
-  }
-
-  dd {
-    margin: 0;
-  }
-
-  .items {
-    display: flex;
-    flex-wrap: wrap;
-    list-style: none;
-    font-size: var(--text-md);
-    line-height: 1.7;
-  }
-
-  .items li:not(:last-child)::after {
-    content: '·';
-    margin-inline: 0.5em;
-    color: var(--color-rule-strong);
-  }
-
-  /* Chips look like the text they replaced; interaction shows on hover, focus, and selection. */
-  .chip {
-    padding: var(--space-2) 0;
-    min-height: 2.75rem;
-    border: 0;
-    background: none;
-    font: inherit;
-    color: var(--color-ink);
-    cursor: pointer;
-    text-decoration: underline;
-    text-decoration-color: var(--color-rule-strong);
-    text-underline-offset: 0.25em;
-    transition: color var(--duration-fast) var(--ease-out), text-decoration-color var(--duration-fast) var(--ease-out);
-  }
-
-  .chip.plain {
-    cursor: default;
-    color: var(--color-ink-soft);
-  }
-
-  .chip:not(.plain):hover,
-  .chip:not(.plain):focus-visible {
-    text-decoration-color: var(--color-rule-strong);
-  }
-
-  .count {
-    display: none;
-    margin-left: 0.2em;
-    font-family: var(--font-mono);
-    font-size: 0.65em;
-    vertical-align: super;
-    color: var(--color-muted);
-  }
-
-  .has-focus .chip {
-    color: var(--color-muted);
-  }
-
-  .has-focus .chip.is-linked,
-  .has-focus .chip.is-focus {
-    color: var(--color-accent-ink);
-    text-decoration-color: currentColor;
-  }
-
-  .lab {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-5);
-    margin-top: var(--space-6);
-  }
-
-  @media (min-width: 60rem) {
-    .lab {
-      grid-template-columns: minmax(0, 1fr);
-      align-items: start;
-    }
-  }
-
-  .map {
-    display: none;
-    margin: 0;
-  }
-
-  @media (min-width: 60rem) {
-    .map {
-      display: block;
-    }
-  }
-
-  svg {
-    display: block;
-    width: 100%;
-    height: auto;
-    overflow: visible;
-  }
-
-  .edges path {
-    fill: none;
-    stroke: var(--color-rule-strong);
-    stroke-width: 1;
-    opacity: 0.55;
-    transition: opacity var(--duration-base) var(--ease-out), stroke var(--duration-base) var(--ease-out);
-  }
-
-  .has-focus .edges path {
-    opacity: calc(var(--opacity-dim) / 2);
-  }
-
-  .has-focus .edges path.is-on {
-    stroke: var(--color-accent);
-    stroke-width: 1.5;
-    opacity: 1;
-  }
-
-  .node {
-    cursor: pointer;
-    outline: none;
-  }
-
-  .node .hit {
-    fill: transparent;
-  }
-
-  .node text {
-    font-family: var(--font-sans);
-    font-size: 14px;
-    fill: var(--color-ink-soft);
-    transition: fill var(--duration-fast) var(--ease-out), opacity var(--duration-base) var(--ease-out);
-  }
-
-  .source text {
-    font-size: 14px;
-    font-weight: 500;
-    fill: var(--color-ink);
-  }
-
-  .node .kind {
-    font-weight: 400;
-    fill: var(--color-muted);
-  }
-
-  .node circle {
-    fill: var(--color-bg);
-    stroke: var(--color-ink-soft);
-    stroke-width: 1.5;
-    transition: fill var(--duration-fast) var(--ease-out), stroke var(--duration-fast) var(--ease-out);
-  }
-
-  .source.project circle {
-    fill: var(--color-ink);
-    stroke: var(--color-ink);
-  }
-
-  .node:hover text,
-  .node:focus-visible text {
-    fill: var(--color-accent-ink);
-  }
-
-  .node:focus-visible .hit {
-    stroke: var(--color-focus);
-    stroke-width: 2;
-  }
-
-  .has-focus .node text {
-    fill: var(--color-muted);
-  }
-
-  .has-focus .node.is-focus text,
-  .has-focus .node.is-linked text {
-    opacity: 1;
-    fill: var(--color-ink);
-  }
-
-  .has-focus .node.is-focus circle,
-  .has-focus .node.is-linked circle {
-    fill: var(--color-accent);
-    stroke: var(--color-accent);
-  }
-
-  figcaption {
-    margin-top: var(--space-3);
-    font-size: var(--text-xs);
-    color: var(--color-muted);
-  }
-
-  /* Panel content is injected by the script, so its inner styles use :global. */
-  .additional-label { margin-top: var(--space-4); color: var(--color-muted); font-size: var(--text-xs); }
-  .additional { display: flex; flex-wrap: wrap; gap: 0 var(--space-4); list-style: none; font-size: var(--text-sm); }
-  .map-disclosure { margin-top: var(--space-4); }
-  .map-disclosure summary { min-height: 2.75rem; padding-block: var(--space-2); font-size: var(--text-sm); }
-  .panel {
-    margin-top: var(--space-4);
-    padding: var(--space-4);
-    border: var(--border-hairline);
-    border-radius: var(--radius-md);
-    background: var(--color-surface);
-    font-size: var(--text-sm);
-  }
-
-
-  .panel :global(.panel-empty) {
-    color: var(--color-muted);
-  }
-
-  .panel :global(.panel-kind) {
-    font-family: var(--font-mono);
-    font-size: var(--text-2xs);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--color-accent-ink);
-  }
-
-  .panel :global(.panel-title) {
-    margin-top: var(--space-1);
-    font-size: var(--text-xl);
-  }
-
-  .panel :global(.panel-sub) {
-    margin-top: var(--space-1);
-    color: var(--color-muted);
-  }
-
-  .panel :global(.panel-list) {
-    display: grid;
-    gap: 2px;
-    margin-top: var(--space-3);
-    list-style: none;
-  }
-
-  .panel :global(.panel-link) {
-    display: inline-flex;
-    gap: var(--space-2);
-    align-items: baseline;
-    min-height: 2.75rem;
-    padding: var(--space-2) 0;
-    border: 0;
-    background: none;
-    font: inherit;
-    color: var(--color-ink);
-    text-align: left;
-    text-decoration: underline;
-    text-decoration-color: var(--color-rule-strong);
-    text-underline-offset: 0.2em;
-    cursor: pointer;
-    transition: color var(--duration-fast) var(--ease-out);
-  }
-
-  .panel :global(.panel-link span) {
-    font-size: var(--text-xs);
-    color: var(--color-muted);
-  }
-
-  .panel :global(.panel-link:hover) {
-    color: var(--color-accent-ink);
-    text-decoration-color: currentColor;
-  }
-
-  .panel :global(.panel-actions) {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: var(--space-3);
-    margin-top: var(--space-4);
-    padding-top: var(--space-3);
-    border-top: var(--border-hairline);
-  }
-
-  .panel :global(.panel-open) {
-    font-weight: 500;
-    color: var(--color-ink);
-    text-decoration: none;
-  }
-
-  .panel :global(.panel-open:hover) {
-    color: var(--color-accent-ink);
-  }
-
-
-  .more {
-    margin-top: var(--space-4);
-    font-size: var(--text-sm);
-    color: var(--color-muted);
-  }
-
-  .groups { display: grid; gap: var(--space-5) var(--space-7); border: 0; grid-template-columns: minmax(0,1fr); }
-  .group { display: block; border: 0; padding: 0; }
-  .group dt { color: var(--color-muted); font-size: var(--text-sm); font-weight: 500; margin-bottom: var(--space-1); }
-  .items { font-size: var(--text-base); }
-  .panel { max-width: 68ch; margin-top: var(--space-6); }
-  .panel:has(.panel-empty) { border: 0; border-left: 2px solid var(--color-rule-strong); padding: var(--space-2) var(--space-4); background: none; }
-  .panel :global(.panel-empty) { font-size: var(--text-base); color: var(--color-ink-soft); }
-  .map-disclosure { padding-top: var(--space-3); border-top: var(--border-hairline); margin-top: var(--space-5); }
-  @media (min-width: 40rem) { .groups { grid-template-columns: repeat(2,minmax(0,1fr)); } }
-  @media (min-width: 68rem) { .groups { grid-template-columns: repeat(3,minmax(0,1fr)); } }
+  .section { padding-top: var(--section-gap); }
+  .intro { color: var(--color-ink-soft); margin-bottom: 24px; }
+  .skill-groups { display:grid; grid-template-columns:minmax(0,1fr); gap:28px 40px; margin-block:24px 32px; }
+  dt { font-size:var(--text-sm); font-weight:600; margin-bottom:10px; }
+  dd { margin:0; }
+  .skill-groups ul { display:flex; flex-wrap:wrap; gap:8px 16px; list-style:none; color:var(--color-ink-soft); font-size:var(--text-base); }
+  .map-disclosure { border-top:var(--border-hairline); }
+  summary { cursor:pointer; min-height:44px; padding-block:18px; color:var(--color-accent-ink); }
+  .summary-note { margin-left:12px; font-size:var(--text-xs); color:var(--color-muted); }
+  .explorer { background:transparent; }
+  .toolbar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; padding:16px; }
+  .toolbar p { color:var(--color-muted); font-size:var(--text-sm); max-width:55ch; }
+  .toolbar button { min-height:44px; padding:8px 16px; border:1px solid var(--color-rule-strong); border-radius:6px; color:var(--color-ink); background:var(--color-bg); font:inherit; cursor:pointer; }
+  .selection-status { padding:12px 16px; min-height:48px; font-size:var(--text-sm); color:var(--color-accent-ink); border-block:var(--border-hairline); }
+  .column-labels { display:flex; justify-content:space-between; padding:12px 16px; font-size:var(--text-xs); color:var(--color-muted); }
+  .map-scroll { overflow-x:auto; padding:4px; }
+  .map-canvas { min-width:1100px; }
+  svg { display:block; width:100%; height:auto; overflow:visible; }
+  path { fill:none; stroke:var(--color-rule-strong); stroke-width:1; opacity:.6; }
+  .map-node { cursor:pointer; outline:none; }
+  .hit { fill:transparent; }
+  .map-node text { font-family:var(--font-sans); font-size:16px; fill:var(--color-ink-soft); }
+  .source text { font-weight:500; fill:var(--color-ink); }
+  .kind { font-weight:400; fill:var(--color-muted); }
+  .map-node circle { fill:var(--color-bg); stroke:var(--color-ink-soft); stroke-width:1.5; }
+  .map-node:hover text, .map-node.connected text, .map-node[aria-pressed="true"] text { fill:var(--color-accent-ink); }
+  .map-node[aria-pressed="true"] text { font-weight:600; }
+  .map-node:focus-visible .hit { stroke:var(--color-focus); stroke-width:2; }
+  .map-node.connected circle, .map-node[aria-pressed="true"] circle { fill:var(--color-accent); stroke:var(--color-accent); }
+  .has-selection path { opacity:.1; }
+  .has-selection path.connected { opacity:1; stroke:var(--color-accent); stroke-width:2; }
+  .map-note,.more { color:var(--color-muted); font-size:var(--text-xs); margin-top:12px; }
+  .map-note { padding:12px 16px; border-top:var(--border-hairline); margin:0; }
+  @media(min-width:40rem) { .skill-groups { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  @media(min-width:68rem) { .skill-groups { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+  @media(prefers-reduced-motion:no-preference) { path { transition:stroke 150ms ease,opacity 150ms ease; } }
 </style>
