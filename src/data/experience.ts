@@ -6,7 +6,7 @@ export type Role = {
   dates: string;
   current?: boolean;
   points: string[];
-  /** Tools named for this role in the résumé; used by the Data Lab connection map. */
+  /** Tools named for this role in the résumé; used by the skills connection map. */
   tech: string[];
   link?: { label: string; href: string };
 };
@@ -20,8 +20,9 @@ export const experience: Role[] = [
     dates: 'Aug 2026 – Present',
     current: true,
     points: [
-      'Selected from 200+ applicants for a Zoom-sponsored fellowship, building the Zoom Lens prototype described above.',
-      'Built a Node.js WebSocket server that routes each answer only to the participant who asked, without interrupting the presenter, and verified the isolation with automated tests.',
+      'Selected from 200+ applicants for a Zoom-sponsored fellowship at ASU Next Lab.',
+      'Building Zoom Lens, an AI assistant that runs inside live Zoom meetings, on the Zoom Apps SDK and Realtime Media Streams API.',
+      'Wrote the Node.js WebSocket server that sends each answer only to the participant who asked, with automated tests for that isolation.',
     ],
     tech: ['Node.js', 'Zoom Apps SDK', 'Zoom Realtime Media Streams API', 'Claude'],
     link: { label: 'Zoom Lens case study', href: '/work/zoom-lens' },

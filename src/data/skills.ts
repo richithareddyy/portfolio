@@ -1,12 +1,17 @@
 export type SkillGroup = { name: string; items: string[] };
 
-/** Complete Technical Skills section from the published résumé. */
+/** Technical skills from the résumé, grouped by area. Rust and GraphQL are added from CodeAtlas, Neo4j and WebSockets from the projects. */
 export const skills: SkillGroup[] = [
-  { name: 'Languages', items: ['Python', 'SQL', 'Java', 'JavaScript', 'C++', 'C', 'R', 'MATLAB'] },
-  { name: 'AI / ML', items: ['TensorFlow', 'Scikit-learn', 'XGBoost', 'SHAP', 'NLTK', 'VADER', 'OpenCV'] },
-  { name: 'Data Science & Analytics', items: ['Pandas', 'NumPy', 'Matplotlib', 'Jupyter', 'PySpark', 'Power BI', 'Tableau'] },
-  { name: 'Frameworks & Libraries', items: ['Flask', 'Node.js', 'Express.js', 'Streamlit', 'PyMuPDF'] },
-  { name: 'Data Platforms', items: ['Databricks', 'Snowflake', 'PostgreSQL', 'MongoDB', 'SQLite'] },
-  { name: 'APIs & SDKs', items: ['Google Gemini API', 'Zoom Video SDK', 'Zoom Realtime Media Streams API', 'REST APIs'] },
-  { name: 'Developer Tools', items: ['Docker', 'Git', 'GitHub Actions', 'ServiceNow'] },
+  { name: 'Languages', items: ['Python', 'SQL', 'JavaScript', 'Rust', 'Java', 'C++', 'C', 'R', 'MATLAB'] },
+  {
+    name: 'AI / ML',
+    items: ['Claude API', 'Google Gemini API', 'Scikit-learn', 'XGBoost', 'SHAP', 'TensorFlow', 'NLTK', 'VADER', 'OpenCV'],
+  },
+  {
+    name: 'Backend',
+    items: ['Node.js', 'Express.js', 'Flask', 'REST APIs', 'GraphQL', 'WebSockets', 'Zoom Apps SDK', 'Zoom Realtime Media Streams API', 'Zoom Video SDK'],
+  },
+  { name: 'Databases', items: ['PostgreSQL', 'MongoDB', 'Neo4j', 'SQLite', 'Snowflake', 'Databricks'] },
+  { name: 'Data & analytics', items: ['Pandas', 'NumPy', 'PySpark', 'Matplotlib', 'Jupyter', 'Streamlit', 'Power BI', 'Tableau'] },
+  { name: 'Infrastructure & tools', items: ['Docker', 'Git', 'GitHub Actions', 'ffmpeg', 'ServiceNow'] },
 ];

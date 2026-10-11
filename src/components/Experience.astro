@@ -11,7 +11,8 @@ import { techId } from '../data/graph';
   <ol class="timeline">
     {
       experience.map((role) => (
-        <li class:list={['role', { current: role.current }]} data-reveal data-role-id={`role:${role.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>
+        <li class:list={['role', role.current ? 'lead' : 'earlier']} data-role-id={`role:${role.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>
+          <p class="dates">{role.dates}</p>
           <div class="what">
             <h3>
               {role.title}
@@ -21,13 +22,14 @@ import { techId } from '../data/graph';
                 <span class="detail"> · {role.place}</span>
               </span>
             </h3>
-            <p class="dates">{role.dates}</p>
             <ul class="points">
               {role.points.map((p) => <li>{p}</li>)}
             </ul>
-            <ul class="stack role-tech" aria-label="Technologies">
-              {role.tech.map((t) => <li><button type="button" class="tech-link" data-tech-link={techId(t)}>{t}</button></li>)}
-            </ul>
+            {role.current && (
+              <ul class="stack role-tech" aria-label="Technologies">
+                {role.tech.map((t) => <li><button type="button" class="tech-link" data-tech-link={techId(t)}>{t}</button></li>)}
+              </ul>
+            )}
             {role.link && (
               <a class="arrow-link more" href={role.link.href}>
                 {role.link.label} <span class="arrow" aria-hidden="true">→</span>
@@ -71,8 +73,8 @@ import { techId } from '../data/graph';
   .edu li {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-1) var(--space-7);
-    padding-block: var(--space-5);
+    gap: var(--space-2) var(--space-7);
+    padding-block: var(--space-6);
     border-bottom: var(--border-hairline);
   }
 
@@ -88,34 +90,39 @@ import { techId } from '../data/graph';
   }
 
   .dates {
+    padding-top: 0.35em;
     font-family: var(--font-mono);
     font-size: var(--text-xs);
     font-weight: 500;
-    padding-top: 0.35em;
+    color: var(--color-muted);
+    transition: color var(--duration-base) var(--ease-out);
   }
 
-  .current .dates::before {
-    content: '';
-    display: inline-block;
-    width: 7px;
-    height: 7px;
-    margin-right: var(--space-2);
-    border-radius: 50%;
-    background: var(--color-accent);
-    vertical-align: 1px;
+  /* The entry being read: its dates take the accent color. */
+  .role.is-current .dates,
+  .lead .dates {
+    color: var(--color-accent-ink);
+  }
+
+  .what {
+    display: grid;
+    justify-items: start;
+    min-width: 0;
   }
 
   h3 {
     display: grid;
-    gap: 2px;
-    font-size: var(--text-xl);
+    gap: var(--space-1);
+    font-size: var(--text-2xl);
+    font-weight: 500;
   }
 
   .org {
     font-family: var(--font-sans);
-    font-size: var(--text-sm);
+    font-size: var(--text-base);
     font-weight: 500;
     letter-spacing: 0;
+    line-height: 1.5;
     color: var(--color-ink-soft);
   }
 
@@ -127,10 +134,11 @@ import { techId } from '../data/graph';
   .points {
     display: grid;
     gap: var(--space-2);
+    max-width: 68ch;
     margin-top: var(--space-3);
-    max-width: 42rem;
     list-style: none;
-    font-size: var(--text-sm);
+    font-size: var(--text-base);
+    line-height: 1.65;
     color: var(--color-ink-soft);
   }
 
@@ -143,70 +151,61 @@ import { techId } from '../data/graph';
     content: '';
     position: absolute;
     left: 0;
-    top: 0.75em;
+    top: 0.8em;
     width: 6px;
     height: 1px;
     background: var(--color-faint);
   }
 
-  .role-tech {
+  .role-tech,
+  .more {
     margin-top: var(--space-3);
-  }
-
-  /* The entry being read: its dates take the accent color. */
-  .dates {
-    transition: color var(--duration-base) var(--ease-out);
-  }
-
-  .role.is-current .dates {
-    color: var(--color-accent-ink);
   }
 
   .more {
-    margin-top: var(--space-3);
     font-size: var(--text-sm);
+  }
+
+  /* Earlier roles stay, with less weight than the fellowship. */
+  .earlier {
+    padding-block: var(--space-5);
+  }
+
+  .earlier h3 {
+    font-size: var(--text-lg);
+  }
+
+  .earlier .org {
+    font-size: var(--text-sm);
+  }
+
+  .earlier .points {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
   }
 
   .sub {
     margin-top: var(--space-7);
     margin-bottom: var(--space-2);
     font-size: var(--text-lg);
+    font-weight: 500;
   }
 
   .edu {
     border-top: var(--border-hairline);
   }
 
+  .edu li {
+    padding-block: var(--space-4);
+  }
+
   .degree {
-    font-weight: 500;
     font-size: var(--text-sm);
+    font-weight: 500;
   }
 
   .meta {
     font-size: var(--text-xs);
     color: var(--color-muted);
   }
-
-  .timeline { border-left: var(--border-hairline); margin-left: 4px; }
-  .role { position: relative; padding-left: var(--space-5); }
-  .role::before { content: ''; position: absolute; left: -4px; top: 2rem; width: 7px; height: 7px; border-radius: 50%; background: var(--color-bg); border: 1px solid var(--color-rule-strong); }
-  .role:first-child::before { top: .6rem; border-color: var(--color-accent); background: var(--color-accent); }
-  .current .dates::before { display: none; }
-
-
-  .points { font-size: var(--text-base); line-height: 1.7; max-width: 68ch; gap: var(--space-3); }
-  .org { font-size: var(--text-base); line-height: 1.5; margin-top: var(--space-2); }
-  .role-tech { font-family: var(--font-sans); }
-  .role { padding-block: var(--space-6); }
-  .dates { color: var(--color-muted); }
-  .role { display: block; }
-  .what { display: grid; grid-template-columns: minmax(0,1fr); }
-  .what .dates { margin-top: var(--space-2); }
-  .what .more { justify-self: start; }
-  @media (min-width: 48rem) {
-    .what { grid-template-columns: 11rem minmax(0,1fr); column-gap: var(--space-7); }
-    .what > * { grid-column: 2; }
-    .what .dates { grid-column: 1; grid-row: 1; margin: 0; }
-  }
-
 </style>

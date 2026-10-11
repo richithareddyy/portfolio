@@ -1,174 +1,132 @@
 ---
 import { profile } from '../data/profile';
-import { projects } from '../data/projects';
-import { experience } from '../data/experience';
-import HeroConstellation from './HeroConstellation.astro';
 
-const demos = projects.filter((p) => p.demo).length;
+// Accomplishments rather than counts: what each flagship project is, and the evidence behind it.
+const highlights = [
+  { slug: 'zoom-lens', title: 'Zoom Lens', what: 'AI assistant inside live Zoom meetings', proof: 'Zoom Fellowship project' },
+  { slug: 'codeatlas', title: 'CodeAtlas', what: 'Change-impact analysis for Rust', proof: 'Indexes tokio in 3.6 s' },
+  { slug: 'reddit-data-pipeline', title: 'Reddit ETL Pipeline', what: '18.9M records into PostgreSQL', proof: 'Full run cut from 584 s to 345 s' },
+];
 ---
 
 <section class="hero wrap" id="top" aria-labelledby="hero-title">
-  <div class="intro">
-    <div class="body">
-      <div class="body-main">
-    <h1 id="hero-title" class="name"><span>Richitha</span> <span>Rekula<span class="dot" aria-hidden="true">.</span></span></h1>
-    <p class="lede enter" style="--d: 60ms">Software engineer building applied AI systems.</p>
-    <p class="desc enter" style="--d: 120ms">
-      ASU master’s student and Zoom Fellow at Next Lab. I build AI products and backend systems, from an in-meeting assistant to a Rust code analysis engine.
-    </p>
+  <div class="body">
+    <div class="main">
+      <h1 id="hero-title" class="name"><span>Richitha</span> <span>Rekula<span class="dot" aria-hidden="true">.</span></span></h1>
+      <p class="lede">Software engineer building applied AI and backend systems.</p>
+      <p class="desc">
+        <strong>Zoom Fellow at ASU Next Lab</strong>, building an AI assistant that runs inside live Zoom meetings. I also build
+        the systems underneath: a Rust code-analysis engine and a PostgreSQL pipeline that accounts for every one of 18.9M records.
+      </p>
 
-    <div class="actions enter" style="--d: 180ms">
-      <a class="button primary" href="#work">View projects</a>
-      <a class="button" href={profile.links.resume} target="_blank" rel="noopener">
-        Résumé <span class="ext-arrow" aria-hidden="true">↗</span><span class="visually-hidden"> (PDF, opens in a new tab)</span>
-      </a>
-      <ul class="quiet" aria-label="Profiles and email">
-        <li><a href={profile.links.github} target="_blank" rel="me noopener">GitHub<span class="visually-hidden"> (opens in a new tab)</span></a></li>
-        <li><a href={profile.links.linkedin} target="_blank" rel="me noopener">LinkedIn<span class="visually-hidden"> (opens in a new tab)</span></a></li>
-        <li><a href={`mailto:${profile.email}`}>Email</a></li>
-      </ul>
-    </div>
-    <p class="readout enter" style="--d: 240ms" aria-label="Portfolio at a glance">
-      <a href="#work" data-explore="projects"><span>Projects</span> <b>{String(projects.length).padStart(2, '0')}</b></a>
-      <a href="#work" data-explore="demos"><span>Live demos</span> <b>{String(demos).padStart(2, '0')}</b></a>
-      <a href="#experience" data-explore="experience"><span>Roles</span> <b>{String(experience.length).padStart(2, '0')}</b></a>
-    </p>
-      </div>
-      <div class="body-viz enter" style="--d: 300ms">
-        <HeroConstellation />
+      <div class="actions">
+        <a class="button primary" href="#work">View projects</a>
+        <a class="button" href={profile.links.resume} target="_blank" rel="noopener">
+          Résumé <span class="ext-arrow" aria-hidden="true">↗</span><span class="visually-hidden"> (PDF, opens in a new tab)</span>
+        </a>
+        <ul class="quiet" aria-label="Profiles and email">
+          <li><a href={profile.links.github} target="_blank" rel="me noopener">GitHub<span class="visually-hidden"> (opens in a new tab)</span></a></li>
+          <li><a href={profile.links.linkedin} target="_blank" rel="me noopener">LinkedIn<span class="visually-hidden"> (opens in a new tab)</span></a></li>
+          <li><a href={`mailto:${profile.email}`}>Email</a></li>
+        </ul>
       </div>
     </div>
+
+    <nav class="index" aria-labelledby="index-title">
+      <p id="index-title" class="label">Featured work</p>
+      <ol>
+        {
+          highlights.map((h, i) => (
+            <li>
+              <a href={`#project-${h.slug}`}>
+                <span class="n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                <span class="t">{h.title}</span>
+                <span class="w">{h.what}</span>
+                <span class="p">{h.proof}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
   </div>
 
-  <div class="band enter" style="--d: 300ms">
-    <dl class="facts">
-      <div>
-        <dt>Now</dt>
-        <dd>Zoom Fellow, ASU Next Lab</dd>
-        <dd class="sub">Fellowship in partnership with Zoom</dd>
-      </div>
-      <div>
-        <dt>Education</dt>
-        <dd>M.S. Data Science, Analytics and Engineering</dd>
-        <dd class="sub">Arizona State University · {profile.graduation}</dd>
-      </div>
-      <div>
-        <dt>Open to</dt>
-        <dd>Applied AI, software, AI/ML, and backend roles</dd>
-        <dd class="sub">New grad and internship</dd>
-      </div>
-    </dl>
-    <a class="scroll" href="#work">
-      Project index <span class="arrow" aria-hidden="true">↓</span>
-    </a>
-  </div>
+  <dl class="facts">
+    <div>
+      <dt class="label">Education</dt>
+      <dd>M.S. Data Science, Analytics and Engineering</dd>
+      <dd class="sub">Arizona State University · {profile.graduation}</dd>
+    </div>
+    <div>
+      <dt class="label">Open to</dt>
+      <dd>Software engineering, applied AI, and backend roles</dd>
+      <dd class="sub">New grad and internship</dd>
+    </div>
+    <div>
+      <dt class="label">Based in</dt>
+      <dd>{profile.location}</dd>
+    </div>
+  </dl>
 </section>
 
 <style>
-  /* The intro fills the first screen; work begins on scroll. */
   .hero {
-    display: flex;
-    flex-direction: column;
-    min-height: calc(100svh - var(--header-height));
-    padding-top: var(--space-6);
-    padding-bottom: var(--space-5);
-  }
-
-  .intro {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding-block: var(--space-7);
-  }
-
-  .desc {
-    max-width: 34rem;
-    margin-top: var(--space-3);
-    font-size: var(--text-md);
-    color: var(--color-muted);
-  }
-
-  .readout {
-    margin-top: var(--space-5);
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    letter-spacing: 0.04em;
-  }
-
-  .readout {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0 var(--space-3);
-  }
-
-  .readout a {
-    color: var(--color-muted);
-    text-decoration: underline;
-    text-decoration-color: transparent;
-    text-underline-offset: 0.3em;
-    transition: color var(--duration-fast) var(--ease-out), text-decoration-color var(--duration-fast) var(--ease-out);
-  }
-
-  .readout a:not(:last-child)::after {
-    content: '·';
-    display: inline-block;
-    margin-left: var(--space-3);
-    color: var(--color-rule-strong);
-    text-decoration: none;
-  }
-
-  .readout a:hover,
-  .readout a:focus-visible {
-    color: var(--color-accent-ink);
-    text-decoration-color: currentColor;
+    padding-block: var(--space-7) var(--space-6);
   }
 
   .body {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-5) var(--space-8);
-    align-items: center;
+    gap: var(--space-7);
+    align-items: end;
   }
 
   @media (min-width: 60rem) {
     .body {
-      grid-template-columns: minmax(0, 1fr) minmax(18rem, 22rem);
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      gap: var(--space-8);
     }
   }
 
-  .body-viz {
+  .main,
+  .index {
     min-width: 0;
   }
 
   .name {
-    font-size: clamp(3.25rem, 1rem + 9vw, 10rem);
+    font-size: clamp(3.5rem, 2rem + 4.7vw, 6.5rem);
     font-weight: 500;
-    line-height: 0.92;
-    letter-spacing: -0.04em;
+    line-height: 0.98;
+    letter-spacing: -0.055em;
   }
 
-  /* Each word stays whole; the name breaks between first and last name on narrow screens. */
   .name > span {
-    display: inline-block;
+    display: block;
   }
 
   .dot {
     display: inline-block;
     color: var(--color-accent);
-    transition: transform var(--duration-slow) var(--ease-out);
-  }
-
-  .name:hover .dot {
-    transform: translateY(-0.08em);
   }
 
   .lede {
+    max-width: 30rem;
     margin-top: var(--space-5);
     font-family: var(--font-serif);
-    font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.5rem);
-    line-height: var(--leading-snug);
+    font-size: clamp(1.3rem, 1rem + 0.8vw, 1.7rem);
+    line-height: 1.35;
+  }
+
+  .desc {
+    max-width: 46ch;
+    margin-top: var(--space-3);
+    font-size: var(--text-md);
     color: var(--color-ink-soft);
+  }
+
+  .desc strong {
+    font-weight: 600;
+    color: var(--color-ink);
   }
 
   .actions {
@@ -197,17 +155,16 @@ const demos = projects.filter((p) => p.demo).length;
   .button:hover {
     border-color: var(--color-ink);
     background: var(--color-surface);
-    transform: translateY(-1px);
   }
 
   .button:active {
-    transform: translateY(0) scale(0.98);
+    transform: scale(0.98);
   }
 
   .button.primary {
-    background: var(--color-ink);
-    border-color: var(--color-ink);
-    color: var(--color-bg);
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-on-accent);
   }
 
   .button.primary:hover {
@@ -218,49 +175,88 @@ const demos = projects.filter((p) => p.demo).length;
   .quiet {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-1) var(--space-4);
-    margin-left: var(--space-3);
+    gap: 0 var(--space-5);
+    width: 100%;
     list-style: none;
     font-size: var(--text-sm);
   }
 
   .quiet a {
-    display: inline-block;
-    padding-block: var(--space-2);
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
     color: var(--color-muted);
     text-decoration: underline;
     text-decoration-color: var(--color-rule-strong);
     text-underline-offset: 0.2em;
-    transition: color var(--duration-fast) var(--ease-out), text-underline-offset var(--duration-base) var(--ease-out),
-      text-decoration-color var(--duration-fast) var(--ease-out);
+    transition: color var(--duration-fast) var(--ease-out), text-decoration-color var(--duration-fast) var(--ease-out);
   }
 
   .quiet a:hover {
     color: var(--color-ink);
     text-decoration-color: currentColor;
-    text-underline-offset: 0.3em;
   }
 
-  .band {
+  .label {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  /* Featured-work index: a typographic list, not a dashboard. */
+  .index ol {
+    margin-top: var(--space-2);
+    list-style: none;
+    border-top: var(--border-hairline);
+  }
+
+  .index a {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-5);
-    padding-top: var(--space-4);
-    border-top: var(--border-ink);
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 2px var(--space-2);
+    padding-block: var(--space-3);
+    border-bottom: var(--border-hairline);
+    text-decoration: none;
   }
 
-  @media (min-width: 60rem) {
-    .band {
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-items: end;
-    }
+  .n {
+    grid-row: span 3;
+    padding-top: 0.35em;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--color-muted);
+  }
+
+  .t {
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    line-height: 1.2;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .w {
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
+  }
+
+  .p {
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+
+  .index a:hover .t {
+    color: var(--color-accent-ink);
   }
 
   .facts {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-3) var(--space-7);
-    margin: 0;
+    gap: var(--space-4) var(--space-7);
+    margin: var(--space-8) 0 0;
+    padding-top: var(--space-4);
+    border-top: var(--border-hairline);
   }
 
   @media (min-width: 40rem) {
@@ -270,9 +266,7 @@ const demos = projects.filter((p) => p.demo).length;
   }
 
   dt {
-    font-size: var(--text-xs);
-    font-weight: 600;
-    color: var(--color-muted);
+    margin-bottom: var(--space-2);
   }
 
   dd {
@@ -287,64 +281,13 @@ const demos = projects.filter((p) => p.demo).length;
     color: var(--color-muted);
   }
 
-  .scroll {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
-    justify-self: start;
-    padding-block: var(--space-2);
-    font-size: var(--text-sm);
-    font-weight: 500;
-    color: var(--color-ink);
-    text-decoration: none;
-    white-space: nowrap;
-    transition: color var(--duration-fast) var(--ease-out);
-  }
+  @media (max-width: 40rem) {
+    .hero {
+      padding-top: var(--space-5);
+    }
 
-  .scroll:hover {
-    color: var(--color-accent-ink);
-  }
-
-  .scroll .arrow {
-    display: inline-block;
-    transition: transform var(--duration-base) var(--ease-out);
-  }
-
-  .scroll:hover .arrow {
-    transform: translateY(3px);
-  }
-
-  @media (max-width: 30rem) {
-    .quiet {
-      margin-left: 0;
-      width: 100%;
+    .facts {
+      margin-top: var(--space-7);
     }
   }
-
-  .hero { min-height: auto; padding-top: var(--space-6); }
-  .intro { padding-block: var(--space-6) var(--space-8); }
-  .name { font-size: clamp(3.5rem, 2rem + 4.7vw, 6.5rem); line-height: .98; letter-spacing: -.055em; font-weight: 500; }
-  .name > span { display: block; }
-  .lede { font-size: clamp(1.3rem, 1rem + .8vw, 1.7rem); max-width: 27rem; line-height: 1.35; }
-  .desc { max-width: 27rem; }
-  .body { gap: var(--space-7) var(--space-8); }
-  .body-main { min-width: 0; }
-  .button.primary { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-bg); }
-  .readout { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 0; margin-top: var(--space-6); border-block: var(--border-hairline); }
-  .readout a { display: flex; flex-direction: column; padding-block: var(--space-3); font-size: 10px; text-transform: uppercase; }
-  .readout a::after { display: none !important; }
-  .readout b { color: var(--color-ink); font-size: var(--text-md); font-weight: 500; }
-  dt { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .06em; font-size: var(--text-2xs); margin-bottom: var(--space-2); }
-  .band { border-top: var(--border-hairline); padding-bottom: var(--space-8); }
-  @media (min-width: 60rem) { .body { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
-  @media (max-width: 40rem) { .hero { padding-top: var(--space-3); } .intro { padding-top: var(--space-5); } }
-
-  .quiet { width: 100%; margin-left: 0; gap: var(--space-5); }
-  .quiet a { min-height: 44px; }
-  .readout { margin-top: var(--space-4); border-bottom: 0; }
-  .readout a { font-family: var(--font-sans); font-size: var(--text-xs); text-transform: none; }
-  .readout b { font-family: var(--font-mono); font-size: var(--text-base); }
-  .desc { color: var(--color-ink-soft); max-width: 45ch; }
-  .band { padding-bottom: var(--space-6); }
-
 </style>

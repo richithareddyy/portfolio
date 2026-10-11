@@ -5,10 +5,10 @@ interface Props {
 }
 
 const { id, lede } = Astro.props;
-const sections: Record<string, string> = { work: '01 / SELECTED SYSTEMS', experience: '02 / EXPERIENCE', skills: '03 / TOOL → EVIDENCE', about: '04 / ABOUT', contact: '05 / CONTACT' };
+const sections: Record<string, string> = { work: '01 / Work', experience: '02 / Experience', skills: '03 / Skills', about: '04 / About', contact: '05 / Contact' };
 ---
 
-<header class="section-heading" data-reveal>
+<header class="section-heading">
   <p class="lab-label">{sections[id] ?? 'RESEARCH NOTES'}</p>
   <h2 id={`${id}-title`}>
     <slot />

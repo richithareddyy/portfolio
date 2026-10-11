@@ -1,114 +1,59 @@
 ---
 import { Image } from 'astro:assets';
-import { projects, type Project } from '../data/projects';
-import ProjectTech from './ProjectTech.astro';
+import type { Project } from '../data/projects';
 import ProjectLinks from './ProjectLinks.astro';
 
 interface Props {
   project: Project;
 }
 const { project } = Astro.props;
-const projectNumber = String(projects.findIndex(p => p.slug === project.slug) + 1).padStart(2, '0');
-const scanResult = project.slug === 'ticket-triage' ? project.result.headline.split(';')[0] : project.result.headline;
 const href = project.caseStudy ? `/work/${project.slug}` : (project.demo ?? project.github);
 const external = !project.caseStudy;
 const v = project.visual;
 ---
 
 <article
-  class="row"
+  class="card"
   id={`project-${project.slug}`}
   aria-labelledby={`${project.slug}-title`}
-  data-reveal
   data-project-id={`project:${project.slug}`}
-  data-domains={project.domains.join(' ')}
-  data-demo={project.demo ? 'true' : 'false'}
 >
-  <a
-    class="thumb"
-    href={href}
-    tabindex="-1"
-    aria-hidden="true"
-    {...(external ? { target: '_blank', rel: 'noopener' } : {})}
-  >
-    {
-      v.kind === 'image' ? (
-        <Image src={v.src} alt="" widths={[240, 480]} sizes="12rem" loading="lazy" />
-      ) : (
-        <span class="thumb-text">{v.kind === 'output' ? '0 errors · 51,633 requests' : 'Diagram'}</span>
-      )
-    }
-  </a>
+  {
+    v.kind === 'image' && (
+      <a class="thumb" href={href} tabindex="-1" aria-hidden="true" {...(external ? { target: '_blank', rel: 'noopener' } : {})}>
+        <Image src={v.src} alt="" widths={[224, 448]} sizes="7rem" loading="lazy" />
+      </a>
+    )
+  }
 
-  <div class="main">
-    <p class="lab-id">PROJECT / {projectNumber}</p>
+  <div class="body">
     <h4 id={`${project.slug}-title`}>
       {project.caseStudy ? <a href={`/work/${project.slug}`} transition:name={`title-${project.slug}`}>{project.title}</a> : project.title}
     </h4>
-    <p class="project-description">{project.summary}</p>
-    <ProjectTech project={project} />
-  </div>
-
-  <p class="result">
-    <span class="lab-label">{project.evaluation ? 'Evaluation' : 'Observation'}</span>
-    <strong>{scanResult}</strong>
-    {project.result.qualifier && <span>{project.result.qualifier}</span>}
-  </p>
-
-  <div class="links-cell">
+    <p class="summary">{project.summary}</p>
+    <p class="result">
+      <strong>{project.result.headline}</strong>
+      {project.result.qualifier && <span>{project.result.qualifier}</span>}
+    </p>
+    <ul class="stack" aria-label={`${project.title} technologies`}>
+      {project.tech.slice(0, 4).map((t) => <li>{t}</li>)}
+    </ul>
     <ProjectLinks project={project} />
   </div>
-  <details class="reading-detail implementation">
-    <summary>Approach & limitations<span class="visually-hidden"> for {project.title}</span></summary>
-    <p class="meta">{[project.year, project.role].filter(Boolean).join(' · ')}</p>
-    {project.problemShort && <p>{project.problemShort}</p>}
-    <p>{project.contribution}</p>
-    {scanResult !== project.result.headline && <p><strong>Evaluation:</strong> {project.result.headline}. {project.result.qualifier}.</p>}
-    {project.limitations?.length && <div><p class="detail-heading">Limitations</p><ul>{project.limitations.map(limit => <li>{limit}</li>)}</ul></div>}
-  </details>
 </article>
 
 <style>
-  .row {
+  .card {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-3) var(--space-6);
+    gap: var(--space-4);
     padding-block: var(--space-5);
-    border-bottom: var(--border-hairline);
+    border-top: var(--border-hairline);
   }
 
-  @media (min-width: 40rem) {
-    .row {
-      grid-template-columns: 9rem minmax(0, 1fr);
-    }
-
-    .thumb {
-      grid-row: span 3;
-    }
-
-    .result,
-    .links-cell {
-      grid-column: 2;
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .row {
-      grid-template-columns: 12rem minmax(0, 1fr) 14rem;
-    }
-
-    .thumb {
-      grid-row: span 2;
-    }
-
-    .result {
-      grid-column: 3;
-      grid-row: 1;
-    }
-
-    .links-cell {
-      grid-column: 2;
-      grid-row: 2;
+  @media (min-width: 30rem) {
+    .card {
+      grid-template-columns: 7rem minmax(0, 1fr);
     }
   }
 
@@ -116,13 +61,13 @@ const v = project.visual;
     display: none;
     align-self: start;
     aspect-ratio: 16 / 10;
-    overflow: hidden;
+    overflow: clip;
     border: var(--border-hairline);
     border-radius: var(--radius-sm);
     background: var(--color-panel);
   }
 
-  @media (min-width: 40rem) {
+  @media (min-width: 30rem) {
     .thumb {
       display: block;
     }
@@ -134,39 +79,30 @@ const v = project.visual;
     height: 100%;
     object-fit: cover;
     object-position: top left;
-    transition: transform var(--duration-slow) var(--ease-out);
   }
 
-  .thumb:hover :global(img) {
-    transform: scale(1.04);
+  /* Cards without a screenshot keep the text aligned with the others. */
+  .card:not(:has(.thumb)) .body {
+    grid-column: 1 / -1;
   }
 
-  .thumb-text {
-    display: grid;
-    place-items: center;
-    height: 100%;
-    padding: var(--space-2);
-    font-family: var(--font-mono);
-    font-size: var(--text-2xs);
-    text-align: center;
-    color: var(--color-panel-ink);
+  @media (min-width: 30rem) {
+    .card:not(:has(.thumb)) .body {
+      grid-column: 2;
+    }
   }
 
-  .main {
+  .body {
     display: grid;
     gap: var(--space-2);
     align-content: start;
+    justify-items: start;
     min-width: 0;
   }
 
-  .meta {
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    color: var(--color-muted);
-  }
-
   h4 {
-    font-size: var(--text-xl);
+    font-size: var(--text-lg);
+    font-weight: 500;
   }
 
   h4 a {
@@ -178,27 +114,16 @@ const v = project.visual;
     color: var(--color-accent-ink);
   }
 
-  .problem {
-    font-size: var(--text-sm);
-    font-weight: 500;
-    color: var(--color-ink);
-  }
-
-  .contribution {
-    max-width: 40rem;
+  .summary {
     font-size: var(--text-sm);
     color: var(--color-ink-soft);
   }
 
   .result {
-    align-self: start;
-    padding-top: var(--space-2);
-    border-top: var(--border-hairline);
     font-size: var(--text-sm);
   }
 
   .result strong {
-    display: block;
     font-weight: 600;
   }
 
@@ -208,24 +133,7 @@ const v = project.visual;
     color: var(--color-muted);
   }
 
-  .result strong { margin-block: var(--space-2); }
-  .limits { font-size: var(--text-sm); color: var(--color-muted); }
-  .limits summary { min-height: 2.75rem; padding-block: var(--space-2); }
-  .limits ul { padding-left: var(--space-4); }
-  .limits li + li { margin-top: var(--space-2); }
-  @media (min-width: 40rem) { .limits { grid-column: 2 / -1; } }
-
-
-  .project-description { font-size: var(--text-base); line-height: 1.65; max-width: 65ch; color: var(--color-ink-soft); }
-  .main { gap: var(--space-3); }
-  .result { border: 0; font-size: var(--text-base); }
-  .result > span:not(.lab-label) { font-size: var(--text-sm); line-height: 1.5; }
-  .implementation { grid-column: 1 / -1; }
-  .implementation .meta { font-family: var(--font-sans); }
-  .detail-heading { font-weight: 600; margin-block: var(--space-4) var(--space-2); }
-  .row { padding-block: var(--space-6); }
-  .thumb { grid-row: 1; }
-  .links-cell { grid-row: auto; }
-  @media (min-width: 40rem) { .implementation { grid-column: 2 / -1; } }
-
+  .stack {
+    font-size: var(--text-xs);
+  }
 </style>

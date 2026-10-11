@@ -15,7 +15,7 @@ const placement: Record<string, { x: number; y: number; label: string }> = {
 ---
 
 <figure class="project-map" data-project-map aria-labelledby="map-title">
-  <div class="map-heading"><p id="map-title" class="lab-label">Field notes / project map</p><span class="lab-label">{String(projects.length).padStart(2, '0')} systems</span></div>
+  <div class="map-heading"><p id="map-title" class="lab-label">Project map</p></div>
   <div class="plot-wrap">
     <span class="axis-y top">Research</span>
     <div class="plot" role="group" aria-label="Conceptual project map. Select a project to inspect it; use arrow keys to move between projects.">
@@ -32,17 +32,16 @@ const placement: Record<string, { x: number; y: number; label: string }> = {
   </div>
   <div class="map-detail" id="map-detail" aria-live="polite" aria-atomic="true">
     <div class="detail overview" data-map-detail="overview">
-      <p class="detail-title">A field guide to my work</p>
-      <p>Explore the space between data, research, and working software.</p>
-      <p class="map-help">Hover to preview · select to inspect</p>
+      <p class="detail-title">Data or software, research or product</p>
+      <p>Each project sits where its emphasis lies. Select a point to inspect it.</p>
     </div>
     {projects.map((p, i) => <div class="detail" data-map-detail={p.slug} aria-hidden="true" inert>
-      <div class="detail-top"><p class="detail-title"><span class="lab-id">{String(i + 1).padStart(2, '0')}</span> {p.title}</p><a href={`#project-${p.slug}`} aria-label={`View ${p.title}`}>View project <span aria-hidden="true">↗</span></a></div>
+      <div class="detail-top"><p class="detail-title"><span class="lab-id">{String(i + 1).padStart(2, '0')}</span> {p.title}</p><a href={`#project-${p.slug}`} aria-label={`View ${p.title}`}>Go to project <span aria-hidden="true">→</span></a></div>
       <p class="detail-domains">{p.domains.map(d => domains.find(v => v.id === d)?.label).join(' / ')}</p>
       <p class="detail-stack">{p.tech.join(' · ')}</p>
     </div>)}
   </div>
-  <div class="map-footer"><figcaption>Conceptual positions, not measured scores.</figcaption><button class="reset-link" type="button" data-map-reset disabled>Reset map</button></div>
+  <div class="map-footer"><figcaption>Positions are my own judgment, not measured scores.</figcaption><button class="reset-link" type="button" data-map-reset disabled>Reset map</button></div>
 </figure>
 
 <script>

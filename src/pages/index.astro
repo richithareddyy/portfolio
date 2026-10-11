@@ -4,15 +4,12 @@ import Hero from '../components/Hero.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import FeaturedProject from '../components/FeaturedProject.astro';
 import ProjectRow from '../components/ProjectRow.astro';
+import ProjectMap from '../components/ProjectMap.astro';
 import Experience from '../components/Experience.astro';
 import Skills from '../components/Skills.astro';
 import About from '../components/About.astro';
 import Contact from '../components/Contact.astro';
 import { featured, more } from '../data/projects';
-import DomainFilter from '../components/DomainFilter.astro';
-import CodeAtlasGraph from '../components/visuals/CodeAtlasGraph.astro';
-import EtlPipeline from '../components/visuals/EtlPipeline.astro';
-import ZoomLensPreview from '../components/ZoomLensPreview.astro';
 ---
 
 <BaseLayout isHome>
@@ -20,36 +17,26 @@ import ZoomLensPreview from '../components/ZoomLensPreview.astro';
     <Hero />
 
     <section id="work" class="wrap" aria-labelledby="work-title">
-      <SectionHeading id="work">Project index</SectionHeading>
-      <DomainFilter />
+      <SectionHeading id="work">Featured work</SectionHeading>
 
-      {
-        featured.map((p, i) => (
-          <FeaturedProject project={p} emphasis={i < 2 ? 'primary' : 'secondary'} flip={i === 1} eager={i === 0}>
-            {p.slug === 'zoom-lens' && p.site && (
-              <ZoomLensPreview slot="visual" />
-            )}
-            {p.slug === 'codeatlas' && <CodeAtlasGraph slot="visual" compact />}
-            {p.slug === 'reddit-data-pipeline' && (
-              <div slot="visual" class="pipeline-preview">
-                <p class="lab-label">From raw records to validated data</p>
-                <ol class="pipeline-stages" aria-label="Pipeline overview">
-                  {['Extract', 'Validate', 'Stage', 'Merge', 'Check'].map((stage,i) => <li><span>{String(i+1).padStart(2,'0')}</span>{stage}</li>)}
-                </ol>
-                <p class="pipeline-description">Every input line is accounted for: loaded into PostgreSQL or recorded as a rejection.</p>
-                <details class="reading-detail">
-                  <summary>Explore the pipeline</summary>
-                  <EtlPipeline />
-                </details>
-              </div>
-            )}
-          </FeaturedProject>
-        ))
-      }
+      {featured.map((p, i) => <FeaturedProject project={p} eager={i === 0} />)}
 
-      <h3 class="more-title">Additional work</h3>
-      <div class="rows">
-        {more.map((p) => <ProjectRow project={p} />)}
+      <div class="more">
+        <div class="more-head">
+          <h3 class="more-title">Additional work</h3>
+          <p class="more-note">Smaller projects across ML, NLP, and web systems. Case studies where there is more to say.</p>
+        </div>
+        <div class="cards">
+          {more.map((p) => <ProjectRow project={p} />)}
+        </div>
+      </div>
+
+      <div class="explore">
+        <div class="explore-head">
+          <h3 class="more-title">Explore all projects</h3>
+          <p class="more-note">All eight projects on one map. Select a point to see its stack and jump to it.</p>
+        </div>
+        <ProjectMap />
       </div>
     </section>
 
@@ -61,19 +48,39 @@ import ZoomLensPreview from '../components/ZoomLensPreview.astro';
 </BaseLayout>
 
 <style>
+  .more,
+  .explore {
+    display: grid;
+    gap: var(--space-4);
+    margin-top: var(--space-8);
+  }
+
+  .explore :global(.project-map) {
+    max-width: 52rem;
+  }
+
   .more-title {
-    margin-top: var(--space-7);
-    margin-bottom: var(--space-3);
     font-size: var(--text-xl);
+    font-weight: 500;
   }
 
-  .rows {
-    border-top: var(--border-hairline);
+  .more-note {
+    max-width: 60ch;
+    margin-top: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
   }
 
-  .pipeline-preview { padding: var(--space-5); border: var(--border-hairline); background: var(--color-surface); }
-  .pipeline-stages { list-style:none; display:flex; flex-wrap:wrap; gap:12px; margin-block:24px; }
-  .pipeline-stages li { flex:1 1 70px; border-top:2px solid var(--color-accent); padding-top:12px; font-size:var(--text-sm); }
-  .pipeline-stages span { display:block; font-family:var(--font-mono); color:var(--color-muted); font-size:var(--text-xs); margin-bottom:6px; }
-  .pipeline-description { color:var(--color-ink-soft); font-size:var(--text-base); margin-bottom:24px; max-width:48ch; }
+  .cards {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    column-gap: var(--space-7);
+    border-bottom: var(--border-hairline);
+  }
+
+  @media (min-width: 48rem) {
+    .cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
 </style>

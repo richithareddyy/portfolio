@@ -9,9 +9,9 @@ const { isHome = false } = Astro.props;
 const base = isHome ? '' : '/';
 
 const nav = [
-  { id: 'work', label: 'Projects' },
+  { id: 'work', label: 'Work' },
   { id: 'experience', label: 'Experience' },
-  { id: 'skills', label: 'Stack' },
+  { id: 'skills', label: 'Skills' },
   { id: 'about', label: 'About' },
   { id: 'contact', label: 'Contact' },
 ];
@@ -21,7 +21,7 @@ const nav = [
   <div class="wrap bar">
     <a class="wordmark" href={isHome ? '#top' : '/'} aria-label={`${profile.name}, home`}>
       <span class="mark" aria-hidden="true">RR</span>
-      <span class="name">Richitha<span class="lab-word"> / data lab</span></span>
+      <span class="name">{profile.name}</span>
     </a>
 
     <nav class="nav" aria-label="Primary">
@@ -481,7 +481,6 @@ const nav = [
     }
   }
 
-  .lab-word { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-muted); }
   .nav-index { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--color-faint); margin-right: 3px; }
   .menu a[aria-current] .nav-index { color: var(--color-accent-ink); }
   .menu a { min-height: 2.75rem; display: flex; align-items: center; }

@@ -9,8 +9,8 @@ const sourceY = Object.fromEntries(orderedSources.map((s, i) => [s.id, (i + .5) 
 const techY = Object.fromEntries(techs.map((t, i) => [t.id, (i + .5) / techs.length * 100]));
 ---
 <section class="wrap section" id="skills" aria-labelledby="skills-title" data-lab>
-  <SectionHeading id="skills">Technical stack</SectionHeading>
-  <p class="intro">My full technical stack, grouped as listed in my résumé.</p>
+  <SectionHeading id="skills">Technical skills</SectionHeading>
+  <p class="intro">Grouped by area. Open the map to see which projects and roles each one comes from.</p>
   <dl class="skill-groups">
     {skills.map(group => <div><dt>{group.name}</dt><dd><ul>{group.items.map(item => <li>{item}</li>)}</ul></dd></div>)}
   </dl>

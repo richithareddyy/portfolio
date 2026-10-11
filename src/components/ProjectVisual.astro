@@ -1,9 +1,8 @@
 ---
 import { Image } from 'astro:assets';
 import type { Visual } from '../data/projects';
-import EtlDiagram from './visuals/EtlDiagram.astro';
-import LoadTestOutput from './visuals/LoadTestOutput.astro';
-import SitePreview from './visuals/SitePreview.astro';
+import ZoomLensPreview from './ZoomLensPreview.astro';
+import PerfCompare from './PerfCompare.astro';
 
 interface Props {
   visual: Visual;
@@ -21,33 +20,25 @@ const sizes =
   size === 'card'
     ? '(min-width: 64rem) 22rem, (min-width: 40rem) 45vw, 92vw'
     : '(min-width: 64rem) 40rem, 92vw';
-const kindLabel = visual.kind === 'image' ? null : visual.kind === 'diagram' ? 'Diagram' : 'Sample output';
 ---
 
 {
-  visual.kind === 'site' ? (
-    <SitePreview url={visual.url} name="Zoom Lens" caption={visual.caption} eager={eager} />
+  visual.kind === 'component' ? (
+    visual.id === 'zoom-lens-site' ? <ZoomLensPreview /> : <PerfCompare />
   ) : (
-    <figure class:list={['visual', size, visual.kind]}>
+    <figure class:list={['visual', size]}>
       <div class:list={['frame', { linked: !!href }]}>
-        {
-          visual.kind === 'image' && (
-            <Image
-              src={visual.src}
-              alt={visual.alt}
-              widths={widths}
-              sizes={sizes}
-              loading={eager ? 'eager' : 'lazy'}
-              class:list={[{ contain: visual.src.height > visual.src.width * 0.8 }]}
-            />
-          )
-        }
-        {visual.kind === 'diagram' && visual.id === 'etl' && <EtlDiagram />}
-        {visual.kind === 'output' && <LoadTestOutput />}
+        <Image
+          src={visual.src}
+          alt={visual.alt}
+          widths={widths}
+          sizes={sizes}
+          loading={eager ? 'eager' : 'lazy'}
+          class:list={[{ contain: visual.src.height > visual.src.width * 0.8 }]}
+        />
         {href && <a class="cover" href={href} tabindex="-1" aria-hidden="true"></a>}
       </div>
       <figcaption>
-        {kindLabel && <span class="kind">{kindLabel}.</span>}
         {visual.caption}
       </figcaption>
     </figure>
@@ -75,13 +66,7 @@ const kindLabel = visual.kind === 'image' ? null : visual.kind === 'diagram' ? '
     aspect-ratio: 16 / 10;
   }
 
-  .full.diagram .frame,
-  .full.output .frame {
-    aspect-ratio: 16 / 9;
-    max-height: 30rem;
-  }
-
-  .image .frame {
+  .frame {
     overflow: clip;
   }
 
@@ -99,18 +84,12 @@ const kindLabel = visual.kind === 'image' ? null : visual.kind === 'diagram' ? '
     border-color: var(--color-rule-strong);
   }
 
-
   .linked :global(img) {
     transition: transform var(--duration-slow) var(--ease-out);
   }
 
   .linked:hover :global(img) {
     transform: scale(1.02);
-  }
-
-  .output .frame {
-    overflow: clip;
-    border-radius: var(--radius-md);
   }
 
   .frame :global(img) {
@@ -141,17 +120,4 @@ const kindLabel = visual.kind === 'image' ? null : visual.kind === 'diagram' ? '
     min-height: calc(2 * 1.45em);
   }
 
-  .kind {
-    font-weight: 600;
-    color: var(--color-ink-soft);
-    margin-right: 0.25em;
-  }
-
-  @media (max-width: 30rem) {
-    .full.diagram .frame,
-    .full.output .frame {
-      aspect-ratio: auto;
-      min-height: 16rem;
-    }
-  }
 </style>

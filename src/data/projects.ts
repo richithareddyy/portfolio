@@ -30,11 +30,10 @@ export type Domain = (typeof domains)[number]['id'];
 
 export type DataTable = { caption: string; columns: string[]; rows: string[][]; note?: string };
 
+/** A screenshot, or a purpose-built component when no screenshot tells the story better. */
 export type Visual =
   | { kind: 'image'; src: ImageMetadata; alt: string; caption: string }
-  | { kind: 'diagram'; id: 'etl'; caption: string }
-  | { kind: 'output'; id: 'streambox-loadtest'; caption: string }
-  | { kind: 'site'; url: string; caption: string };
+  | { kind: 'component'; id: 'zoom-lens-site' | 'etl-performance' };
 
 export type Project = {
   slug: string;
@@ -62,6 +61,8 @@ export type Project = {
 
   /** One sentence used on compact rows. */
   problemShort?: string;
+  /** Homepage story for featured projects. Labels differ per project, because each one is interesting for a different reason. */
+  story?: { label: string; text: string }[];
 
   // Case-study content
   status?: string;
@@ -87,7 +88,7 @@ export const projects: Project[] = [
     slug: 'zoom-lens',
     title: 'Zoom Lens',
     summary:
-      'Privately ask AI about whatever someone is sharing in a Zoom meeting: a spreadsheet, a chart, a slide, a paper or code. The presenter is never interrupted, and only you see the answer.',
+      'An AI assistant inside Zoom that privately explains whatever someone is sharing on screen: a spreadsheet, a chart, a slide, a paper, or code.',
     tier: 'featured',
     domains: ['applied-ai', 'software'],
     year: '2026 – present',
@@ -99,20 +100,34 @@ export const projects: Project[] = [
       qualifier: 'Captures the participant’s display for now, not the meeting feed',
     },
     tech: ['Node.js', 'Zoom Apps SDK', 'Zoom Realtime Media Streams API', 'WebSockets', 'Claude', 'ffmpeg'],
+    story: [
+      {
+        label: 'The experience',
+        text: 'Open Zoom Lens from the Apps panel, press Describe or Explain, or type a question about the shared screen. Only you see the answer, and the presenter is never interrupted.',
+      },
+      {
+        label: 'How it works',
+        text: 'A panel built on the Zoom Apps SDK talks to a Node.js WebSocket server. On each request the server captures one still of the screen, sends it to Claude with instructions for that kind of question, and returns the answer.',
+      },
+      {
+        label: 'The hard part',
+        text: 'Privacy is enforced on the server, not the panel: each connection is bound to one participant, there is no broadcast path, and seven isolation tests run against the real server.',
+      },
+      {
+        label: 'Status',
+        text: 'Working prototype in live Zoom meetings. For now it captures the asking participant’s display, not the meeting’s screen-share stream.',
+      },
+    ],
     site: 'https://zoomlens.vercel.app/',
     github: gh('ZoomLens'),
     caseStudy: true,
-    visual: {
-      kind: 'site',
-      url: 'https://zoomlens.vercel.app/',
-      caption: 'Live preview of the Zoom Lens product site. Select it to open the site.',
-    },
+    visual: { kind: 'component', id: 'zoom-lens-site' },
   },
   {
     slug: 'codeatlas',
     title: 'CodeAtlas',
     summary:
-      'Change-impact analysis for Rust: which functions, modules, and tests a change can reach, with the source line behind each step.',
+      'Static analysis for Rust that traces which functions, modules, and tests a code change can affect, with the source line behind each step.',
     tier: 'featured',
     domains: ['software', 'systems'],
     year: '2026',
@@ -121,6 +136,20 @@ export const projects: Project[] = [
       'Built a Rust analyzer that labels each call site by whether it can be resolved, then answers change-impact queries from a Neo4j call graph.',
     result: { headline: '3.6 s to index tokio', qualifier: '808 files, ~163k LOC, release build on one machine' },
     tech: ['Rust', 'tree-sitter', 'Neo4j', 'GraphQL'],
+    story: [
+      {
+        label: 'The problem',
+        text: 'You change a function in a Rust repository. Before merging, you want to know which functions, modules, and tests it can reach, and you want to check the answer rather than trust a name match.',
+      },
+      {
+        label: 'Architecture',
+        text: 'A tree-sitter analyzer rebuilds the module tree and resolves calls with Rust’s scoping and visibility rules. Each call site is labeled resolved, ambiguous, or unresolved, and the call graph is stored in Neo4j and queried through GraphQL.',
+      },
+      {
+        label: 'Benchmark',
+        text: 'Indexes tokio (808 files, about 163k lines) in 3.6 s on one machine. Test selection reached 83 to 100% recall on small fixture projects; unexpanded macros limit it on large crates.',
+      },
+    ],
     github: gh('CodeAtlas'),
     caseStudy: true,
     visual: {
@@ -246,7 +275,7 @@ export const projects: Project[] = [
   {
     slug: 'reddit-data-pipeline',
     title: 'Reddit Data ETL Pipeline',
-    summary: 'Loads Reddit-format archives into PostgreSQL and accounts for every rejected record.',
+    summary: 'A PostgreSQL ETL pipeline that loads 18.9M Reddit-format records and accounts for every line it rejects.',
     tier: 'featured',
     domains: ['data', 'systems'],
     year: '2026',
@@ -258,13 +287,23 @@ export const projects: Project[] = [
       qualifier: 'Generated data with injected defects, one machine',
     },
     tech: ['Python', 'PostgreSQL', 'SQL', 'Docker'],
+    story: [
+      {
+        label: 'Scale',
+        text: '18,897,027 lines (5.9 GB of NDJSON) streamed in constant memory, with malformed lines, duplicates, and orphaned records injected at a 1% rate.',
+      },
+      {
+        label: 'Pipeline',
+        text: 'Extract, validate, bulk-load with COPY, merge in one set-based deduplication pass, then rebuild constraints and run 13 quality checks. Every rejected line keeps its source line and reason.',
+      },
+      {
+        label: 'Result',
+        text: 'Every count reconciled with the generator’s manifest, and a full run dropped from 584 s to 345 s. Measured on generated data on one machine.',
+      },
+    ],
     github: gh('reddit-data-pipeline'),
     caseStudy: true,
-    visual: {
-      kind: 'diagram',
-      id: 'etl',
-      caption: 'Diagram of the pipeline stages and benchmark record counts.',
-    },
+    visual: { kind: 'component', id: 'etl-performance' },
     status: 'Complete; tests run in GitHub Actions',
     problem:
       'Archive dumps contain malformed lines, duplicates, and records whose parents never appear. A naive load either fails on constraints or silently stores bad data.',

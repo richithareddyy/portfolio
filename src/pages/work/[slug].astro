@@ -28,14 +28,59 @@ interface Props {
 }
 
 const { project } = Astro.props;
-const sections = [
-  { id: 'problem', label: 'Problem' },
-  ...(project.challenges ? [{ id: 'challenges', label: 'What makes it hard' }] : []),
-  { id: 'contribution', label: 'My contribution' },
-  { id: 'decisions', label: 'Decisions' },
-  { id: 'evaluation', label: 'Evaluation' },
-  { id: 'limitations', label: project.next ? 'Limitations and next steps' : 'Limitations' },
+
+type Key = 'problem' | 'challenges' | 'contribution' | 'decisions' | 'evaluation' | 'limitations';
+// Each case study follows the order that tells its story best.
+const layouts: Record<string, [Key, string][]> = {
+  codeatlas: [
+    ['problem', 'The engineering problem'],
+    ['contribution', 'Architecture'],
+    ['challenges', 'What makes it hard'],
+    ['evaluation', 'Benchmarks'],
+    ['decisions', 'Decisions and tradeoffs'],
+    ['limitations', 'Limitations and next steps'],
+  ],
+  'reddit-data-pipeline': [
+    ['problem', 'The problem'],
+    ['challenges', 'Working at scale'],
+    ['contribution', 'The pipeline'],
+    ['evaluation', 'Performance and reconciliation'],
+    ['decisions', 'Decisions and tradeoffs'],
+    ['limitations', 'Limitations'],
+  ],
+  streambox: [
+    ['problem', 'The race conditions'],
+    ['contribution', 'Concurrency safeguards'],
+    ['decisions', 'Decisions and tradeoffs'],
+    ['evaluation', 'Load testing'],
+    ['limitations', 'Limitations'],
+  ],
+  'ticket-triage': [
+    ['problem', 'The ML problem'],
+    ['evaluation', 'Evaluation'],
+    ['decisions', 'Explainability'],
+    ['contribution', 'What I built'],
+    ['limitations', 'Limitations'],
+  ],
+};
+const fallback: [Key, string][] = [
+  ['problem', 'Problem and constraints'],
+  ['challenges', 'What makes it hard'],
+  ['contribution', 'My contribution'],
+  ['decisions', 'Decisions and tradeoffs'],
+  ['evaluation', 'Evaluation'],
+  ['limitations', project.next ? 'Limitations and next steps' : 'Limitations'],
 ];
+const has: Record<Key, boolean> = {
+  problem: !!project.problem,
+  challenges: !!project.challenges,
+  contribution: true,
+  decisions: !!project.decisions,
+  evaluation: !!project.evaluation,
+  limitations: !!(project.limitations || project.next),
+};
+const order = (layouts[project.slug] ?? fallback).filter(([key]) => has[key]);
+const sections = order.map(([id, label]) => ({ id, label }));
 ---
 
 <BaseLayout title={project.title} description={project.summary}>
@@ -47,61 +92,61 @@ const sections = [
         {project.slug === 'reddit-data-pipeline' ? <EtlPipeline /> : <ProjectVisual visual={project.visual} size="full" eager />}
       </div>
 
-      <CaseSection title="Problem and constraints" id="problem">
-        <p>{project.problem}</p>
-        {project.constraints && <BulletList items={project.constraints} />}
-      </CaseSection>
-
       {
-        project.challenges && (
-          <CaseSection title="What makes it hard" id="challenges">
-            <BulletList items={project.challenges} />
-          </CaseSection>
+        order.map(([key, title]) =>
+          key === 'problem' ? (
+            <CaseSection title={title} id="problem">
+              <p>{project.problem}</p>
+              {project.constraints && <BulletList items={project.constraints} />}
+            </CaseSection>
+          ) : key === 'challenges' ? (
+            <CaseSection title={title} id="challenges">
+              <BulletList items={project.challenges!} />
+            </CaseSection>
+          ) : key === 'contribution' ? (
+            <CaseSection title={title} id="contribution">
+              <p>{project.contribution}</p>
+              {project.built && <BulletList items={project.built} />}
+              {project.slug === 'codeatlas' && <CodeAtlasGraph />}
+              {project.slug === 'streambox' && <StreamBoxFlow />}
+              {project.stack && (
+                <ul class="stack" aria-label="Full stack">
+                  {project.stack.map((s) => (
+                    <li>
+                      <button type="button" class="tech-link" data-tech-link={techId(s)}>
+                        {s}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </CaseSection>
+          ) : key === 'decisions' ? (
+            <CaseSection title={title} id="decisions">
+              <DecisionList items={project.decisions!} />
+            </CaseSection>
+          ) : key === 'evaluation' ? (
+            <CaseSection title={title} id="evaluation">
+              <h3>Method</h3>
+              <BulletList items={project.evaluation!.method} />
+              <Metrics metrics={project.evaluation!.metrics} />
+              {project.slug === 'reddit-data-pipeline' && <PerfCompare />}
+              {project.tables?.map((t) => <DataTable table={t} />)}
+              <EvidenceLinks links={project.evaluation!.evidence} />
+            </CaseSection>
+          ) : (
+            <CaseSection title={title} id="limitations">
+              {project.limitations && <BulletList items={project.limitations} />}
+              {project.next && (
+                <>
+                  <h3>Next steps</h3>
+                  <BulletList items={project.next} />
+                </>
+              )}
+            </CaseSection>
+          ),
         )
       }
-
-      <CaseSection title="My contribution" id="contribution">
-        <p>{project.contribution}</p>
-        {project.built && <BulletList items={project.built} />}
-        {project.slug === 'codeatlas' && <CodeAtlasGraph />}
-        {project.slug === 'streambox' && <StreamBoxFlow />}
-        {project.stack && (
-          <ul class="stack" aria-label="Full stack">
-            {project.stack.map((s) => <li><button type="button" class="tech-link" data-tech-link={techId(s)}>{s}</button></li>)}
-          </ul>
-        )}
-      </CaseSection>
-
-      {
-        project.decisions && (
-          <CaseSection title="Decisions and tradeoffs" id="decisions">
-            <DecisionList items={project.decisions} />
-          </CaseSection>
-        )
-      }
-
-      {
-        project.evaluation && (
-          <CaseSection title="Evaluation" id="evaluation">
-            <h3>Method</h3>
-            <BulletList items={project.evaluation.method} />
-            <Metrics metrics={project.evaluation.metrics} />
-            {project.slug === 'reddit-data-pipeline' && <PerfCompare />}
-            {project.tables?.map((t) => <DataTable table={t} />)}
-            <EvidenceLinks links={project.evaluation.evidence} />
-          </CaseSection>
-        )
-      }
-
-      <CaseSection title={project.next ? 'Limitations and next steps' : 'Limitations'} id="limitations">
-        {project.limitations && <BulletList items={project.limitations} />}
-        {project.next && (
-          <>
-            <h3>Next steps</h3>
-            <BulletList items={project.next} />
-          </>
-        )}
-      </CaseSection>
 
       {
         project.gallery && (
