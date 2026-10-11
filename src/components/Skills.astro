@@ -18,7 +18,7 @@ const techY = Object.fromEntries(techs.map((t, i) => [t.id, (i + .5) / techs.len
     <summary>Explore connections <span class="summary-note">Projects ↔ technologies</span></summary>
     <div class="explorer" id="technology-map">
       <div class="toolbar">
-        <p>Click a name to highlight its connections. Click again or reset to see all.</p>
+        <p>Select a name to highlight its connections. Select it again, or reset, to see everything.</p>
         <button type="button" data-reset>Reset map</button>
       </div>
       <p class="selection-status" data-status aria-live="polite">All projects, roles, and technologies</p>
@@ -40,6 +40,20 @@ const techY = Object.fromEntries(techs.map((t, i) => [t.id, (i + .5) / techs.len
           </svg>
         </div>
       </div>
+      <div class="map-list" role="group" aria-label="Projects, roles, and technologies. Select one to highlight its connections.">
+        <div>
+          <p class="list-label">Projects & roles</p>
+          <ul>
+            {orderedSources.map(s => <li><button type="button" class="list-node" data-node={s.id} aria-pressed="false">{s.label}{s.kind === 'role' && <span class="kind"> · role</span>}</button></li>)}
+          </ul>
+        </div>
+        <div>
+          <p class="list-label">Technologies</p>
+          <ul>
+            {techs.map(t => <li><button type="button" class="list-node" data-node={t.id} aria-pressed="false">{t.label}</button></li>)}
+          </ul>
+        </div>
+      </div>
       <p class="map-note">Projects and roles on the left, technologies on the right. Lines show where each was used.</p>
     </div>
   </details>
@@ -53,7 +67,9 @@ const techY = Object.fromEntries(techs.map((t, i) => [t.id, (i + .5) / techs.len
     lab.dataset.ready = 'true';
     const graph: {nodes: Record<string,{label:string;kind:string}>;links:Record<string,string[]>} = JSON.parse(lab.querySelector('[data-graph]')!.textContent!);
     const map = lab.querySelector<HTMLElement>('.map-canvas')!;
-    const nodes = Array.from(map.querySelectorAll<SVGGElement>('[data-node]'));
+    const explorer = lab.querySelector<HTMLElement>('.explorer')!;
+    // The SVG map (wide screens) and the lists (narrow screens) share one selection.
+    const nodes = Array.from(explorer.querySelectorAll<HTMLElement | SVGGElement>('[data-node]'));
     const paths = Array.from(map.querySelectorAll<SVGPathElement>('path'));
     const status = lab.querySelector<HTMLElement>('[data-status]')!;
     let selected: string | null = null;
@@ -61,6 +77,7 @@ const techY = Object.fromEntries(techs.map((t, i) => [t.id, (i + .5) / techs.len
       selected = id;
       const linked = new Set(id ? graph.links[id] : []);
       map.classList.toggle('has-selection', !!id);
+      explorer.classList.toggle('has-selection', !!id);
       nodes.forEach(button => {
         const active = button.dataset.node === id;
         button.setAttribute('aria-pressed', String(active));
@@ -72,12 +89,14 @@ const techY = Object.fromEntries(techs.map((t, i) => [t.id, (i + .5) / techs.len
     nodes.forEach(button => {
       const toggle = () => select(selected === button.dataset.node ? null : button.dataset.node!);
       button.addEventListener('click', toggle);
-      button.addEventListener('keydown', e => {
+      // SVG nodes are role="button"; real buttons already handle Enter and Space.
+      if (!(button instanceof HTMLButtonElement)) button.addEventListener('keydown', (e: Event) => {
+        if (!(e instanceof KeyboardEvent)) return;
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
       });
     });
     lab.querySelector('[data-reset]')!.addEventListener('click', () => select(null));
-    map.addEventListener('keydown', e => { if(e.key === 'Escape') select(null); });
+    explorer.addEventListener('keydown', e => { if(e.key === 'Escape') select(null); });
     document.addEventListener('lab:select', ((e:CustomEvent<string>) => {
       if (!graph.nodes[e.detail]) return;
       lab.querySelector<HTMLDetailsElement>('[data-map-disclosure]')!.open = true;
@@ -89,7 +108,7 @@ const techY = Object.fromEntries(techs.map((t, i) => [t.id, (i + .5) / techs.len
       select(id);
     }
   }
-  document.addEventListener('astro:page-load', setupLab);
+  setupLab();
 </script>
 <style>
   .section { padding-top: var(--section-gap); }
@@ -125,6 +144,21 @@ const techY = Object.fromEntries(techs.map((t, i) => [t.id, (i + .5) / techs.len
   .has-selection path.connected { opacity:1; stroke:var(--color-accent); stroke-width:2; }
   .map-note,.more { color:var(--color-muted); font-size:var(--text-xs); margin-top:12px; }
   .map-note { padding:12px 16px; border-top:var(--border-hairline); margin:0; }
+  /* Narrow screens: the same connections as two lists instead of a 1,100px-wide canvas. */
+  .map-list { display:none; }
+  .list-label { margin:16px 16px 8px; font-family:var(--font-mono); font-size:var(--text-2xs); letter-spacing:.06em; text-transform:uppercase; color:var(--color-muted); }
+  .map-list ul { display:flex; flex-wrap:wrap; gap:4px 6px; padding:0 12px 8px; list-style:none; }
+  .list-node { min-height:40px; padding:6px 8px; border:1px solid transparent; border-radius:6px; background:none; font:inherit; font-size:var(--text-sm); color:var(--color-ink-soft); cursor:pointer; text-align:left; transition:color var(--duration-fast) var(--ease-out), opacity var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out); }
+  .list-node:hover { color:var(--color-accent-ink); }
+  .list-node.connected { color:var(--color-accent-ink); }
+  .list-node[aria-pressed="true"] { color:var(--color-accent-ink); font-weight:600; border-color:var(--color-accent); }
+  .explorer.has-selection .list-node:not(.connected):not([aria-pressed="true"]) { opacity:.45; }
+  @media(max-width:47.99rem) {
+    .map-scroll, .column-labels { display:none; }
+    .map-list { display:block; }
+    .map-note { display:none; }
+    .toolbar p { font-size:var(--text-xs); }
+  }
   @media(min-width:40rem) { .skill-groups { grid-template-columns:repeat(2,minmax(0,1fr)); } }
   @media(min-width:68rem) { .skill-groups { grid-template-columns:repeat(3,minmax(0,1fr)); } }
   @media(prefers-reduced-motion:no-preference) { path { transition:stroke 150ms ease,opacity 150ms ease; } }

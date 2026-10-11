@@ -7,7 +7,8 @@ interface Props {
   project: Project;
 }
 const { project } = Astro.props;
-const href = project.caseStudy ? `/work/${project.slug}` : (project.demo ?? project.github);
+// The whole card opens its main destination: the case study, else the demo, else the source.
+const href = project.caseStudy ? `/work/${project.slug}` : (project.demo ?? project.github)!;
 const external = !project.caseStudy;
 const v = project.visual;
 ---
@@ -20,15 +21,18 @@ const v = project.visual;
 >
   {
     v.kind === 'image' && (
-      <a class="thumb" href={href} tabindex="-1" aria-hidden="true" {...(external ? { target: '_blank', rel: 'noopener' } : {})}>
+      <div class="thumb" aria-hidden="true">
         <Image src={v.src} alt="" widths={[224, 448]} sizes="7rem" loading="lazy" />
-      </a>
+      </div>
     )
   }
 
   <div class="body">
     <h4 id={`${project.slug}-title`}>
-      {project.caseStudy ? <a href={`/work/${project.slug}`} transition:name={`title-${project.slug}`}>{project.title}</a> : project.title}
+      <a class="primary" href={href} {...(external ? { target: '_blank', rel: 'noopener' } : {})}>
+        {project.title}
+        {external && <span class="visually-hidden"> ({project.demo ? 'live demo' : 'source on GitHub'}, opens in a new tab)</span>}
+      </a>
     </h4>
     <p class="summary">{project.summary}</p>
     <p class="result">
@@ -44,6 +48,7 @@ const v = project.visual;
 
 <style>
   .card {
+    position: relative;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: var(--space-4);
@@ -110,8 +115,38 @@ const v = project.visual;
     transition: color var(--duration-fast) var(--ease-out);
   }
 
-  h4 a:hover {
+  /* The title link stretches over the card; the secondary links sit above it, so nothing is nested. */
+  .primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .primary:focus-visible {
+    outline: none;
+  }
+
+  .card:has(.primary:focus-visible) {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 4px;
+    border-radius: var(--radius-xs);
+  }
+
+  .body :global(.links) {
+    position: relative;
+    z-index: 1;
+  }
+
+  .card:hover h4 a {
     color: var(--color-accent-ink);
+  }
+
+  .thumb {
+    transition: border-color var(--duration-fast) var(--ease-out);
+  }
+
+  .card:hover .thumb {
+    border-color: var(--color-rule-strong);
   }
 
   .summary {

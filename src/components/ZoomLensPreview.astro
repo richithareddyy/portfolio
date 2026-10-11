@@ -1,10 +1,16 @@
 ---
 import { Image } from 'astro:assets';
 import preview from '../assets/zoomlens-website.png';
+
+interface Props {
+  /** Load immediately when the preview is at the top of the page. */
+  eager?: boolean;
+}
+const { eager = false } = Astro.props;
 ---
 
 <a class="website-preview" href="https://zoomlens.vercel.app/" target="_blank" rel="noopener">
-  <Image src={preview} alt="ZoomLens website: Ask AI about anything shared in your Zoom meeting." widths={[480, 800, 1280]} sizes="(max-width: 768px) 100vw, 800px" loading="lazy" />
+  <Image src={preview} alt="ZoomLens website: Ask AI about anything shared in your Zoom meeting." widths={[480, 800, 1280]} sizes="(max-width: 768px) 100vw, 800px" loading={eager ? 'eager' : 'lazy'} />
   <span class="preview-caption">
     <span><strong>Explore Zoom Lens <span aria-hidden="true">↗</span></strong><span class="domain">zoomlens.vercel.app</span></span>
     <span class="visit">Visit website<span class="new-tab">Opens in a new tab</span></span>

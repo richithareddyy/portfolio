@@ -167,16 +167,13 @@ button {
   color: var(--color-rule-strong);
 }
 
-/* Technology names that open the skills map: they look like the text around them until hovered or focused. */
+/* Technology names link to the skills map. A faint dotted underline marks them as links without competing with the text. */
 .tech-link {
-  padding: 0;
-  border: 0;
-  background: none;
-  font: inherit;
+  display: inline-flex;
+  align-items: center;
   color: inherit;
-  cursor: pointer;
-  text-decoration: underline;
-  text-decoration-color: transparent;
+  text-decoration: underline dotted;
+  text-decoration-color: var(--color-rule-strong);
   text-underline-offset: 0.25em;
   transition: color var(--duration-fast) var(--ease-out), text-decoration-color var(--duration-fast) var(--ease-out);
 }
@@ -184,7 +181,25 @@ button {
 .tech-link:hover,
 .tech-link:focus-visible {
   color: var(--color-accent-ink);
+  text-decoration-style: solid;
   text-decoration-color: currentColor;
+}
+
+/* Sections carry their spacing as top padding; anchor jumps land the heading just below the header instead. */
+main > div > section[id]:not(#top):not(#work) {
+  scroll-margin-top: calc(var(--space-5) - var(--section-gap));
+}
+
+/* Page changes: a short native crossfade between documents, no script involved. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 150ms;
+  }
 }
 
 /*

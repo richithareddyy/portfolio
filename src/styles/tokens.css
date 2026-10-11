@@ -109,6 +109,8 @@
     --color-accent: #82adff;
     --color-accent-ink: #a4c2ff;
     --color-accent-wash: #243657;
+    /* The dark-mode accent is light, so text on it is dark: 7.8:1. */
+    --color-on-accent: #0f1726;
     --color-positive: #7fbf93;
     --color-positive-wash: #1d2c22;
     --color-pending: #d9b35c;

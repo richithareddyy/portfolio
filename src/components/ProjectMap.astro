@@ -30,6 +30,9 @@ const placement: Record<string, { x: number; y: number; label: string }> = {
     </div>
     <div class="axis-bottom"><span>Data</span><span class="axis-product">Product</span><span>Software</span></div>
   </div>
+  <ol class="legend" aria-label="Projects on the map">
+    {projects.map((p, i) => <li><button type="button" data-map-legend={p.slug} aria-pressed="false" aria-controls="map-detail"><span class="lab-id">{String(i + 1).padStart(2, '0')}</span> {placement[p.slug].label}</button></li>)}
+  </ol>
   <div class="map-detail" id="map-detail" aria-live="polite" aria-atomic="true">
     <div class="detail overview" data-map-detail="overview">
       <p class="detail-title">Data or software, research or product</p>
@@ -51,6 +54,7 @@ const placement: Record<string, { x: number; y: number; label: string }> = {
       const points = Array.from(fig.querySelectorAll<HTMLButtonElement>('[data-map-point]'));
       const panels = Array.from(fig.querySelectorAll<HTMLElement>('[data-map-detail]'));
       const reset = fig.querySelector<HTMLButtonElement>('[data-map-reset]')!;
+      const legend = Array.from(fig.querySelectorAll<HTMLButtonElement>('[data-map-legend]'));
       let selected: string | null = null;
       const show = (id: string | null) => {
         points.forEach(p => {
@@ -62,6 +66,7 @@ const placement: Record<string, { x: number; y: number; label: string }> = {
           p.setAttribute('aria-hidden', String(!visible));
           p.inert = !visible;
         });
+        legend.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mapLegend === selected)));
         reset.disabled = !selected;
       };
       const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -88,10 +93,12 @@ const placement: Record<string, { x: number; y: number; label: string }> = {
         show(null);
       };
       reset.addEventListener('click', clear);
+      // The legend (narrow screens) selects the same points by name.
+      legend.forEach(b => b.addEventListener('click', () => points.find(p => p.dataset.mapPoint === b.dataset.mapLegend)?.click()));
       fig.addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); clear(); } });
     }
   }
-  document.addEventListener('astro:page-load', setupProjectMap);
+  setupProjectMap();
 </script>
 
 <style>
@@ -126,7 +133,14 @@ const placement: Record<string, { x: number; y: number; label: string }> = {
   .map-footer { border-top: var(--border-hairline); display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
   figcaption { font-size: var(--text-2xs); color: var(--color-muted); }
   .reset-link { white-space: nowrap; font-size: var(--text-2xs); }
-  @container (max-width: 400px) { .point-name { display: none; } .plot { height: 250px; } }
+  .legend { display: none; }
+  @container (max-width: 400px) {
+    .point-name { display: none; }
+    .plot { height: 250px; }
+    .legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 var(--space-3); list-style: none; padding-block: var(--space-2); border-top: var(--border-hairline); }
+    .legend button { display: flex; align-items: center; gap: .5rem; width: 100%; min-height: 40px; padding: 0; border: 0; background: none; font: inherit; font-size: var(--text-sm); color: var(--color-ink-soft); text-align: left; cursor: pointer; }
+    .legend button[aria-pressed='true'] { color: var(--color-accent-ink); font-weight: 600; }
+  }
 
   .point-id, .point-name { font-size: 12px; }
   .axis-y, .axis-bottom { font-size: 12px; letter-spacing: .02em; }

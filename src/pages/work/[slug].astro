@@ -113,9 +113,10 @@ const sections = order.map(([id, label]) => ({ id, label }));
                 <ul class="stack" aria-label="Full stack">
                   {project.stack.map((s) => (
                     <li>
-                      <button type="button" class="tech-link" data-tech-link={techId(s)}>
+                      <a class="tech-link" href={`/?tech=${encodeURIComponent(techId(s))}#skills`} data-tech-link={techId(s)}>
                         {s}
-                      </button>
+                        <span class="visually-hidden">: show in skills map</span>
+                      </a>
                     </li>
                   ))}
                 </ul>

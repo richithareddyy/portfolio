@@ -175,10 +175,8 @@ const nav = [
     sections.forEach((section) => sectionObserver?.observe(section));
   }
 
-  document.addEventListener('astro:page-load', () => {
-    onScroll();
-    setupActiveNav();
-  });
+  onScroll();
+  setupActiveNav();
 </script>
 
 <style>

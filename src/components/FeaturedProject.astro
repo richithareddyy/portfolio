@@ -22,7 +22,7 @@ const href = project.caseStudy ? `/work/${project.slug}` : undefined;
   <div class="text">
     <p class="meta">{[project.role, project.year].filter(Boolean).join(' · ')}</p>
     <h3 id={`${project.slug}-title`}>
-      {href ? <a href={href} transition:name={`title-${project.slug}`}>{project.title}</a> : project.title}
+      {href ? <a href={href}>{project.title}</a> : project.title}
     </h3>
     <p class="summary">{project.summary}</p>
 
@@ -40,7 +40,7 @@ const href = project.caseStudy ? `/work/${project.slug}` : undefined;
     }
 
     <ul class="stack" aria-label={`${project.title} technologies`}>
-      {project.tech.map((t) => <li><button type="button" class="tech-link" data-tech-link={techId(t)}>{t}</button></li>)}
+      {project.tech.map((t) => <li><a class="tech-link" href="#skills" data-tech-link={techId(t)}>{t}<span class="visually-hidden">: show in skills map</span></a></li>)}
     </ul>
     <ProjectLinks project={project} />
   </div>

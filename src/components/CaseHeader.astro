@@ -17,9 +17,9 @@ const links = [
 ---
 
 <header class="case-header wrap">
-  <a class="back" href="/#work"><span aria-hidden="true">←</span> All work</a>
+  <a class="back" href={`/#project-${project.slug}`}><span aria-hidden="true">←</span> All work</a>
   <p class="lab-id">PROJECT / {String(projects.findIndex(p => p.slug === project.slug) + 1).padStart(2, '0')} · SYSTEM NOTES</p>
-  <h1 transition:name={`title-${project.slug}`}>{project.title}</h1>
+  <h1>{project.title}</h1>
   <p class="summary">{project.summary}</p>
 
   <dl class="facts">

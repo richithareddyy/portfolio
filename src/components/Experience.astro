@@ -27,7 +27,7 @@ import { techId } from '../data/graph';
             </ul>
             {role.current && (
               <ul class="stack role-tech" aria-label="Technologies">
-                {role.tech.map((t) => <li><button type="button" class="tech-link" data-tech-link={techId(t)}>{t}</button></li>)}
+                {role.tech.map((t) => <li><a class="tech-link" href="#skills" data-tech-link={techId(t)}>{t}<span class="visually-hidden">: show in skills map</span></a></li>)}
               </ul>
             )}
             {role.link && (

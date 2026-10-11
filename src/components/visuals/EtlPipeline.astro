@@ -161,7 +161,7 @@ const uid = `etl-${Math.random().toString(36).slice(2, 7)}`;
       });
     }
   }
-  document.addEventListener('astro:page-load', setupEtl);
+  setupEtl();
 </script>
 
 <style>
