@@ -41,6 +41,14 @@ h4 {
   text-wrap: balance;
 }
 
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  letter-spacing: -0.015em;
+}
+
 p {
   margin: 0;
   text-wrap: pretty;
@@ -323,3 +331,84 @@ a:focus-visible .ext-arrow {
 .reading-detail p + p { margin-top: var(--space-3); }
 .reading-detail ul { padding-left: var(--space-4); }
 .reading-detail li + li { margin-top: var(--space-2); }
+
+/*
+  The notebook motif: a pen that circles, underlines, and annotates.
+  Marks draw themselves once when they scroll into view; with reduced motion, or without JavaScript, they are simply there.
+*/
+.mk {
+  position: relative;
+  display: inline-block;
+}
+
+.mk > svg {
+  position: absolute;
+  max-width: none;
+  overflow: visible;
+  pointer-events: none;
+  fill: none;
+  stroke: var(--pen);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mk-circle > svg {
+  left: -0.28em;
+  top: -0.2em;
+  width: calc(100% + 0.56em);
+  height: calc(100% + 0.4em);
+}
+
+.mk-under > svg {
+  left: -0.04em;
+  bottom: -0.28em;
+  width: calc(100% + 0.08em);
+  height: 0.42em;
+}
+
+.mk-strike > svg {
+  left: -0.1em;
+  top: 50%;
+  width: calc(100% + 0.2em);
+  height: 0.5em;
+  transform: translateY(-40%);
+}
+
+.js .mk path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.js .mk.is-drawn path {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 600ms var(--ease-out) var(--mk-delay, 0ms);
+}
+
+/* Highlighter: a marker stroke behind the lower half of the words. */
+.hl {
+  padding-inline: 0.12em;
+  margin-inline: -0.12em;
+  background: linear-gradient(transparent 58%, var(--color-highlight) 58%, var(--color-highlight) 92%, transparent 92%);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* Margin notes: short monospace asides in pen color. */
+.note {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--pen-ink);
+}
+
+.note b {
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .mk path {
+    stroke-dashoffset: 0;
+  }
+}

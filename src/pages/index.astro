@@ -17,24 +17,26 @@ import { featured, more } from '../data/projects';
     <Hero />
 
     <section id="work" class="wrap" aria-labelledby="work-title">
-      <SectionHeading id="work">Featured work</SectionHeading>
+      <SectionHeading id="work" note="each one starts with the problem, then the engineering. limits are in the case studies.">
+        Things I’ve <em>built</em>
+      </SectionHeading>
 
-      {featured.map((p, i) => <FeaturedProject project={p} eager={i === 0} />)}
+      {featured.map((p, i) => <FeaturedProject project={p} index={i} eager={i === 0} />)}
 
       <div class="more">
         <div class="more-head">
-          <h3 class="more-title">Additional work</h3>
-          <p class="more-note">Smaller projects across ML, NLP, and web systems. Case studies where there is more to say.</p>
+          <h3 class="more-title">Also in the notebook</h3>
+          <p class="note">smaller projects. still real code, still measured where I could.</p>
         </div>
-        <div class="cards">
+        <div class="rows">
           {more.map((p) => <ProjectRow project={p} />)}
         </div>
       </div>
 
       <div class="explore">
-        <div class="explore-head">
-          <h3 class="more-title">Explore all projects</h3>
-          <p class="more-note">All eight projects on one map. Select a point to see its stack and jump to it.</p>
+        <div class="more-head">
+          <h3 class="more-title">All eight, on one map</h3>
+          <p class="note">placed by what each one leans toward. pick a point.</p>
         </div>
         <ProjectMap />
       </div>
@@ -52,35 +54,26 @@ import { featured, more } from '../data/projects';
   .explore {
     display: grid;
     gap: var(--space-4);
-    margin-top: var(--space-8);
+    margin-top: var(--space-9);
   }
 
   .explore :global(.project-map) {
     max-width: 52rem;
   }
 
+  .more-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2) var(--space-5);
+  }
+
   .more-title {
-    font-size: var(--text-xl);
-    font-weight: 500;
+    font-size: var(--text-2xl);
+    font-weight: 450;
   }
 
-  .more-note {
-    max-width: 60ch;
-    margin-top: var(--space-2);
-    font-size: var(--text-sm);
-    color: var(--color-muted);
-  }
-
-  .cards {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    column-gap: var(--space-7);
-    border-bottom: var(--border-hairline);
-  }
-
-  @media (min-width: 48rem) {
-    .cards {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+  .rows {
+    border-top: var(--border-ink);
   }
 </style>

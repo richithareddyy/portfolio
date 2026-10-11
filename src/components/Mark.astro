@@ -1,0 +1,21 @@
+---
+/* A pen mark around inline text: a loose circle, a wavy underline, or a strike-through. Decorative only. */
+interface Props {
+  kind?: 'circle' | 'under' | 'strike';
+  /** Milliseconds to wait before drawing, for marks that should follow one another. */
+  delay?: number;
+}
+const { kind = 'under', delay = 0 } = Astro.props;
+
+const paths = {
+  // Starts past the left edge and overshoots the start, the way a quick circle does.
+  circle: { box: '0 0 200 60', d: 'M 16 34 C 6 16, 52 4, 112 5 C 170 6, 197 16, 195 31 C 193 47, 148 57, 92 55 C 38 53, 5 45, 7 30 C 9 17, 44 8, 82 8' },
+  under: { box: '0 0 200 12', d: 'M 2 8 C 34 3, 66 11, 100 6 S 166 3, 198 7' },
+  strike: { box: '0 0 200 12', d: 'M 2 7 C 60 4, 140 9, 198 5' },
+};
+const p = paths[kind];
+---
+
+<span class:list={['mk', `mk-${kind}`]} style={delay ? `--mk-delay:${delay}ms` : undefined}
+  ><slot /><svg viewBox={p.box} preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d={p.d} pathLength="1" /></svg></span
+>

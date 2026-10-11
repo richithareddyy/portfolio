@@ -2,33 +2,34 @@
 import { profile } from '../data/profile';
 import SectionHeading from './SectionHeading.astro';
 
-const items = [
-  { label: 'Email', value: profile.email, href: `mailto:${profile.email}`, external: false },
-  { label: 'LinkedIn', value: 'linkedin.com/in/richitha-rekula', href: profile.links.linkedin, external: true },
-  { label: 'GitHub', value: 'github.com/richithareddyy', href: profile.links.github, external: true },
-  { label: 'Résumé', value: 'Download PDF', href: profile.links.resume, external: true },
+const others = [
+  { label: 'LinkedIn', value: 'linkedin.com/in/richitha-rekula', href: profile.links.linkedin },
+  { label: 'GitHub', value: 'github.com/richithareddyy', href: profile.links.github },
+  { label: 'Résumé', value: 'download the PDF', href: profile.links.resume },
 ];
 ---
 
 <section class="wrap section" id="contact" aria-labelledby="contact-title">
-  <SectionHeading id="contact">Contact</SectionHeading>
+  <SectionHeading id="contact">Say <em>hello</em></SectionHeading>
+
   <p class="invite">
-    If you are hiring for early-career software engineering or applied AI roles, I would be glad to talk. You can reach me by
-    email or LinkedIn, and my résumé has the full details.
+    Hiring for early-career software engineering or applied AI roles? I’d be glad to talk. Email is the quickest way to reach me.
   </p>
 
-  <ul class="list">
+  <div class="email">
+    <a href={`mailto:${profile.email}`}>{profile.email}</a>
+    <button type="button" class="copy note" data-copy={profile.email}>copy</button>
+  </div>
+
+  <ul class="others">
     {
-      items.map((item) => (
+      others.map((o) => (
         <li>
-          <span class="label">{item.label}</span>
-          <a
-            href={item.href}
-            {...(item.external ? { target: '_blank', rel: 'me noopener' } : {})}
-          >
-            <span class="value">{item.value}</span>
-            <span class="arrow" aria-hidden="true">{item.external ? '↗' : '→'}</span>
-            {item.external && <span class="visually-hidden"> (opens in a new tab)</span>}
+          <span class="note">{o.label.toLowerCase()}</span>
+          <a href={o.href} target="_blank" rel="me noopener">
+            {o.value}
+            <span class="ext-arrow" aria-hidden="true">↗</span>
+            <span class="visually-hidden"> (opens in a new tab)</span>
           </a>
         </li>
       ))
@@ -38,73 +39,91 @@ const items = [
 
 <style>
   .section {
-    padding-top: var(--section-gap);
-    padding-bottom: var(--section-gap);
+    padding-block: var(--section-gap);
   }
 
   .invite {
     max-width: var(--width-prose);
-    margin-bottom: var(--space-5);
     font-size: var(--text-md);
     color: var(--color-ink-soft);
   }
 
-  .list {
+  .email {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2) var(--space-5);
+    margin-top: var(--space-6);
+  }
+
+  .email a {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 1rem + 3.4vw, 3.5rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
+    text-decoration: none;
+    background-image: linear-gradient(var(--pen), var(--pen));
+    background-size: 100% 2px;
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .email a:hover {
+    color: var(--pen-ink);
+  }
+
+  .copy {
+    min-height: 2.75rem;
+    padding: 0 var(--space-4);
+    border: 1px dashed var(--pen);
+    border-radius: 999px;
+    background: none;
+    cursor: pointer;
+    transition: background var(--duration-fast) var(--ease-out);
+  }
+
+  .copy:hover {
+    background: var(--pen-wash);
+  }
+
+  .others {
+    display: grid;
+    gap: 0;
+    margin-top: var(--space-7);
     list-style: none;
     border-top: var(--border-hairline);
   }
 
-  li {
+  .others li {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-1) var(--space-6);
-    padding-block: var(--space-4);
+    gap: 2px var(--space-6);
+    padding-block: var(--space-3);
     border-bottom: var(--border-hairline);
   }
 
-  @media (min-width: 48rem) {
-    li {
-      grid-template-columns: 12rem minmax(0, 1fr);
+  @media (min-width: 40rem) {
+    .others li {
+      grid-template-columns: 8rem minmax(0, 1fr);
       align-items: baseline;
     }
   }
 
-  a {
-    display: inline-flex;
-    align-items: baseline;
-    gap: var(--space-3);
+  .others a {
     justify-self: start;
-    max-width: 100%;
-    font-family: var(--font-serif);
-    font-size: var(--text-xl);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 2.75rem;
+    font-size: var(--text-lg);
     text-decoration: none;
+    overflow-wrap: anywhere;
     transition: color var(--duration-fast) var(--ease-out);
   }
 
-  .value {
-    overflow-wrap: anywhere;
-    background-image: linear-gradient(currentColor, currentColor);
-    background-size: 0 1px;
-    background-repeat: no-repeat;
-    background-position: 0 100%;
-    transition: background-size var(--duration-base) var(--ease-out);
-  }
-
-  a:hover {
-    color: var(--color-accent-ink);
-  }
-
-  a:hover .value {
-    background-size: 100% 1px;
-  }
-
-  .arrow {
-    font-family: var(--font-sans);
-    font-size: var(--text-base);
-    transition: transform var(--duration-base) var(--ease-out);
-  }
-
-  a:hover .arrow {
-    transform: translate(2px, -2px);
+  .others a:hover {
+    color: var(--pen-ink);
   }
 </style>

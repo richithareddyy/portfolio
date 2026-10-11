@@ -1,9 +1,9 @@
 /*
-  Design tokens. Every color, type size, space, radius, border and shadow
-  used by the site is defined here.
+  Design tokens. The site is set like an annotated notebook: warm paper, dark ink,
+  and one pen color used for every annotation, link accent, and selection.
 */
 :root {
-  /* Color: cool paper, graphite, scientific blue */
+  /* Paper and ink */
   --color-bg: #f7f8fa;
   --color-surface: #ffffff;
   --color-surface-sunken: #eef1f6;
@@ -13,15 +13,23 @@
   --color-faint: #647185;
   --color-rule: #dce2eb;
   --color-rule-strong: #aab6c8;
-  --color-accent: #2563eb;
-  --color-accent-ink: #1d4ed8;
-  --color-accent-wash: #eaf0ff;
+  --color-highlight: var(--pen-wash);
   --color-positive: #2f6b45;
   --color-positive-wash: #e1ece3;
   --color-pending: #7a5a12;
   --color-pending-wash: #f1e8d2;
-  --color-focus: #1f5fbf;
-  --color-selection: #dce7ff;
+
+  /* The pen. --pen draws marks; --pen-ink is the same hue dark enough for text (4.5:1 or more on paper). */
+  --pen: #2563eb;
+  --pen-ink: #1d4ed8;
+  --pen-wash: #dce7ff;
+
+  /* Older names, mapped to the pen so every component follows it. */
+  --color-accent: var(--pen);
+  --color-accent-ink: var(--pen-ink);
+  --color-accent-wash: var(--pen-wash);
+  --color-focus: var(--pen-ink);
+  --color-selection: var(--pen-wash);
   --color-on-accent: #ffffff;
 
   /* Dark UI panels inside diagrams and sample output (same in both themes) */
@@ -30,10 +38,11 @@
   --color-panel-muted: #a6b3c6;
   --color-panel-line: #354052;
 
-  /* Typography */
-  --font-serif: var(--font-sans); /* Compatibility for existing prose components. */
+  /* Typography: an editorial serif for display, a plain sans for reading, mono for notes */
+  --font-display: 'Newsreader Variable', 'Iowan Old Style', Georgia, serif;
   --font-sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --font-serif: var(--font-display);
 
   --text-2xs: 0.75rem;
   --text-xs: 0.8125rem;
@@ -42,10 +51,10 @@
   --text-md: 1.0625rem;
   --text-lg: clamp(1.125rem, 1.05rem + 0.3vw, 1.25rem);
   --text-xl: clamp(1.375rem, 1.2rem + 0.7vw, 1.75rem);
-  --text-2xl: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem);
-  --text-3xl: clamp(2.125rem, 1.6rem + 2.2vw, 3.375rem);
+  --text-2xl: clamp(1.875rem, 1.45rem + 1.6vw, 2.75rem);
+  --text-3xl: clamp(2.25rem, 1.6rem + 2.6vw, 3.75rem);
 
-  --leading-tight: 1.12;
+  --leading-tight: 1.08;
   --leading-snug: 1.3;
   --leading-body: 1.6;
   --tracking-label: 0.08em;
@@ -61,39 +70,40 @@
   --space-8: 4rem;
   --space-9: 6rem;
   --space-10: 8rem;
-  --section-gap: clamp(4.5rem, 3rem + 6vw, 8rem);
+  --section-gap: clamp(5rem, 3rem + 7vw, 9rem);
   --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
 
-  /* Layout */
-  --width-page: 72rem;
+  /* Layout: a text column plus a margin for notes on wide screens */
+  --width-page: 74rem;
   --width-prose: 38rem;
+  --width-margin: 15rem;
   --header-height: 3.75rem;
 
-  /* Radius: kept small on purpose */
   --radius-xs: 2px;
-  --radius-sm: 2px;
-  --radius-md: 3px;
+  --radius-sm: 3px;
+  --radius-md: 4px;
 
-  /* Borders */
   --border-hairline: 1px solid var(--color-rule);
   --border-strong: 1px solid var(--color-rule-strong);
   --border-ink: 1px solid var(--color-ink);
 
-  /* Shadows: used only for raised UI in diagrams and the open mobile menu */
   --shadow-sm: 0 1px 2px rgb(25 25 21 / 0.06);
   --shadow-md: 0 1px 2px rgb(25 25 21 / 0.06), 0 8px 24px -12px rgb(25 25 21 / 0.18);
 
-  /* Motion: one easing curve and three durations, used everywhere */
+  /* Motion: one easing curve and three durations */
   --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
   --duration-fast: 150ms;
   --duration-base: 250ms;
   --duration-slow: 400ms;
-
-  /* Interaction states: anything unrelated to the current selection fades to this opacity */
   --opacity-dim: 0.3;
 
   color-scheme: light;
 }
+
+/* Other pens, switched by the dot after the name. Blue is the default. Each keeps text contrast at 4.5:1 or more. */
+:root[data-pen='red'] { --pen: #d64527; --pen-ink: #b2341a; --pen-wash: #f9e1d8; }
+:root[data-pen='green'] { --pen: #2f8a55; --pen-ink: #22673f; --pen-wash: #dcebdc; }
+:root[data-pen='violet'] { --pen: #8343cc; --pen-ink: #6c32ad; --pen-wash: #e9def4; }
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -106,19 +116,21 @@
     --color-faint: #8998ac;
     --color-rule: #323e50;
     --color-rule-strong: #53657d;
-    --color-accent: #82adff;
-    --color-accent-ink: #a4c2ff;
-    --color-accent-wash: #243657;
-    /* The dark-mode accent is light, so text on it is dark: 7.8:1. */
-    --color-on-accent: #0f1726;
     --color-positive: #7fbf93;
     --color-positive-wash: #1d2c22;
     --color-pending: #d9b35c;
     --color-pending-wash: #2f2817;
-    --color-focus: #7fb0ff;
-    --color-selection: #2b4268;
+    --pen: #82adff;
+    --pen-ink: #a4c2ff;
+    --pen-wash: #243657;
+    /* The dark-mode pen is light, so text on it is dark. */
+    --color-on-accent: #0f1726;
     --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
     --shadow-md: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 28px -12px rgb(0 0 0 / 0.6);
     color-scheme: dark;
   }
+
+  :root[data-pen='red'] { --pen: #ff7d5c; --pen-ink: #ff9a7e; --pen-wash: #3d2620; }
+  :root[data-pen='green'] { --pen: #6fd09a; --pen-ink: #8adcae; --pen-wash: #1e3326; }
+  :root[data-pen='violet'] { --pen: #c39bff; --pen-ink: #d2b3ff; --pen-wash: #31234a; }
 }

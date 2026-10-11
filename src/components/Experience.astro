@@ -6,13 +6,13 @@ import { techId } from '../data/graph';
 ---
 
 <section class="wrap section" id="experience" aria-labelledby="experience-title">
-  <SectionHeading id="experience">Experience and education</SectionHeading>
+  <SectionHeading id="experience" note="newest first. school is at the bottom.">Where I’ve <em>been</em></SectionHeading>
 
   <ol class="timeline">
     {
       experience.map((role) => (
         <li class:list={['role', role.current ? 'lead' : 'earlier']} data-role-id={`role:${role.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>
-          <p class="dates">{role.dates}</p>
+          <p class="dates">{role.dates}{role.current && <span class="now note"> ← right now</span>}</p>
           <div class="what">
             <h3>
               {role.title}
@@ -41,7 +41,7 @@ import { techId } from '../data/graph';
     }
   </ol>
 
-  <h3 class="sub">Education</h3>
+  <h3 class="sub">School</h3>
   <ul class="edu">
     {
       education.map((e) => (
@@ -102,6 +102,11 @@ import { techId } from '../data/graph';
   .role.is-current .dates,
   .lead .dates {
     color: var(--color-accent-ink);
+  }
+
+  .now {
+    display: block;
+    margin-top: var(--space-1);
   }
 
   .what {

@@ -1,26 +1,33 @@
 ---
 import { profile } from '../data/profile';
+import Mark from './Mark.astro';
 
-// Accomplishments rather than counts: what each flagship project is, and the evidence behind it.
-const highlights = [
-  { slug: 'zoom-lens', title: 'Zoom Lens', what: 'AI assistant inside live Zoom meetings', proof: 'Zoom Fellowship project' },
-  { slug: 'codeatlas', title: 'CodeAtlas', what: 'Change-impact analysis for Rust', proof: 'Indexes tokio in 3.6 s' },
-  { slug: 'reddit-data-pipeline', title: 'Reddit ETL Pipeline', what: '18.9M records into PostgreSQL', proof: 'Full run cut from 584 s to 345 s' },
+// The three projects that matter most, set as a table of contents with the evidence in the margin.
+const contents = [
+  { slug: 'zoom-lens', title: 'Zoom Lens', what: 'An AI assistant inside live Zoom meetings', proof: 'Zoom Fellowship project' },
+  { slug: 'codeatlas', title: 'CodeAtlas', what: 'What a Rust change can break, with receipts', proof: 'indexes tokio in 3.6 s' },
+  { slug: 'reddit-data-pipeline', title: 'Reddit ETL Pipeline', what: '18.9M records into PostgreSQL, every one accounted for', proof: '584 s → 345 s' },
 ];
 ---
 
 <section class="hero wrap" id="top" aria-labelledby="hero-title">
-  <div class="body">
+  <div class="layout">
     <div class="main">
-      <h1 id="hero-title" class="name"><span>Richitha</span> <span>Rekula<span class="dot" aria-hidden="true">.</span></span></h1>
-      <p class="lede">Software engineer building applied AI and backend systems.</p>
+      <p class="hello note">hi, I'm</p>
+      <h1 id="hero-title" class="name" aria-label="Richitha Rekula">
+        <span>Richitha</span>
+        <span class="last">Rekula<button type="button" class="pen-dot" data-pen-toggle aria-label="Change the pen color used across the site"></button><span class="pen-hint note" aria-hidden="true">← psst. that dot is a pen. try it.</span></span>
+      </h1>
+      <p class="lede">
+        Software engineer building <Mark kind="circle" delay={150}>applied AI</Mark> and <Mark kind="under" delay={550}>backend systems</Mark>.
+      </p>
       <p class="desc">
-        <strong>Zoom Fellow at ASU Next Lab</strong>, building an AI assistant that runs inside live Zoom meetings. I also build
-        the systems underneath: a Rust code-analysis engine and a PostgreSQL pipeline that accounts for every one of 18.9M records.
+        I’m a <span class="hl">Zoom Fellow at ASU Next Lab</span>, building an AI assistant that runs inside live Zoom meetings. I also
+        build the systems underneath: a Rust code-analysis engine, and a PostgreSQL pipeline that accounts for every one of 18.9M records.
       </p>
 
       <div class="actions">
-        <a class="button primary" href="#work">View projects</a>
+        <a class="button primary" href="#work">See the work <span aria-hidden="true">↓</span></a>
         <a class="button" href={profile.links.resume} target="_blank" rel="noopener">
           Résumé <span class="ext-arrow" aria-hidden="true">↗</span><span class="visually-hidden"> (PDF, opens in a new tab)</span>
         </a>
@@ -32,101 +39,128 @@ const highlights = [
       </div>
     </div>
 
-    <nav class="index" aria-labelledby="index-title">
-      <p id="index-title" class="label">Featured work</p>
-      <ol>
-        {
-          highlights.map((h, i) => (
-            <li>
-              <a href={`#project-${h.slug}`}>
-                <span class="n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-                <span class="t">{h.title}</span>
-                <span class="w">{h.what}</span>
-                <span class="p">{h.proof}</span>
-              </a>
-            </li>
-          ))
-        }
-      </ol>
-    </nav>
+    <aside class="margin" aria-label="Quick facts">
+      <dl class="facts note">
+        <div><dt>now</dt><dd><b>Zoom Fellow</b>, ASU Next Lab</dd></div>
+        <div><dt>studying</dt><dd>M.S. Data Science, Analytics and Engineering, Arizona State ({profile.graduation.replace('Expected ', '')})</dd></div>
+        <div><dt>based in</dt><dd>{profile.location}</dd></div>
+        <div><dt>open to</dt><dd>new grad and internship roles in software, applied AI, and backend</dd></div>
+      </dl>
+    </aside>
   </div>
 
-  <dl class="facts">
-    <div>
-      <dt class="label">Education</dt>
-      <dd>M.S. Data Science, Analytics and Engineering</dd>
-      <dd class="sub">Arizona State University · {profile.graduation}</dd>
-    </div>
-    <div>
-      <dt class="label">Open to</dt>
-      <dd>Software engineering, applied AI, and backend roles</dd>
-      <dd class="sub">New grad and internship</dd>
-    </div>
-    <div>
-      <dt class="label">Based in</dt>
-      <dd>{profile.location}</dd>
-    </div>
-  </dl>
+  <nav class="contents" aria-labelledby="contents-title">
+    <p id="contents-title" class="contents-title">In this notebook</p>
+    <ol>
+      {
+        contents.map((c, i) => (
+          <li>
+            <a href={`#project-${c.slug}`}>
+              <span class="n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+              <span class="t">{c.title}</span>
+              <span class="leader" aria-hidden="true" />
+              <span class="w">{c.what}</span>
+              <span class="p note">{c.proof}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </nav>
 </section>
 
 <style>
   .hero {
-    padding-block: var(--space-7) var(--space-6);
+    padding-block: var(--space-8) var(--space-6);
   }
 
-  .body {
+  .layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-7);
-    align-items: end;
+    gap: var(--space-6) var(--space-8);
   }
 
-  @media (min-width: 60rem) {
-    .body {
-      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-      gap: var(--space-8);
+  @media (min-width: 64rem) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr) var(--width-margin);
+      align-items: end;
     }
   }
 
-  .main,
-  .index {
+  .main {
     min-width: 0;
   }
 
+  .hello {
+    margin-bottom: var(--space-2);
+  }
+
   .name {
-    font-size: clamp(3.5rem, 2rem + 4.7vw, 6.5rem);
-    font-weight: 500;
-    line-height: 0.98;
-    letter-spacing: -0.055em;
+    font-size: clamp(3.75rem, 1.6rem + 8vw, 8.5rem);
+    font-weight: 450;
+    line-height: 0.88;
+    letter-spacing: -0.035em;
   }
 
   .name > span {
     display: block;
+    width: fit-content;
   }
 
-  .dot {
+  .name > span:last-child {
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  /* The period is a pen: each click switches the ink color used across the site. */
+  .pen-dot {
+    position: relative;
     display: inline-block;
-    color: var(--color-accent);
+    width: 0.16em;
+    height: 0.16em;
+    margin-left: 0.06em;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--pen);
+    vertical-align: baseline;
+    cursor: pointer;
+    transition: transform var(--duration-base) var(--ease-out), background-color var(--duration-base) var(--ease-out);
+  }
+
+  /* A comfortable tap area around a small dot. */
+  .pen-dot::before {
+    content: '';
+    position: absolute;
+    inset: -0.12em;
+  }
+
+  .pen-dot:hover {
+    transform: scale(1.25);
+  }
+
+  .pen-dot:active {
+    transform: scale(0.85);
+  }
+
+  .pen-dot:focus-visible {
+    outline-offset: 0.06em;
+    border-radius: 50%;
   }
 
   .lede {
-    max-width: 30rem;
-    margin-top: var(--space-5);
-    font-family: var(--font-serif);
-    font-size: clamp(1.3rem, 1rem + 0.8vw, 1.7rem);
-    line-height: 1.35;
+    max-width: 34rem;
+    margin-top: var(--space-6);
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 1.15rem + 1.2vw, 2.1rem);
+    line-height: 1.3;
   }
 
   .desc {
-    max-width: 46ch;
-    margin-top: var(--space-3);
+    max-width: 50ch;
+    margin-top: var(--space-4);
     font-size: var(--text-md);
     color: var(--color-ink-soft);
-  }
-
-  .desc strong {
-    font-weight: 600;
-    color: var(--color-ink);
   }
 
   .actions {
@@ -143,18 +177,17 @@ const highlights = [
     gap: var(--space-2);
     min-height: 2.75rem;
     padding: 0 var(--space-5);
-    border: var(--border-strong);
-    border-radius: var(--radius-sm);
+    border: var(--border-ink);
+    border-radius: 999px;
     font-size: var(--text-sm);
     font-weight: 500;
     text-decoration: none;
-    transition: border-color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out),
-      transform var(--duration-fast) var(--ease-press);
+    transition: background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out),
+      transform var(--duration-fast) var(--ease-out);
   }
 
   .button:hover {
-    border-color: var(--color-ink);
-    background: var(--color-surface);
+    background: var(--color-surface-sunken);
   }
 
   .button:active {
@@ -162,21 +195,21 @@ const highlights = [
   }
 
   .button.primary {
-    background: var(--color-accent);
-    border-color: var(--color-accent);
-    color: var(--color-on-accent);
+    background: var(--color-ink);
+    color: var(--color-bg);
   }
 
   .button.primary:hover {
-    background: var(--color-accent-ink);
-    border-color: var(--color-accent-ink);
+    background: var(--pen-ink);
+    border-color: var(--pen-ink);
+    color: var(--color-on-accent);
   }
 
   .quiet {
     display: flex;
     flex-wrap: wrap;
     gap: 0 var(--space-5);
-    width: 100%;
+    margin-left: var(--space-2);
     list-style: none;
     font-size: var(--text-sm);
   }
@@ -188,52 +221,126 @@ const highlights = [
     color: var(--color-muted);
     text-decoration: underline;
     text-decoration-color: var(--color-rule-strong);
-    text-underline-offset: 0.2em;
+    text-underline-offset: 0.25em;
     transition: color var(--duration-fast) var(--ease-out), text-decoration-color var(--duration-fast) var(--ease-out);
   }
 
   .quiet a:hover {
-    color: var(--color-ink);
+    color: var(--pen-ink);
     text-decoration-color: currentColor;
   }
 
-  .label {
-    font-family: var(--font-mono);
-    font-size: var(--text-2xs);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+  /* Margin: notes in the right column on wide screens, a short list under the actions on small ones. */
+  .margin {
+    display: grid;
+    gap: var(--space-5);
+    min-width: 0;
+  }
+
+  /* Sits just right of the dot on wide screens; hidden where there is no room for it. */
+  .last {
+    position: relative;
+  }
+
+  .pen-hint {
+    display: none;
+    position: absolute;
+    left: calc(100% + 0.9rem);
+    bottom: 0.35em;
+    width: 11rem;
+    font-size: var(--text-xs);
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.4;
+    white-space: normal;
+    transform: rotate(-3deg);
+    transform-origin: left bottom;
+  }
+
+  @media (min-width: 64rem) {
+    .margin {
+      align-self: stretch;
+      align-content: end;
+      padding-left: var(--space-5);
+      border-left: 1px dashed var(--color-rule-strong);
+    }
+
+    .pen-hint {
+      display: block;
+    }
+  }
+
+  .facts {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+  }
+
+  .facts dt {
     color: var(--color-muted);
   }
 
-  /* Featured-work index: a typographic list, not a dashboard. */
-  .index ol {
-    margin-top: var(--space-2);
-    list-style: none;
-    border-top: var(--border-hairline);
+  .facts dt::after {
+    content: ':';
   }
 
-  .index a {
+  .facts dd {
+    margin: 0;
+    color: var(--color-ink-soft);
+  }
+
+  @media (min-width: 40rem) and (max-width: 63.99rem) {
+    .facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-3) var(--space-6);
+    }
+  }
+
+  /* Table of contents with dot leaders. */
+  .contents {
+    margin-top: var(--space-8);
+  }
+
+  .contents-title {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-lg);
+    color: var(--color-muted);
+  }
+
+  .contents ol {
+    margin-top: var(--space-2);
+    list-style: none;
+    border-top: var(--border-ink);
+  }
+
+  .contents a {
     display: grid;
-    grid-template-columns: 2rem minmax(0, 1fr);
-    gap: 2px var(--space-2);
-    padding-block: var(--space-3);
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+    gap: 2px var(--space-3);
+    align-items: baseline;
+    padding-block: var(--space-4);
     border-bottom: var(--border-hairline);
     text-decoration: none;
   }
 
   .n {
     grid-row: span 3;
-    padding-top: 0.35em;
     font-family: var(--font-mono);
-    font-size: var(--text-2xs);
+    font-size: var(--text-xs);
     color: var(--color-muted);
   }
 
   .t {
-    font-family: var(--font-serif);
-    font-size: var(--text-lg);
-    line-height: 1.2;
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    line-height: 1.15;
     transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .leader {
+    display: none;
   }
 
   .w {
@@ -242,52 +349,48 @@ const highlights = [
   }
 
   .p {
-    font-size: var(--text-xs);
-    color: var(--color-muted);
+    font-size: var(--text-2xs);
   }
 
-  .index a:hover .t {
-    color: var(--color-accent-ink);
+  .contents a:hover .t {
+    color: var(--pen-ink);
   }
 
-  .facts {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-4) var(--space-7);
-    margin: var(--space-8) 0 0;
-    padding-top: var(--space-4);
-    border-top: var(--border-hairline);
-  }
-
-  @media (min-width: 40rem) {
-    .facts {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+  @media (min-width: 56rem) {
+    .contents a {
+      grid-template-columns: 2.25rem auto minmax(2rem, 1fr) auto 11rem;
+      gap: var(--space-3);
     }
-  }
 
-  dt {
-    margin-bottom: var(--space-2);
-  }
+    .n {
+      grid-row: auto;
+    }
 
-  dd {
-    margin: 2px 0 0;
-    font-size: var(--text-sm);
-    font-weight: 500;
-    line-height: var(--leading-snug);
-  }
+    .leader {
+      display: block;
+      align-self: center;
+      height: 0;
+      border-bottom: 2px dotted var(--color-rule-strong);
+      transition: border-color var(--duration-fast) var(--ease-out);
+    }
 
-  dd.sub {
-    font-weight: 400;
-    color: var(--color-muted);
+    .contents a:hover .leader {
+      border-color: var(--pen);
+    }
+
+    .p {
+      text-align: right;
+    }
   }
 
   @media (max-width: 40rem) {
     .hero {
-      padding-top: var(--space-5);
+      padding-top: var(--space-6);
     }
 
-    .facts {
-      margin-top: var(--space-7);
+    .quiet {
+      margin-left: 0;
+      width: 100%;
     }
   }
 </style>

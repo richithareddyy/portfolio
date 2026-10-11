@@ -1,0 +1,172 @@
+---
+/*
+  CodeAtlas's answer for one change, written out like a code review: the changed method, then each caller it can
+  reach, with the source line CodeAtlas cites for every step. Symbols and locations are from the repository's
+  change-impact fixture.
+*/
+import Mark from '../Mark.astro';
+
+const chain = [
+  { symbol: 'Gateway::charge', note: 'trait method', loc: 'src/gateway.rs:2', via: 'may dispatch to the changed impl', at: 'src/gateway.rs:9' },
+  { symbol: 'PaymentService::authorize', loc: 'src/payments.rs:12', via: 'calls Gateway::charge', at: 'src/payments.rs:14' },
+  { symbol: 'checkout', loc: 'src/checkout.rs:3', via: 'calls PaymentService::authorize', at: 'src/checkout.rs:5' },
+  { symbol: 'test_checkout', note: 'test', loc: 'tests/payment_tests.rs:14', via: 'calls checkout', at: 'tests/payment_tests.rs:16', test: true },
+];
+---
+
+<figure class="trace">
+  <div class="sheet">
+    <p class="head"><span>impact</span> one change, traced back to the tests</p>
+
+    <div class="changed">
+      <p class="label note">you changed</p>
+      <p class="sym"><Mark kind="circle">StripeGateway::charge</Mark></p>
+      <p class="loc">src/gateway.rs:9</p>
+    </div>
+
+    <ol class="chain">
+      {
+        chain.map((step) => (
+          <li class:list={{ test: step.test }}>
+            <p class="via">
+              <span class="arrow" aria-hidden="true">↑</span> {step.via} <span class="at">{step.at}</span>
+            </p>
+            <p class="sym">
+              {step.symbol}
+              {step.note && <>{' '}<span class="tag">{step.note}</span></>}
+            </p>
+            <p class="loc">{step.loc}</p>
+          </li>
+        ))
+      }
+    </ol>
+
+    <p class="also">
+      also reaches <code>test_authorize_valid</code>, which calls PaymentService::authorize at <span class="at">tests/payment_tests.rs:9</span>
+    </p>
+
+    <p class="total">
+      <Mark kind="under">5 symbols in 4 files, 2 tests to run</Mark>
+    </p>
+  </div>
+  <figcaption>
+    Written out from CodeAtlas’s impact view on its change-impact fixture. The interactive graph and the real screenshot are in{' '}
+    <a href="/work/codeatlas">the case study</a>.
+  </figcaption>
+</figure>
+
+<style>
+  .trace {
+    margin: 0;
+    min-width: 0;
+  }
+
+  .sheet {
+    padding: var(--space-5);
+    border: var(--border-ink);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    box-shadow: -6px 6px 0 var(--color-rule);
+  }
+
+  .head {
+    margin-bottom: var(--space-5);
+    color: var(--color-muted);
+  }
+
+  .head span {
+    margin-right: var(--space-2);
+    padding: 1px 6px;
+    border: 1px solid var(--color-ink);
+    border-radius: 999px;
+    color: var(--color-ink);
+  }
+
+  .sym {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-ink);
+    overflow-wrap: anywhere;
+  }
+
+  .loc,
+  .at {
+    color: var(--color-muted);
+  }
+
+  .changed {
+    padding-bottom: var(--space-3);
+  }
+
+  .changed .sym {
+    margin-block: 2px 4px;
+    font-size: var(--text-md);
+  }
+
+  .chain {
+    list-style: none;
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .chain li {
+    padding-left: var(--space-4);
+    border-left: 2px solid var(--color-rule-strong);
+  }
+
+  .chain li.test {
+    border-left-color: var(--pen);
+  }
+
+  .via {
+    color: var(--color-ink-soft);
+  }
+
+  .arrow {
+    color: var(--pen-ink);
+  }
+
+  .tag {
+    margin-left: var(--space-2);
+    padding: 0 6px;
+    border: 1px dashed var(--color-rule-strong);
+    border-radius: 999px;
+    font-size: var(--text-2xs);
+    font-weight: 400;
+    color: var(--color-muted);
+  }
+
+  .test .tag {
+    border-color: var(--pen);
+    color: var(--pen-ink);
+  }
+
+  .also {
+    margin-top: var(--space-4);
+    color: var(--color-muted);
+  }
+
+  .also code {
+    font-size: 1em;
+    color: var(--color-ink);
+  }
+
+  .total {
+    margin-top: var(--space-5);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+
+  figcaption {
+    margin-top: var(--space-3);
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+
+  figcaption a {
+    color: var(--pen-ink);
+  }
+</style>

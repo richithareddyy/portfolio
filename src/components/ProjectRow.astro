@@ -1,31 +1,22 @@
 ---
+/* One line in the "also in the notebook" index. The whole row opens the project; hovering shows its screenshot. */
 import { Image } from 'astro:assets';
-import type { Project } from '../data/projects';
+import { projects, type Project } from '../data/projects';
 import ProjectLinks from './ProjectLinks.astro';
 
 interface Props {
   project: Project;
 }
 const { project } = Astro.props;
-// The whole card opens its main destination: the case study, else the demo, else the source.
+// The whole row opens its main destination: the case study, else the demo, else the source.
 const href = project.caseStudy ? `/work/${project.slug}` : (project.demo ?? project.github)!;
 const external = !project.caseStudy;
 const v = project.visual;
+const n = String(projects.findIndex((p) => p.slug === project.slug) + 1).padStart(2, '0');
 ---
 
-<article
-  class="card"
-  id={`project-${project.slug}`}
-  aria-labelledby={`${project.slug}-title`}
-  data-project-id={`project:${project.slug}`}
->
-  {
-    v.kind === 'image' && (
-      <div class="thumb" aria-hidden="true">
-        <Image src={v.src} alt="" widths={[224, 448]} sizes="7rem" loading="lazy" />
-      </div>
-    )
-  }
+<article class="row" id={`project-${project.slug}`} aria-labelledby={`${project.slug}-title`} data-project-id={`project:${project.slug}`}>
+  <span class="n" aria-hidden="true">{n}</span>
 
   <div class="body">
     <h4 id={`${project.slug}-title`}>
@@ -35,79 +26,75 @@ const v = project.visual;
       </a>
     </h4>
     <p class="summary">{project.summary}</p>
-    <p class="result">
-      <strong>{project.result.headline}</strong>
-      {project.result.qualifier && <span>{project.result.qualifier}</span>}
-    </p>
-    <ul class="stack" aria-label={`${project.title} technologies`}>
-      {project.tech.slice(0, 4).map((t) => <li>{t}</li>)}
-    </ul>
-    <ProjectLinks project={project} />
+    <p class="stack-line">{project.tech.slice(0, 4).join(' · ')}</p>
   </div>
+
+  <p class="result note">
+    <span class="arrow" aria-hidden="true">→</span>
+    {project.result.headline}
+    {project.result.qualifier && <span class="q">{project.result.qualifier}</span>}
+  </p>
+
+  <div class="links-cell"><ProjectLinks project={project} /></div>
+
+  {
+    v.kind === 'image' && (
+      <div class="peek" aria-hidden="true">
+        <Image src={v.src} alt="" widths={[320, 640]} sizes="16rem" loading="lazy" />
+      </div>
+    )
+  }
 </article>
 
 <style>
-  .card {
+  .row {
     position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-4);
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+    gap: var(--space-2) var(--space-4);
     padding-block: var(--space-5);
-    border-top: var(--border-hairline);
+    border-bottom: var(--border-hairline);
   }
 
-  @media (min-width: 30rem) {
-    .card {
-      grid-template-columns: 7rem minmax(0, 1fr);
+  .result,
+  .links-cell {
+    grid-column: 2;
+  }
+
+  @media (min-width: 56rem) {
+    .row {
+      grid-template-columns: 2.25rem minmax(0, 1fr) 15rem;
+      gap: var(--space-2) var(--space-6);
     }
-  }
 
-  .thumb {
-    display: none;
-    align-self: start;
-    aspect-ratio: 16 / 10;
-    overflow: clip;
-    border: var(--border-hairline);
-    border-radius: var(--radius-sm);
-    background: var(--color-panel);
-  }
-
-  @media (min-width: 30rem) {
-    .thumb {
-      display: block;
+    .result {
+      grid-column: 3;
+      grid-row: 1;
     }
-  }
 
-  .thumb :global(img) {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: top left;
-  }
-
-  /* Cards without a screenshot keep the text aligned with the others. */
-  .card:not(:has(.thumb)) .body {
-    grid-column: 1 / -1;
-  }
-
-  @media (min-width: 30rem) {
-    .card:not(:has(.thumb)) .body {
+    .links-cell {
       grid-column: 2;
     }
   }
 
+  .n {
+    padding-top: 0.45em;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+
   .body {
     display: grid;
-    gap: var(--space-2);
-    align-content: start;
-    justify-items: start;
+    gap: var(--space-1);
     min-width: 0;
   }
 
   h4 {
-    font-size: var(--text-lg);
-    font-weight: 500;
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 450;
+    letter-spacing: -0.01em;
   }
 
   h4 a {
@@ -115,60 +102,99 @@ const v = project.visual;
     transition: color var(--duration-fast) var(--ease-out);
   }
 
-  /* The title link stretches over the card; the secondary links sit above it, so nothing is nested. */
+  /* The title link stretches over the row; the secondary links sit above it, so nothing is nested. */
   .primary::after {
     content: '';
     position: absolute;
     inset: 0;
+    z-index: 1;
   }
 
   .primary:focus-visible {
     outline: none;
   }
 
-  .card:has(.primary:focus-visible) {
+  .row:has(.primary:focus-visible) {
     outline: 2px solid var(--color-focus);
-    outline-offset: 4px;
-    border-radius: var(--radius-xs);
+    outline-offset: 2px;
   }
 
-  .body :global(.links) {
+  .links-cell {
     position: relative;
-    z-index: 1;
-  }
-
-  .card:hover h4 a {
-    color: var(--color-accent-ink);
-  }
-
-  .thumb {
-    transition: border-color var(--duration-fast) var(--ease-out);
-  }
-
-  .card:hover .thumb {
-    border-color: var(--color-rule-strong);
+    z-index: 2;
   }
 
   .summary {
+    max-width: 52ch;
     font-size: var(--text-sm);
     color: var(--color-ink-soft);
   }
 
-  .result {
-    font-size: var(--text-sm);
-  }
-
-  .result strong {
-    font-weight: 600;
-  }
-
-  .result span {
-    display: block;
-    font-size: var(--text-xs);
+  .stack-line {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
     color: var(--color-muted);
   }
 
-  .stack {
+  .result {
+    align-self: start;
+    padding-top: 0.35em;
     font-size: var(--text-xs);
+  }
+
+  .arrow {
+    margin-right: 0.25em;
+  }
+
+  .q {
+    display: block;
+    color: var(--color-muted);
+  }
+
+  .row:hover h4 a {
+    color: var(--pen-ink);
+  }
+
+  /* Hover peek: the screenshot slides in tilted, like a photo tucked into the page. Fine pointers only. */
+  .peek {
+    display: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) and (min-width: 64rem) {
+    .peek {
+      display: block;
+      position: absolute;
+      right: calc(15rem + var(--space-7));
+      top: 50%;
+      z-index: 0;
+      width: 15rem;
+      padding: 6px 6px 18px;
+      background: var(--color-surface);
+      box-shadow: var(--shadow-md);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-50%) rotate(-4deg) translateX(12px);
+      transition: opacity var(--duration-base) var(--ease-out), transform var(--duration-base) var(--ease-out);
+    }
+
+    .peek :global(img) {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      object-position: top left;
+    }
+
+    .row:hover .peek {
+      opacity: 1;
+      transform: translateY(-50%) rotate(-3deg) translateX(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .peek {
+      transition: none;
+    }
   }
 </style>

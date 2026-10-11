@@ -268,28 +268,32 @@ const nav = [
     align-items: center;
     gap: var(--space-3);
     text-decoration: none;
+    font-family: var(--font-display);
     font-weight: 500;
-    font-size: var(--text-sm);
-    letter-spacing: 0.01em;
+    font-size: var(--text-lg);
+    letter-spacing: -0.01em;
   }
 
+  /* The monogram, circled in pen like everything else worth noticing. */
   .mark {
     display: grid;
     place-items: center;
-    width: 1.75rem;
-    height: 1.75rem;
-    border: var(--border-ink);
-    border-radius: var(--radius-xs);
-    font-family: var(--font-mono);
-    font-size: var(--text-2xs);
+    width: 2rem;
+    height: 2rem;
+    border: 1.5px solid var(--pen);
+    border-radius: 50% 46% 52% 48%;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-sm);
     font-weight: 500;
-    letter-spacing: 0.04em;
-    transition: background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
+    letter-spacing: 0;
+    transform: rotate(-6deg);
+    transition: background var(--duration-fast) var(--ease-out), transform var(--duration-base) var(--ease-out);
   }
 
   .wordmark:hover .mark {
-    background: var(--color-ink);
-    color: var(--color-bg);
+    background: var(--pen-wash);
+    transform: rotate(4deg);
   }
 
   .menu {

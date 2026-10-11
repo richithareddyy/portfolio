@@ -61,6 +61,8 @@ export type Project = {
 
   /** One sentence used on compact rows. */
   problemShort?: string;
+  /** The real-world problem, in one human sentence. Leads each featured project on the homepage. */
+  hook?: string;
   /** Homepage story for featured projects. Labels differ per project, because each one is interesting for a different reason. */
   story?: { label: string; text: string }[];
 
@@ -100,6 +102,7 @@ export const projects: Project[] = [
       qualifier: 'Captures the participant’s display for now, not the meeting feed',
     },
     tech: ['Node.js', 'Zoom Apps SDK', 'Zoom Realtime Media Streams API', 'WebSockets', 'Claude', 'ffmpeg'],
+    hook: 'You join a meeting late, someone is sharing a dense chart, and you would rather not interrupt everyone to ask what it means.',
     story: [
       {
         label: 'The experience',
@@ -136,11 +139,8 @@ export const projects: Project[] = [
       'Built a Rust analyzer that labels each call site by whether it can be resolved, then answers change-impact queries from a Neo4j call graph.',
     result: { headline: '3.6 s to index tokio', qualifier: '808 files, ~163k LOC, release build on one machine' },
     tech: ['Rust', 'tree-sitter', 'Neo4j', 'GraphQL'],
+    hook: 'Before merging a change, you want to know what it can break and which tests to run, and you want an answer you can check.',
     story: [
-      {
-        label: 'The problem',
-        text: 'You change a function in a Rust repository. Before merging, you want to know which functions, modules, and tests it can reach, and you want to check the answer rather than trust a name match.',
-      },
       {
         label: 'Architecture',
         text: 'A tree-sitter analyzer rebuilds the module tree and resolves calls with Rust’s scoping and visibility rules. Each call site is labeled resolved, ambiguous, or unresolved, and the call graph is stored in Neo4j and queried through GraphQL.',
@@ -287,6 +287,7 @@ export const projects: Project[] = [
       qualifier: 'Generated data with injected defects, one machine',
     },
     tech: ['Python', 'PostgreSQL', 'SQL', 'Docker'],
+    hook: 'Archive dumps are full of malformed lines, duplicates, and records whose parents never show up. A naive load either crashes or quietly stores bad data.',
     story: [
       {
         label: 'Scale',

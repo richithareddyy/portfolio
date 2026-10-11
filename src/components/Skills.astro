@@ -9,13 +9,12 @@ const sourceY = Object.fromEntries(orderedSources.map((s, i) => [s.id, (i + .5) 
 const techY = Object.fromEntries(techs.map((t, i) => [t.id, (i + .5) / techs.length * 100]));
 ---
 <section class="wrap section" id="skills" aria-labelledby="skills-title" data-lab>
-  <SectionHeading id="skills">Technical skills</SectionHeading>
-  <p class="intro">Grouped by area. Open the map to see which projects and roles each one comes from.</p>
+  <SectionHeading id="skills" note="the map below shows where I actually used each one.">What I build <em>with</em></SectionHeading>
   <dl class="skill-groups">
     {skills.map(group => <div><dt>{group.name}</dt><dd><ul>{group.items.map(item => <li>{item}</li>)}</ul></dd></div>)}
   </dl>
   <details class="map-disclosure" data-map-disclosure>
-    <summary>Explore connections <span class="summary-note">Projects ↔ technologies</span></summary>
+    <summary>Open the map <span class="summary-note">projects ↔ tools, with receipts</span></summary>
     <div class="explorer" id="technology-map">
       <div class="toolbar">
         <p>Select a name to highlight its connections. Select it again, or reset, to see everything.</p>
@@ -57,7 +56,7 @@ const techY = Object.fromEntries(techs.map((t, i) => [t.id, (i + .5) / techs.len
       <p class="map-note">Projects and roles on the left, technologies on the right. Lines show where each was used.</p>
     </div>
   </details>
-  <p class="more">The <a class="text-link" href={profile.links.resume} target="_blank" rel="noopener">résumé<span class="visually-hidden"> (PDF, opens in a new tab)</span></a> has the full list.</p>
+  <p class="more">Dates and details are in the <a class="text-link" href={profile.links.resume} target="_blank" rel="noopener">résumé<span class="visually-hidden"> (PDF, opens in a new tab)</span></a>.</p>
   <script type="application/json" data-graph set:html={JSON.stringify(graphData)} />
 </section>
 <script>
@@ -114,9 +113,11 @@ const techY = Object.fromEntries(techs.map((t, i) => [t.id, (i + .5) / techs.len
   .section { padding-top: var(--section-gap); }
   .intro { color: var(--color-ink-soft); margin-bottom: 24px; }
   .skill-groups { display:grid; grid-template-columns:minmax(0,1fr); gap:28px 40px; margin-block:24px 32px; }
-  dt { font-size:var(--text-sm); font-weight:600; margin-bottom:10px; }
+  dt { margin-bottom:10px; font-family:var(--font-mono); font-size:var(--text-xs); text-transform:lowercase; color:var(--pen-ink); }
+  dt::before { content:'// '; color:var(--color-rule-strong); }
   dd { margin:0; }
-  .skill-groups ul { display:flex; flex-wrap:wrap; gap:8px 16px; list-style:none; color:var(--color-ink-soft); font-size:var(--text-base); }
+  .skill-groups ul { display:flex; flex-wrap:wrap; gap:2px 0; list-style:none; font-family:var(--font-display); font-size:var(--text-lg); line-height:1.45; color:var(--color-ink); }
+  .skill-groups li:not(:last-child)::after { content:','; margin-right:.35em; color:var(--color-muted); }
   .map-disclosure { border-top:var(--border-hairline); }
   summary { cursor:pointer; min-height:44px; padding-block:18px; color:var(--color-accent-ink); }
   .summary-note { margin-left:12px; font-size:var(--text-xs); color:var(--color-muted); }
