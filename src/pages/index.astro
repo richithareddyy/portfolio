@@ -4,7 +4,6 @@ import Hero from '../components/Hero.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import FeaturedProject from '../components/FeaturedProject.astro';
 import ProjectRow from '../components/ProjectRow.astro';
-import ProjectMap from '../components/ProjectMap.astro';
 import Experience from '../components/Experience.astro';
 import Skills from '../components/Skills.astro';
 import About from '../components/About.astro';
@@ -32,14 +31,6 @@ import { featured, more } from '../data/projects';
           {more.map((p) => <ProjectRow project={p} />)}
         </div>
       </div>
-
-      <div class="explore">
-        <div class="more-head">
-          <h3 class="more-title">All eight, on one map</h3>
-          <p class="note">placed by what each one leans toward. pick a point.</p>
-        </div>
-        <ProjectMap />
-      </div>
     </section>
 
     <Experience />
@@ -50,15 +41,10 @@ import { featured, more } from '../data/projects';
 </BaseLayout>
 
 <style>
-  .more,
-  .explore {
+  .more {
     display: grid;
     gap: var(--space-4);
     margin-top: var(--space-9);
-  }
-
-  .explore :global(.project-map) {
-    max-width: 52rem;
   }
 
   .more-head {
