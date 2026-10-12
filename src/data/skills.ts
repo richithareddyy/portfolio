@@ -1,6 +1,6 @@
 export type SkillGroup = { name: string; items: string[] };
 
-/** Technical skills from the résumé, grouped by area. Rust and GraphQL are added from CodeAtlas, Neo4j and WebSockets from the projects. */
+// From the résumé, plus Rust, GraphQL, Neo4j, WebSockets, and ffmpeg, which the projects use but the résumé doesn't list.
 export const skills: SkillGroup[] = [
   { name: 'Languages', items: ['Python', 'SQL', 'JavaScript', 'Rust', 'Java', 'C++', 'C', 'R', 'MATLAB'] },
   {

@@ -93,10 +93,6 @@ const lines = [
     gap: var(--space-2);
   }
 
-  .row dt::after {
-    content: '';
-  }
-
   .row dt {
     flex: 1;
     display: flex;
@@ -106,6 +102,7 @@ const lines = [
   }
 
   .row dt::after {
+    content: '';
     flex: 1;
     border-bottom: 1px dotted var(--color-rule-strong);
   }

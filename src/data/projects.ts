@@ -17,58 +17,36 @@ export type Metric = { value: string; label: string; qualifier?: string };
 
 export type Decision = { heading: string; body: string; tradeoff: string };
 
-/** Technical domains used by the hero constellation and the project filter. */
-export const domains = [
-  { id: 'applied-ai', label: 'Applied AI' },
-  { id: 'ml', label: 'ML' },
-  { id: 'nlp', label: 'NLP' },
-  { id: 'data', label: 'Data' },
-  { id: 'software', label: 'Software' },
-  { id: 'systems', label: 'Systems' },
-] as const;
-export type Domain = (typeof domains)[number]['id'];
-
 export type DataTable = { caption: string; columns: string[]; rows: string[][]; note?: string };
 
-/** A screenshot, or a purpose-built component when no screenshot tells the story better. */
-export type Visual =
-  | { kind: 'image'; src: ImageMetadata; alt: string; caption: string }
-  | { kind: 'component'; id: 'zoom-lens-site' | 'etl-performance' };
+export type Visual = { kind: 'image'; src: ImageMetadata; alt: string; caption: string };
 
 export type Project = {
   slug: string;
   title: string;
-  /** One-sentence value statement. */
   summary: string;
   tier: 'featured' | 'more';
-  /** Domains this project actually involves, from its README and stack. */
-  domains: Domain[];
   year: string;
-  /** Shown on cards and case studies. */
   role: string;
   contribution: string;
-  /** Strongest supported result, or current status when there is no result. */
+  /** Strongest supported result, or the current status when there is no result yet. */
   result: { headline: string; qualifier?: string };
-  /** Up to four, shown on cards. */
   tech: string[];
   demo?: string;
-  /** Product or landing site (not an interactive demo). */
+  /** Product or landing page, as opposed to an interactive demo. */
   site?: string;
   github?: string;
   caseStudy: boolean;
-  visual: Visual;
+  /** Zoom Lens and the Reddit pipeline use purpose-built visuals instead (see FeaturedProject). */
+  visual?: Visual;
   gallery?: Visual[];
 
-  /** One sentence used on compact rows. */
-  problemShort?: string;
-  /** The real-world problem, in one human sentence. Leads each featured project on the homepage. */
+  // Featured projects on the homepage
   hook?: string;
-  /** Homepage story for featured projects. Labels differ per project, because each one is interesting for a different reason. */
   story?: { label: string; text: string }[];
 
   // Case-study content
   status?: string;
-  /** What makes the project technically hard. */
   challenges?: string[];
   tables?: DataTable[];
   problem?: string;
@@ -92,7 +70,6 @@ export const projects: Project[] = [
     summary:
       'An AI assistant inside Zoom that privately explains whatever someone is sharing on screen: a spreadsheet, a chart, a slide, a paper, or code.',
     tier: 'featured',
-    domains: ['applied-ai', 'software'],
     year: '2026 – present',
     role: 'Zoom Fellow, ASU Next Lab',
     contribution:
@@ -124,7 +101,6 @@ export const projects: Project[] = [
     site: 'https://zoomlens.vercel.app/',
     github: gh('ZoomLens'),
     caseStudy: true,
-    visual: { kind: 'component', id: 'zoom-lens-site' },
   },
   {
     slug: 'codeatlas',
@@ -132,7 +108,6 @@ export const projects: Project[] = [
     summary:
       'Static analysis for Rust that traces which functions, modules, and tests a code change can affect, with the source line behind each step.',
     tier: 'featured',
-    domains: ['software', 'systems'],
     year: '2026',
     role: 'Solo project',
     contribution:
@@ -277,7 +252,6 @@ export const projects: Project[] = [
     title: 'Reddit Data ETL Pipeline',
     summary: 'A PostgreSQL ETL pipeline that loads 18.9M Reddit-format records and accounts for every line it rejects.',
     tier: 'featured',
-    domains: ['data', 'systems'],
     year: '2026',
     role: 'Solo project',
     contribution:
@@ -304,7 +278,6 @@ export const projects: Project[] = [
     ],
     github: gh('reddit-data-pipeline'),
     caseStudy: true,
-    visual: { kind: 'component', id: 'etl-performance' },
     status: 'Complete; tests run in GitHub Actions',
     problem:
       'Archive dumps contain malformed lines, duplicates, and records whose parents never appear. A naive load either fails on constraints or silently stores bad data.',
@@ -395,7 +368,6 @@ export const projects: Project[] = [
     title: 'StreamBox',
     summary: 'A streaming web app whose backend stays consistent when many users write to the same data.',
     tier: 'more',
-    domains: ['software', 'systems'],
     year: '2024',
     role: 'Solo project',
     contribution:
@@ -423,7 +395,6 @@ export const projects: Project[] = [
       'HTTP range streaming with short-lived, title-scoped stream tokens',
     ],
     stack: ['Node.js', 'Express.js', 'MongoDB', 'Mongoose', 'JWT', 'Docker'],
-    problemShort: 'Double-clicks, multiple tabs, and concurrent edits cause duplicate entries, rewound playback, and wrong totals.',
     decisions: [
       {
         heading: 'Unique indexes with idempotent upserts',
@@ -467,7 +438,6 @@ export const projects: Project[] = [
     title: 'Support Ticket Triage',
     summary: 'Predicts support-ticket priority and resolution time, and explains each prediction.',
     tier: 'more',
-    domains: ['ml', 'nlp', 'data'],
     year: '2026',
     role: 'Solo project',
     contribution:
@@ -510,7 +480,6 @@ export const projects: Project[] = [
       'SHAP per-prediction explanations served through a Flask API and a Streamlit interface',
     ],
     stack: ['Python', 'XGBoost', 'Scikit-learn', 'SHAP', 'NLTK', 'VADER', 'PySpark', 'Flask', 'Streamlit', 'Docker'],
-    problemShort: 'A triage model has to be accurate and explain itself, so an agent can trust or override it.',
     decisions: [
       {
         heading: 'Stacked text model for readable explanations',
@@ -544,7 +513,6 @@ export const projects: Project[] = [
     title: 'Research Paper Summarizer',
     summary: 'Summarize, question, and compare academic papers from a PDF, DOI, or arXiv link.',
     tier: 'more',
-    domains: ['applied-ai', 'nlp'],
     year: '2025',
     role: 'Solo project',
     contribution:
@@ -553,7 +521,6 @@ export const projects: Project[] = [
     tech: ['Python', 'Streamlit', 'Gemini API', 'PyMuPDF'],
     demo: 'https://researchpapersummerizer-3bmsmrmm7glsxfeavslfb6.streamlit.app/',
     github: gh('Researchpaper_summerizer'),
-    problemShort: 'Reading, questioning, and comparing long academic papers takes time, and citations are tedious to format.',
     caseStudy: false,
     visual: {
       kind: 'image',
@@ -567,7 +534,6 @@ export const projects: Project[] = [
     title: 'Meeting Insights',
     summary: 'Turns a meeting transcript into action items, decisions, and open questions.',
     tier: 'more',
-    domains: ['applied-ai', 'nlp'],
     year: '',
     role: 'Solo project',
     contribution:
@@ -576,7 +542,6 @@ export const projects: Project[] = [
     tech: ['Python', 'Streamlit', 'Gemini API'],
     demo: 'https://richithareddyy-zoom-meeting-insights-app-gr5imo.streamlit.app',
     github: gh('zoom-meeting-insights'),
-    problemShort: 'After a meeting, action items, owners, and decisions are buried in a long transcript.',
     caseStudy: false,
     visual: {
       kind: 'image',
@@ -590,7 +555,6 @@ export const projects: Project[] = [
     title: 'Smart Parking',
     summary: 'Estimates parking-space occupancy by comparing a camera image with an empty reference.',
     tier: 'more',
-    domains: ['software'],
     year: '',
     role: 'Solo project',
     contribution:
@@ -598,7 +562,6 @@ export const projects: Project[] = [
     result: { headline: 'MATLAB prototype', qualifier: 'No real-world accuracy benchmark yet' },
     tech: ['MATLAB'],
     github: gh('Smart-Parking-App'),
-    problemShort: 'Knowing which spaces in a lot are free, using a single fixed camera.',
     caseStudy: false,
     visual: {
       kind: 'image',
@@ -613,12 +576,11 @@ export const featured = projects.filter((p) => p.tier === 'featured');
 export const more = projects.filter((p) => p.tier === 'more');
 export const caseStudies = projects.filter((p) => p.caseStudy);
 
-/** Zoom Lens case-study details that do not fit the shared shape. Every claim here is checked against the repository. */
+/** Zoom Lens case-study details that do not fit the shared shape. */
 export const zoomLens = {
   role: 'Zoom Fellow, ASU Next Lab (a fellowship in partnership with Zoom)',
   /** Demo recording. Put the file in public/ and set the path, e.g. '/zoom-lens-demo.mp4'. */
   demoVideo: null as string | null,
-  oneLiner: 'An AI assistant inside Zoom that privately explains whatever someone is sharing on screen.',
   problem: {
     intro: 'During a screen share, people often:',
     points: [

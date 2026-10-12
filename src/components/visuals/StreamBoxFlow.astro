@@ -91,26 +91,24 @@ const requests = [
 </figure>
 
 <script>
-  function setupStreamBox() {
-    for (const fig of document.querySelectorAll<HTMLElement>('[data-sb]:not([data-ready])')) {
-      fig.dataset.ready = 'true';
-      const buttons = Array.from(fig.querySelectorAll<HTMLButtonElement>('[data-guard]'));
-      const empty = fig.querySelector<HTMLElement>('.empty')!;
-      let current: string | null = null;
-      for (const b of buttons) {
-        b.addEventListener('click', () => {
-          current = current === b.dataset.guard ? null : b.dataset.guard!;
-          const on = new Set(current ? (b.dataset.on ?? '').split(' ') : []);
-          for (const x of buttons) x.setAttribute('aria-pressed', String(x.dataset.guard === current));
-          for (const t of fig.querySelectorAll<HTMLElement>('[data-target]')) t.classList.toggle('is-on', on.has(t.dataset.target!));
-          fig.classList.toggle('has-guard', !!current);
-          empty.setAttribute("aria-hidden", String(!!current));
-          for (const d of fig.querySelectorAll<HTMLElement>('[data-guard-detail]')) d.setAttribute('aria-hidden', String(d.dataset.guardDetail !== current));
-        });
-      }
+  for (const fig of document.querySelectorAll<HTMLElement>('[data-sb]')) {
+    const buttons = Array.from(fig.querySelectorAll<HTMLButtonElement>('[data-guard]'));
+    const empty = fig.querySelector<HTMLElement>('.empty')!;
+    let current: string | null = null;
+    for (const b of buttons) {
+      b.addEventListener('click', () => {
+        current = current === b.dataset.guard ? null : b.dataset.guard!;
+        const on = new Set(current ? (b.dataset.on ?? '').split(' ') : []);
+        for (const x of buttons) x.setAttribute('aria-pressed', String(x.dataset.guard === current));
+        for (const t of fig.querySelectorAll<HTMLElement>('[data-target]')) t.classList.toggle('is-on', on.has(t.dataset.target!));
+        fig.classList.toggle('has-guard', !!current);
+        empty.setAttribute('aria-hidden', String(!!current));
+        for (const d of fig.querySelectorAll<HTMLElement>('[data-guard-detail]')) {
+          d.setAttribute('aria-hidden', String(d.dataset.guardDetail !== current));
+        }
+      });
     }
   }
-  setupStreamBox();
 </script>
 
 <style>

@@ -1,11 +1,7 @@
 export const profile = {
   name: 'Richitha Rekula',
-  degree: 'M.S. Data Science, Analytics and Engineering',
-  school: 'Arizona State University',
   graduation: 'Expected May 2027',
   location: 'Tempe, AZ',
-  roles: 'Software engineering, applied AI, and AI/ML engineering',
-  seeking: 'New grad and internship roles in software engineering, applied AI, and ML engineering.',
   email: 'richitharekula@gmail.com',
   links: {
     github: 'https://github.com/richithareddyy',

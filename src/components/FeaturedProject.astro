@@ -1,8 +1,4 @@
 ---
-/*
-  A featured project: the problem first, then how it was built, then the stack and links.
-  Each one carries its own visual, and the layout alternates so no two read alike.
-*/
 import type { Project } from '../data/projects';
 import { techId } from '../data/graph';
 import ProjectVisual from './ProjectVisual.astro';
@@ -76,7 +72,7 @@ const flip = index % 2 === 1;
       ) : project.slug === 'reddit-data-pipeline' ? (
         <EtlLedger />
       ) : (
-        <ProjectVisual visual={project.visual} size="feature" eager={eager} href={href} />
+        project.visual && <ProjectVisual visual={project.visual} eager={eager} href={href} />
       )
     }
   </div>
@@ -163,7 +159,6 @@ const flip = index % 2 === 1;
     background-size: 100% 2px;
   }
 
-  /* The problem comes first, in the voice of the person who has it. */
   .hook {
     max-width: 34rem;
     font-family: var(--font-display);
@@ -201,9 +196,6 @@ const flip = index % 2 === 1;
     font-family: var(--font-mono);
     font-size: var(--text-xs);
     color: var(--color-muted);
-  }
-
-  dt {
     text-transform: lowercase;
   }
 

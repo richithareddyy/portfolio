@@ -116,129 +116,134 @@ const uid = compact ? 'ca-compact' : 'ca-full';
 </figure>
 
 <script>
-  type CA = {
+  type Graph = {
     nodes: Record<string, { id: string; full: string; kind: string; loc: string }>;
     edges: { from: string; to: string; text: string; loc: string }[];
   };
 
-  function setupCodeAtlas() {
-    for (const fig of document.querySelectorAll<HTMLElement>('[data-ca]:not([data-ready])')) {
-      fig.dataset.ready = 'true';
-      const data: CA = JSON.parse(fig.querySelector('[data-ca-data]')!.textContent!);
-      const svg = fig.querySelector('svg')!;
-      const ev = fig.querySelector<HTMLElement>('[data-ca-evidence]')!;
-      const reset = fig.querySelector<HTMLButtonElement>('[data-ca-reset]')!;
-      const summary = ev.innerHTML;
-      let selected: string | null = null;
+  const esc = (s: string) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]!);
+  const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-      // The chain from a symbol down to the changed method, following callees.
-      const chainFrom = (id: string) => {
-        const out: CA['edges'] = [];
-        let cur = id;
-        const seen = new Set<string>();
-        while (cur !== 'charge' && !seen.has(cur)) {
-          seen.add(cur);
-          const e = data.edges.find((x) => x.from === cur);
-          if (!e) break;
-          out.push(e);
-          cur = e.to;
-        }
-        return out;
-      };
+  for (const fig of document.querySelectorAll<HTMLElement>('[data-ca]')) {
+    const data: Graph = JSON.parse(fig.querySelector('[data-ca-data]')!.textContent!);
+    const svg = fig.querySelector('svg')!;
+    const ev = fig.querySelector<HTMLElement>('[data-ca-evidence]')!;
+    const reset = fig.querySelector<HTMLButtonElement>('[data-ca-reset]')!;
+    const nodes = Array.from(fig.querySelectorAll<HTMLElement | SVGGElement>('[data-ca-node]'));
+    const summary = ev.innerHTML;
+    let selected: string | null = null;
 
-      const esc = (s: string) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]!);
-
-      const show = (id: string | null) => {
-        svg.classList.toggle('has-focus', !!id);
-        const chain = id ? (id === 'charge' ? data.edges : chainFrom(id)) : [];
-        const onNodes = new Set(chain.flatMap((e) => [e.from, e.to]));
-        if (id) onNodes.add(id);
-        for (const p of svg.querySelectorAll<SVGPathElement>('.edge')) {
-          p.classList.toggle('is-on', chain.some((e) => e.from === p.dataset.from && e.to === p.dataset.to));
-        }
-        for (const n of fig.querySelectorAll<HTMLElement | SVGGElement>('[data-ca-node]')) {
-          n.classList.toggle('is-on', onNodes.has(n.dataset.caNode!));
-          n.setAttribute('aria-pressed', String(n.dataset.caNode === selected));
-        }
-        reset.disabled = !selected;
-        if (id !== selected) return;
-        if (!id) {
-          ev.innerHTML = summary;
-          return;
-        }
-        const node = data.nodes[id];
-        const lines =
-          id === 'charge'
-            ? `<p class="summary">This is the changed method (${esc(node.loc)}). Everything highlighted can be affected by it.</p>`
-            : `<ol class="chain">${chain
-                .map((e) => `<li><span>${esc(e.text)}</span><code>${esc(e.loc)}</code></li>`)
-                .join('')}</ol>`;
-        ev.innerHTML = `<p class="who"><code>${esc(node.full)}</code> <span>${esc(node.loc)}</span></p>${lines}`;
-      };
-
-      const select = (id: string | null) => {
-        selected = id && id !== selected ? id : null;
-        show(selected);
-      };
-
-      const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-      for (const n of fig.querySelectorAll<HTMLElement | SVGGElement>('[data-ca-node]')) {
-        const id = n.dataset.caNode!;
-        n.addEventListener('click', () => select(id));
-        n.addEventListener('keydown', (event) => {
-          const e = event as KeyboardEvent;
-          if (n.tagName.toLowerCase() === 'g' && (e.key === 'Enter' || e.key === ' ')) {
-            e.preventDefault();
-            select(id);
-          } else if (e.key === 'Escape') select(null);
-        });
-        if (fine) {
-          n.addEventListener('pointerenter', () => !selected && show(id));
-          n.addEventListener('pointerleave', () => !selected && show(null));
-        }
-        n.addEventListener('focus', () => !selected && show(id));
-        n.addEventListener('blur', () => !selected && show(null));
+    // Follow callees from a symbol down to the changed method.
+    const chainFrom = (id: string) => {
+      const chain: Graph['edges'] = [];
+      for (let e = data.edges.find((x) => x.from === id); e; e = data.edges.find((x) => x.from === e!.to)) {
+        chain.push(e);
+        if (e.to === 'charge') break;
       }
-      reset.addEventListener('click', () => {
-        const previous = selected;
-        select(null);
-        const target = Array.from(fig.querySelectorAll<HTMLElement>('[data-ca-node]')).find(n => n.dataset.caNode === previous && n.getBoundingClientRect().width > 0);
-        target?.focus();
-        show(null);
+      return chain;
+    };
+
+    const show = (id: string | null) => {
+      svg.classList.toggle('has-focus', !!id);
+      const chain = id ? (id === 'charge' ? data.edges : chainFrom(id)) : [];
+      const lit = new Set(chain.flatMap((e) => [e.from, e.to]));
+      if (id) lit.add(id);
+      for (const p of svg.querySelectorAll<SVGPathElement>('.edge')) {
+        p.classList.toggle('is-on', chain.some((e) => e.from === p.dataset.from && e.to === p.dataset.to));
+      }
+      for (const n of nodes) {
+        n.classList.toggle('is-on', lit.has(n.dataset.caNode!));
+        n.setAttribute('aria-pressed', String(n.dataset.caNode === selected));
+      }
+      reset.disabled = !selected;
+      // Hover previews only highlight; the evidence text follows the persistent selection.
+      if (id !== selected) return;
+      if (!id) {
+        ev.innerHTML = summary;
+        return;
+      }
+      const node = data.nodes[id];
+      const lines =
+        id === 'charge'
+          ? `<p class="summary">This is the changed method (${esc(node.loc)}). Everything highlighted can be affected by it.</p>`
+          : `<ol class="chain">${chain.map((e) => `<li><span>${esc(e.text)}</span><code>${esc(e.loc)}</code></li>`).join('')}</ol>`;
+      ev.innerHTML = `<p class="who"><code>${esc(node.full)}</code> <span>${esc(node.loc)}</span></p>${lines}`;
+    };
+
+    const select = (id: string | null) => {
+      selected = id && id !== selected ? id : null;
+      show(selected);
+    };
+
+    for (const n of nodes) {
+      const id = n.dataset.caNode!;
+      n.addEventListener('click', () => select(id));
+      n.addEventListener('keydown', (event) => {
+        const e = event as KeyboardEvent;
+        if (n instanceof SVGGElement && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          select(id);
+        } else if (e.key === 'Escape') {
+          select(null);
+        }
       });
-
-      // Tabs: graph and screenshot.
-      const tabs = Array.from(fig.querySelectorAll<HTMLButtonElement>('[data-ca-tab]'));
-      const activate = (name: string) => {
-        for (const t of tabs) {
-          const on = t.dataset.caTab === name;
-          t.setAttribute('aria-selected', String(on));
-          t.tabIndex = on ? 0 : -1;
-        }
-        for (const p of fig.querySelectorAll<HTMLElement>('[data-ca-panel]')) p.hidden = p.dataset.caPanel !== name;
-      };
-      for (const t of tabs) {
-        t.addEventListener('click', () => activate(t.dataset.caTab!));
-        t.addEventListener('keydown', (e) => {
-          if (['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(e.key)) {
-            e.preventDefault();
-            const next = tabs[e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : (tabs.indexOf(t) + 1) % tabs.length];
-            next.focus();
-            activate(next.dataset.caTab!);
-          }
-        });
+      if (fine) {
+        n.addEventListener('pointerenter', () => !selected && show(id));
+        n.addEventListener('pointerleave', () => !selected && show(null));
       }
+      n.addEventListener('focus', () => !selected && show(id));
+      n.addEventListener('blur', () => !selected && show(null));
+    }
+
+    reset.addEventListener('click', () => {
+      const previous = selected;
+      select(null);
+      // Return focus to the node that was selected, in whichever view (graph or list) is visible.
+      nodes.find((n) => n.dataset.caNode === previous && n.getBoundingClientRect().width > 0)?.focus();
+    });
+
+    const tabs = Array.from(fig.querySelectorAll<HTMLButtonElement>('[data-ca-tab]'));
+    const activate = (name: string) => {
+      for (const t of tabs) {
+        const on = t.dataset.caTab === name;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+      }
+      for (const p of fig.querySelectorAll<HTMLElement>('[data-ca-panel]')) p.hidden = p.dataset.caPanel !== name;
+    };
+    for (const t of tabs) {
+      t.addEventListener('click', () => activate(t.dataset.caTab!));
+      t.addEventListener('keydown', (e) => {
+        if (!['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(e.key)) return;
+        e.preventDefault();
+        const next = tabs[e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : (tabs.indexOf(t) + 1) % tabs.length];
+        next.focus();
+        activate(next.dataset.caTab!);
+      });
     }
   }
-  setupCodeAtlas();
 </script>
 
 <style>
-  .graph-hint { font-size: var(--text-xs); color: var(--color-muted); margin-bottom: var(--space-3); }
-  .mobile-nodes { display: none; }
-  .mobile-nodes .is-on { border-color: var(--color-accent); }
-  .node[aria-pressed="true"] .hit { fill: var(--color-accent-wash); stroke: var(--color-accent); }
-  .node .mark, .node text { pointer-events: none; }
+  .graph-hint {
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+    margin-bottom: var(--space-3);
+  }
+  .mobile-nodes {
+    display: none;
+  }
+  .mobile-nodes .is-on {
+    border-color: var(--color-accent);
+  }
+  .node[aria-pressed="true"] .hit {
+    fill: var(--color-accent-wash);
+    stroke: var(--color-accent);
+  }
+  .node .mark,
+  .node text {
+    pointer-events: none;
+  }
   .ca {
     margin: 0;
     min-width: 0;
@@ -368,15 +373,6 @@ const uid = compact ? 'ca-compact' : 'ca-full';
     stroke: var(--color-accent);
   }
 
-  .evidence {
-    min-height: 8.5rem;
-    margin-top: var(--space-3);
-    padding-top: var(--space-3);
-    border-top: var(--border-hairline);
-    font-size: var(--text-xs);
-    color: var(--color-ink-soft);
-  }
-
   .evidence :global(.summary) {
     color: var(--color-muted);
   }
@@ -422,16 +418,6 @@ const uid = compact ? 'ca-compact' : 'ca-full';
     margin-top: var(--space-2);
   }
 
-  .legend {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
-    margin-left: auto;
-    font-family: var(--font-mono);
-    font-size: var(--text-2xs);
-    color: var(--color-muted);
-  }
-
   .legend i {
     display: inline-block;
     width: 9px;
@@ -452,12 +438,31 @@ const uid = compact ? 'ca-compact' : 'ca-full';
   }
 
   @container (max-width: 420px) {
-    .panel-graph svg, .graph-hint { display: none; }
-    .mobile-nodes { display: grid; gap: var(--space-2); }
-    .mobile-nodes p { font-size: var(--text-sm); margin-bottom: var(--space-2); }
-    .mobile-nodes button { min-height: 2.75rem; padding: var(--space-2); text-align: left; overflow-wrap: anywhere; }
-    .mobile-nodes small { display: block; color: var(--color-muted); }
-    .evidence { min-height: 0; }
+    .panel-graph svg,
+    .graph-hint {
+      display: none;
+    }
+    .mobile-nodes {
+      display: grid;
+      gap: var(--space-2);
+    }
+    .mobile-nodes p {
+      font-size: var(--text-sm);
+      margin-bottom: var(--space-2);
+    }
+    .mobile-nodes button {
+      min-height: 2.75rem;
+      padding: var(--space-2);
+      text-align: left;
+      overflow-wrap: anywhere;
+    }
+    .mobile-nodes small {
+      display: block;
+      color: var(--color-muted);
+    }
+    .evidence {
+      min-height: 0;
+    }
   }
   figcaption {
     margin-top: var(--space-2);
@@ -465,17 +470,57 @@ const uid = compact ? 'ca-compact' : 'ca-full';
     color: var(--color-muted);
   }
 
-  .instrument-label { padding-bottom: var(--space-3); margin-bottom: var(--space-3); border-bottom: var(--border-hairline); }
-  .panel-graph svg { background-image: radial-gradient(var(--color-rule) .75px, transparent .75px); background-size: 20px 20px; }
-  .selection-legend { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-3); font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--color-muted); }
-  .selection-legend span:first-child { color: var(--color-accent-ink); }
-  .node[aria-pressed='true'] .mark { fill: var(--color-accent); stroke: var(--color-accent); }
+  .panel-graph svg {
+    background-image: radial-gradient(var(--color-rule) .75px, transparent .75px);
+    background-size: 20px 20px;
+  }
+  .selection-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--color-muted);
+  }
+  .selection-legend span:first-child {
+    color: var(--color-accent-ink);
+  }
+  .node[aria-pressed='true'] .mark {
+    fill: var(--color-accent);
+    stroke: var(--color-accent);
+  }
 
-  .instrument-label { border: 0; padding-bottom: 0; }
-  .evidence { font-size: var(--text-sm); line-height: 1.6; min-height: 11rem; }
-  .legend { font-family: var(--font-sans); font-size: var(--text-xs); gap: var(--space-1); }
-  .legend .lg-selected { background: var(--color-accent); border-color: var(--color-accent); }
-  .mobile-nodes p { font-size: var(--text-sm); }
+  .instrument-label {
+    margin-bottom: var(--space-3);
+    border-bottom: var(--border-hairline);
+    border: 0;
+    padding-bottom: 0;
+  }
+  .evidence {
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: var(--border-hairline);
+    color: var(--color-ink-soft);
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    min-height: 11rem;
+  }
+  .legend {
+    display: inline-flex;
+    align-items: center;
+    margin-left: auto;
+    color: var(--color-muted);
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    gap: var(--space-1);
+  }
+  .legend .lg-selected {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+  .mobile-nodes p {
+    font-size: var(--text-sm);
+  }
   @container (max-width: 420px) { .evidence { min-height: 0; } }
-
 </style>

@@ -2,7 +2,6 @@
 import { profile } from '../data/profile';
 import Mark from './Mark.astro';
 
-// The three projects that matter most, set as a table of contents with the evidence in the margin.
 const contents = [
   { slug: 'zoom-lens', title: 'Zoom Lens', what: 'An AI assistant inside live Zoom meetings', proof: 'Zoom Fellowship project' },
   { slug: 'codeatlas', title: 'CodeAtlas', what: 'What a Rust change can break, with receipts', proof: 'indexes tokio in 3.6 s' },
@@ -112,7 +111,7 @@ const contents = [
     font-weight: 400;
   }
 
-  /* The period is a pen: each click switches the ink color used across the site. */
+  /* The period doubles as the pen toggle (handled in interactions.ts). */
   .pen-dot {
     position: relative;
     display: inline-block;
@@ -128,7 +127,7 @@ const contents = [
     transition: transform var(--duration-base) var(--ease-out), background-color var(--duration-base) var(--ease-out);
   }
 
-  /* A comfortable tap area around a small dot. */
+  /* Bigger tap target than the dot itself. */
   .pen-dot::before {
     content: '';
     position: absolute;
@@ -230,14 +229,14 @@ const contents = [
     text-decoration-color: currentColor;
   }
 
-  /* Margin: notes in the right column on wide screens, a short list under the actions on small ones. */
+  /* Margin notes: a right column on wide screens, a list under the actions otherwise. */
   .margin {
     display: grid;
     gap: var(--space-5);
     min-width: 0;
   }
 
-  /* Sits just right of the dot on wide screens; hidden where there is no room for it. */
+  /* Hint next to the dot; only shown where there's room beside the name. */
   .last {
     position: relative;
   }
@@ -297,7 +296,6 @@ const contents = [
     }
   }
 
-  /* Table of contents with dot leaders. */
   .contents {
     margin-top: var(--space-8);
   }

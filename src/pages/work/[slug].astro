@@ -89,7 +89,7 @@ const sections = order.map(([id, label]) => ({ id, label }));
 
     <div class="wrap">
       <div class="lead-visual">
-        {project.slug === 'reddit-data-pipeline' ? <EtlPipeline /> : <ProjectVisual visual={project.visual} size="full" eager />}
+        {project.slug === 'reddit-data-pipeline' ? <EtlPipeline /> : project.visual && <ProjectVisual visual={project.visual} size="full" eager />}
       </div>
 
       {

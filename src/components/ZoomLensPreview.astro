@@ -1,10 +1,9 @@
 ---
-/* The Zoom Lens product site, shown as itself in a browser frame, with a pen note pointing at it. */
 import { Image } from 'astro:assets';
 import preview from '../assets/zoomlens-website.png';
 
 interface Props {
-  /** Load immediately when the preview is at the top of the page. */
+  /** Set when the preview is above the fold. */
   eager?: boolean;
 }
 const { eager = false } = Astro.props;

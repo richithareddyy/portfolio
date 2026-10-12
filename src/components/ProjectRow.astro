@@ -1,5 +1,4 @@
 ---
-/* One line in the "also in the notebook" index. The whole row opens the project; hovering shows its screenshot. */
 import { Image } from 'astro:assets';
 import { projects, type Project } from '../data/projects';
 import ProjectLinks from './ProjectLinks.astro';
@@ -8,10 +7,9 @@ interface Props {
   project: Project;
 }
 const { project } = Astro.props;
-// The whole row opens its main destination: the case study, else the demo, else the source.
+// The row links to the case study if there is one, else the demo, else the repo.
 const href = project.caseStudy ? `/work/${project.slug}` : (project.demo ?? project.github)!;
 const external = !project.caseStudy;
-const v = project.visual;
 const n = String(projects.findIndex((p) => p.slug === project.slug) + 1).padStart(2, '0');
 ---
 
@@ -38,9 +36,9 @@ const n = String(projects.findIndex((p) => p.slug === project.slug) + 1).padStar
   <div class="links-cell"><ProjectLinks project={project} /></div>
 
   {
-    v.kind === 'image' && (
+    project.visual && (
       <div class="peek" aria-hidden="true">
-        <Image src={v.src} alt="" widths={[320, 640]} sizes="16rem" loading="lazy" />
+        <Image src={project.visual.src} alt="" widths={[320, 640]} sizes="16rem" loading="lazy" />
       </div>
     )
   }
@@ -155,7 +153,7 @@ const n = String(projects.findIndex((p) => p.slug === project.slug) + 1).padStar
     color: var(--pen-ink);
   }
 
-  /* Hover peek: the screenshot slides in tilted, like a photo tucked into the page. Fine pointers only. */
+  /* Screenshot peek on hover. Fine pointers only, since touch has no hover. */
   .peek {
     display: none;
   }

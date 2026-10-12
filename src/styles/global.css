@@ -130,7 +130,6 @@ button {
   text-decoration-color: currentColor;
 }
 
-/* Arrow links: "Read the case study →" */
 .arrow-link {
   display: inline-flex;
   align-items: center;
@@ -157,7 +156,6 @@ button {
   transform: translateX(3px);
 }
 
-/* Technology lists: quiet inline text separated by dots */
 .stack {
   display: flex;
   flex-wrap: wrap;
@@ -175,7 +173,7 @@ button {
   color: var(--color-rule-strong);
 }
 
-/* Technology names link to the skills map. A faint dotted underline marks them as links without competing with the text. */
+/* Dotted so tech names read as links without competing with the text around them. */
 .tech-link {
   display: inline-flex;
   align-items: center;
@@ -193,12 +191,12 @@ button {
   text-decoration-color: currentColor;
 }
 
-/* Sections carry their spacing as top padding; anchor jumps land the heading just below the header instead. */
+/* Sections carry their spacing as top padding, so pull anchor targets up to land the heading under the header. */
 main > div > section[id]:not(#top):not(#work) {
   scroll-margin-top: calc(var(--space-5) - var(--section-gap));
 }
 
-/* Page changes: a short native crossfade between documents, no script involved. */
+/* Cross-document view transition: a short crossfade between pages. */
 @media (prefers-reduced-motion: no-preference) {
   @view-transition {
     navigation: auto;
@@ -210,12 +208,11 @@ main > div > section[id]:not(#top):not(#work) {
     animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
   }
 
-  /* In-page links glide instead of jumping. Native, so Back and focus still behave. */
   html {
     scroll-behavior: smooth;
   }
 
-  /* Content below the first screen fades up once as it arrives. Scripts add .reveal only to elements that start off screen. */
+  /* interactions.ts adds .reveal only to elements that start below the fold. */
   .js .reveal {
     opacity: 0;
     transform: translateY(14px);
@@ -230,22 +227,7 @@ main > div > section[id]:not(#top):not(#work) {
   }
 }
 
-/*
-  Interaction system. One easing curve and three durations, used everywhere.
-  Content is visible immediately; motion is reserved for intentional interactions.
-*/
-:root {
-  /* --ease-out and --duration-fast/base/slow live in tokens.css. */
-  --ease-press: var(--ease-out);
-  --duration-reveal: var(--duration-slow);
-}
-
-/*
-  One interaction language for every selectable control (filters, tabs, pipeline stages, flow steps,
-  safeguards). Hover previews with a stronger border; selected is the accent border on an accent wash;
-  pressed gives a small tactile scale. Graph nodes follow the same model in their own components:
-  hover previews, click persists, related items take the accent, unrelated items fade to --opacity-dim.
-*/
+/* Selectable controls in the diagrams (tabs, pipeline stages, safeguards) share one look. */
 .choice {
   border: var(--border-hairline);
   border-radius: var(--radius-sm);
@@ -253,7 +235,7 @@ main > div > section[id]:not(#top):not(#work) {
   color: var(--color-ink);
   cursor: pointer;
   transition: border-color var(--duration-fast) var(--ease-out), background-color var(--duration-fast) var(--ease-out),
-    color var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-press);
+    color var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out);
 }
 
 .choice:hover {
@@ -271,7 +253,6 @@ main > div > section[id]:not(#top):not(#work) {
   color: var(--color-ink);
 }
 
-/* Reset: the same quiet text button everywhere a selection can be cleared. */
 .reset-link {
   padding: var(--space-1) 0;
   border: 0;
@@ -291,15 +272,26 @@ main > div > section[id]:not(#top):not(#work) {
   text-decoration-color: currentColor;
 }
 
-[hidden] { display: none !important; }
+[hidden] {
+  display: none !important;
+}
 
-summary { cursor: pointer; }
-.tech-link, .reset-link { min-height: 2.75rem; }
-.reset-link:disabled { cursor: default; color: var(--color-muted); text-decoration: none; }
-.stack { font-family: var(--font-mono); }
-code { overflow-wrap: anywhere; }
+summary {
+  cursor: pointer;
+}
+.tech-link,
+.reset-link {
+  min-height: 2.75rem;
+}
+.reset-link:disabled {
+  cursor: default;
+  color: var(--color-muted);
+  text-decoration: none;
+}
+code {
+  overflow-wrap: anywhere;
+}
 
-/* Diagonal nudge for external-link arrows, used by any element with .ext-arrow. */
 .ext-arrow {
   display: inline-block;
   transition: transform var(--duration-base) var(--ease-out);
@@ -310,7 +302,7 @@ a:focus-visible .ext-arrow {
   transform: translate(2px, -2px);
 }
 
-/* Touch devices: no hover, so give links and buttons a brief pressed state instead. */
+/* No hover on touch screens, so links and buttons get a brief pressed state instead. */
 @media (hover: none) {
   a,
   button {
@@ -325,36 +317,75 @@ a:focus-visible .ext-arrow {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after { scroll-behavior: auto !important; }
-  .button:hover, .choice:active, .linked:hover img, a:hover .ext-arrow, .name:hover .dot { transform: none !important; }
-
   *,
   *::before,
   *::after {
+    scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+
+  .button:hover,
+  .choice:active,
+  .linked:hover img,
+  a:hover .ext-arrow {
+    transform: none !important;
+  }
+
+  .js .mk path {
+    stroke-dashoffset: 0;
+  }
 }
 
-/* Shared lab annotations: typography carries the structure, color carries selection. */
-.lab-label { font-family: var(--font-mono); font-size: var(--text-2xs); font-weight: 500; letter-spacing: .09em; text-transform: uppercase; color: var(--color-muted); }
-.lab-id { font-family: var(--font-mono); font-size: var(--text-2xs); letter-spacing: .06em; color: var(--color-muted); }
+.lab-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+.lab-id {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: .06em;
+  color: var(--color-muted);
+}
 
-/* Reading hierarchy: primary headings, readable descriptions, supporting detail, lab annotations. */
-.reading-detail { font-size: var(--text-sm); line-height: 1.65; color: var(--color-ink-soft); }
-.reading-detail > summary { min-height: 44px; padding-block: var(--space-2); color: var(--color-muted); }
-.reading-detail > summary:hover { color: var(--color-accent-ink); }
-.reading-detail > :not(summary) { max-width: 68ch; }
-.reading-detail[open] > summary { color: var(--color-ink); margin-bottom: var(--space-2); }
-.reading-detail p + p { margin-top: var(--space-3); }
-.reading-detail ul { padding-left: var(--space-4); }
-.reading-detail li + li { margin-top: var(--space-2); }
+.reading-detail {
+  font-size: var(--text-sm);
+  line-height: 1.65;
+  color: var(--color-ink-soft);
+}
+.reading-detail > summary {
+  min-height: 44px;
+  padding-block: var(--space-2);
+  color: var(--color-muted);
+}
+.reading-detail > summary:hover {
+  color: var(--color-accent-ink);
+}
+.reading-detail > :not(summary) {
+  max-width: 68ch;
+}
+.reading-detail[open] > summary {
+  color: var(--color-ink);
+  margin-bottom: var(--space-2);
+}
+.reading-detail p + p {
+  margin-top: var(--space-3);
+}
+.reading-detail ul {
+  padding-left: var(--space-4);
+}
+.reading-detail li + li {
+  margin-top: var(--space-2);
+}
 
 /*
-  The notebook motif: a pen that circles, underlines, and annotates.
-  Marks draw themselves once when they scroll into view; with reduced motion, or without JavaScript, they are simply there.
+  Pen marks (see Mark.astro). They draw once when scrolled into view; without JS or with reduced motion
+  they are simply there, since the dash offset only applies under .js.
 */
 .mk {
   position: relative;
@@ -405,7 +436,6 @@ a:focus-visible .ext-arrow {
   transition: stroke-dashoffset 600ms var(--ease-out) var(--mk-delay, 0ms);
 }
 
-/* Highlighter: a marker stroke behind the lower half of the words. */
 .hl {
   padding-inline: 0.12em;
   margin-inline: -0.12em;
@@ -414,7 +444,6 @@ a:focus-visible .ext-arrow {
   box-decoration-break: clone;
 }
 
-/* Margin notes: short monospace asides in pen color. */
 .note {
   font-family: var(--font-mono);
   font-size: var(--text-xs);
@@ -425,10 +454,4 @@ a:focus-visible .ext-arrow {
 .note b {
   font-weight: 500;
   color: var(--color-ink);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .js .mk path {
-    stroke-dashoffset: 0;
-  }
 }

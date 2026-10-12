@@ -12,7 +12,6 @@ export type SourceNode = {
   id: string;
   kind: 'project' | 'role';
   label: string;
-  /** Where the node links to on the site. */
   href: string;
   tech: string[];
 };

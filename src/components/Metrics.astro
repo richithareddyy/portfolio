@@ -48,14 +48,6 @@ const { metrics, note } = Astro.props;
     border-bottom: var(--border-hairline);
   }
 
-  dd {
-    margin: 0;
-    font-family: var(--font-serif);
-    font-size: var(--text-xl);
-    font-variant-numeric: tabular-nums lining-nums;
-    line-height: 1.1;
-  }
-
   dt {
     font-size: var(--text-xs);
     line-height: 1.45;
@@ -74,6 +66,12 @@ const { metrics, note } = Astro.props;
     color: var(--color-muted);
   }
 
-  dd { font-family: var(--font-mono); font-size: var(--text-lg); line-height: 1.4; color: var(--color-accent-ink); }
-
+  dd {
+    margin: 0;
+    font-variant-numeric: tabular-nums lining-nums;
+    font-family: var(--font-mono);
+    font-size: var(--text-lg);
+    line-height: 1.4;
+    color: var(--color-accent-ink);
+  }
 </style>

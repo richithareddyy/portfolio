@@ -60,107 +60,351 @@ const techY = Object.fromEntries(techs.map((t, i) => [t.id, (i + .5) / techs.len
   <script type="application/json" data-graph set:html={JSON.stringify(graphData)} />
 </section>
 <script>
-  function setupLab() {
-    const lab = document.querySelector<HTMLElement>('[data-lab]');
-    if (!lab || lab.dataset.ready) return;
-    lab.dataset.ready = 'true';
-    const graph: {nodes: Record<string,{label:string;kind:string}>;links:Record<string,string[]>} = JSON.parse(lab.querySelector('[data-graph]')!.textContent!);
-    const map = lab.querySelector<HTMLElement>('.map-canvas')!;
-    const explorer = lab.querySelector<HTMLElement>('.explorer')!;
-    // The SVG map (wide screens) and the lists (narrow screens) share one selection.
-    const nodes = Array.from(explorer.querySelectorAll<HTMLElement | SVGGElement>('[data-node]'));
-    const paths = Array.from(map.querySelectorAll<SVGPathElement>('path'));
-    const status = lab.querySelector<HTMLElement>('[data-status]')!;
-    let selected: string | null = null;
-    function select(id: string | null) {
-      selected = id;
-      const linked = new Set(id ? graph.links[id] : []);
-      map.classList.toggle('has-selection', !!id);
-      explorer.classList.toggle('has-selection', !!id);
-      nodes.forEach(button => {
-        const active = button.dataset.node === id;
-        button.setAttribute('aria-pressed', String(active));
-        button.classList.toggle('connected', linked.has(button.dataset.node!));
-      });
-      paths.forEach(path => path.classList.toggle('connected', !!id && (path.dataset.from === id || path.dataset.to === id)));
-      status.textContent = id ? `${graph.nodes[id].label} · ${linked.size} ${linked.size === 1 ? 'connection' : 'connections'}` : 'All projects, roles, and technologies';
+  const lab = document.querySelector<HTMLElement>('[data-lab]')!;
+  const graph: { nodes: Record<string, { label: string; kind: string }>; links: Record<string, string[]> } = JSON.parse(
+    lab.querySelector('[data-graph]')!.textContent!,
+  );
+  const map = lab.querySelector<HTMLElement>('.map-canvas')!;
+  const explorer = lab.querySelector<HTMLElement>('.explorer')!;
+  // The SVG map (wide screens) and the lists (narrow screens) share one selection.
+  const nodes = Array.from(explorer.querySelectorAll<HTMLElement | SVGGElement>('[data-node]'));
+  const paths = Array.from(map.querySelectorAll<SVGPathElement>('path'));
+  const status = lab.querySelector<HTMLElement>('[data-status]')!;
+  let selected: string | null = null;
+
+  function select(id: string | null) {
+    selected = id;
+    const linked = new Set(id ? graph.links[id] : []);
+    map.classList.toggle('has-selection', !!id);
+    explorer.classList.toggle('has-selection', !!id);
+    for (const node of nodes) {
+      node.setAttribute('aria-pressed', String(node.dataset.node === id));
+      node.classList.toggle('connected', linked.has(node.dataset.node!));
     }
-    nodes.forEach(button => {
-      const toggle = () => select(selected === button.dataset.node ? null : button.dataset.node!);
-      button.addEventListener('click', toggle);
-      // SVG nodes are role="button"; real buttons already handle Enter and Space.
-      if (!(button instanceof HTMLButtonElement)) button.addEventListener('keydown', (e: Event) => {
-        if (!(e instanceof KeyboardEvent)) return;
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+    for (const path of paths) path.classList.toggle('connected', !!id && (path.dataset.from === id || path.dataset.to === id));
+    status.textContent = id
+      ? `${graph.nodes[id].label} · ${linked.size} ${linked.size === 1 ? 'connection' : 'connections'}`
+      : 'All projects, roles, and technologies';
+  }
+
+  function openAt(id: string) {
+    if (!graph.nodes[id]) return;
+    lab.querySelector<HTMLDetailsElement>('[data-map-disclosure]')!.open = true;
+    select(id);
+  }
+
+  for (const node of nodes) {
+    const toggle = () => select(selected === node.dataset.node ? null : node.dataset.node!);
+    node.addEventListener('click', toggle);
+    // SVG nodes are role="button"; real buttons already handle Enter and Space.
+    if (!(node instanceof HTMLButtonElement)) {
+      node.addEventListener('keydown', (e: Event) => {
+        const key = (e as KeyboardEvent).key;
+        if (key === 'Enter' || key === ' ') {
+          e.preventDefault();
+          toggle();
+        }
       });
-    });
-    lab.querySelector('[data-reset]')!.addEventListener('click', () => select(null));
-    explorer.addEventListener('keydown', e => { if(e.key === 'Escape') select(null); });
-    document.addEventListener('lab:select', ((e:CustomEvent<string>) => {
-      if (!graph.nodes[e.detail]) return;
-      lab.querySelector<HTMLDetailsElement>('[data-map-disclosure]')!.open = true;
-      select(e.detail);
-    }) as EventListener);
-    const id = new URLSearchParams(location.search).get('tech');
-    if (id && graph.nodes[id]) {
-      lab.querySelector<HTMLDetailsElement>('[data-map-disclosure]')!.open = true;
-      select(id);
     }
   }
-  setupLab();
+  lab.querySelector('[data-reset]')!.addEventListener('click', () => select(null));
+  explorer.addEventListener('keydown', (e) => e.key === 'Escape' && select(null));
+  document.addEventListener('lab:select', ((e: CustomEvent<string>) => openAt(e.detail)) as EventListener);
+
+  const fromUrl = new URLSearchParams(location.search).get('tech');
+  if (fromUrl) openAt(fromUrl);
 </script>
 <style>
-  .section { padding-top: var(--section-gap); }
-  .intro { color: var(--color-ink-soft); margin-bottom: 24px; }
-  .skill-groups { display:grid; grid-template-columns:minmax(0,1fr); gap:28px 40px; margin-block:24px 32px; }
-  dt { margin-bottom:10px; font-family:var(--font-mono); font-size:var(--text-xs); text-transform:lowercase; color:var(--pen-ink); }
-  dt::before { content:'// '; color:var(--color-rule-strong); }
-  dd { margin:0; }
-  .skill-groups ul { display:flex; flex-wrap:wrap; gap:2px 0; list-style:none; font-family:var(--font-display); font-size:var(--text-lg); line-height:1.45; color:var(--color-ink); }
-  .skill-groups li:not(:last-child)::after { content:','; margin-right:.35em; color:var(--color-muted); }
-  .map-disclosure { border-top:var(--border-hairline); }
-  summary { cursor:pointer; min-height:44px; padding-block:18px; color:var(--color-accent-ink); }
-  .summary-note { margin-left:12px; font-size:var(--text-xs); color:var(--color-muted); }
-  .explorer { background:transparent; }
-  .toolbar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; padding:16px; }
-  .toolbar p { color:var(--color-muted); font-size:var(--text-sm); max-width:55ch; }
-  .toolbar button { min-height:44px; padding:8px 16px; border:1px solid var(--color-rule-strong); border-radius:6px; color:var(--color-ink); background:var(--color-bg); font:inherit; cursor:pointer; }
-  .selection-status { padding:12px 16px; min-height:48px; font-size:var(--text-sm); color:var(--color-accent-ink); border-block:var(--border-hairline); }
-  .column-labels { display:flex; justify-content:space-between; padding:12px 16px; font-size:var(--text-xs); color:var(--color-muted); }
-  .map-scroll { overflow-x:auto; padding:4px; }
-  .map-canvas { min-width:1100px; }
-  svg { display:block; width:100%; height:auto; overflow:visible; }
-  path { fill:none; stroke:var(--color-rule-strong); stroke-width:1; opacity:.6; }
-  .map-node { cursor:pointer; outline:none; }
-  .hit { fill:transparent; }
-  .map-node text { font-family:var(--font-sans); font-size:16px; fill:var(--color-ink-soft); }
-  .source text { font-weight:500; fill:var(--color-ink); }
-  .kind { font-weight:400; fill:var(--color-muted); }
-  .map-node circle { fill:var(--color-bg); stroke:var(--color-ink-soft); stroke-width:1.5; }
-  .map-node:hover text, .map-node.connected text, .map-node[aria-pressed="true"] text { fill:var(--color-accent-ink); }
-  .map-node[aria-pressed="true"] text { font-weight:600; }
-  .map-node:focus-visible .hit { stroke:var(--color-focus); stroke-width:2; }
-  .map-node.connected circle, .map-node[aria-pressed="true"] circle { fill:var(--color-accent); stroke:var(--color-accent); }
-  .has-selection path { opacity:.1; }
-  .has-selection path.connected { opacity:1; stroke:var(--color-accent); stroke-width:2; }
-  .map-note,.more { color:var(--color-muted); font-size:var(--text-xs); margin-top:12px; }
-  .map-note { padding:12px 16px; border-top:var(--border-hairline); margin:0; }
-  /* Narrow screens: the same connections as two lists instead of a 1,100px-wide canvas. */
-  .map-list { display:none; }
-  .list-label { margin:16px 16px 8px; font-family:var(--font-mono); font-size:var(--text-2xs); letter-spacing:.06em; text-transform:uppercase; color:var(--color-muted); }
-  .map-list ul { display:flex; flex-wrap:wrap; gap:4px 6px; padding:0 12px 8px; list-style:none; }
-  .list-node { min-height:40px; padding:6px 8px; border:1px solid transparent; border-radius:6px; background:none; font:inherit; font-size:var(--text-sm); color:var(--color-ink-soft); cursor:pointer; text-align:left; transition:color var(--duration-fast) var(--ease-out), opacity var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out); }
-  .list-node:hover { color:var(--color-accent-ink); }
-  .list-node.connected { color:var(--color-accent-ink); }
-  .list-node[aria-pressed="true"] { color:var(--color-accent-ink); font-weight:600; border-color:var(--color-accent); }
-  .explorer.has-selection .list-node:not(.connected):not([aria-pressed="true"]) { opacity:.45; }
-  @media(max-width:47.99rem) {
-    .map-scroll, .column-labels { display:none; }
-    .map-list { display:block; }
-    .map-note { display:none; }
-    .toolbar p { font-size:var(--text-xs); }
+  .section {
+    padding-top: var(--section-gap);
   }
-  @media(min-width:40rem) { .skill-groups { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-  @media(min-width:68rem) { .skill-groups { grid-template-columns:repeat(3,minmax(0,1fr)); } }
-  @media(prefers-reduced-motion:no-preference) { path { transition:stroke 150ms ease,opacity 150ms ease; } }
+
+  .skill-groups {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px 40px;
+    margin-block: 24px 32px;
+  }
+
+  dt {
+    margin-bottom: 10px;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: lowercase;
+    color: var(--pen-ink);
+  }
+
+  dt::before {
+    content: '// ';
+    color: var(--color-rule-strong);
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  .skill-groups ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 0;
+    list-style: none;
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    line-height: 1.45;
+    color: var(--color-ink);
+  }
+
+  .skill-groups li:not(:last-child)::after {
+    content: ',';
+    margin-right: .35em;
+    color: var(--color-muted);
+  }
+
+  .map-disclosure {
+    border-top: var(--border-hairline);
+  }
+
+  summary {
+    cursor: pointer;
+    min-height: 44px;
+    padding-block: 18px;
+    color: var(--color-accent-ink);
+  }
+
+  .summary-note {
+    margin-left: 12px;
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .toolbar p {
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+    max-width: 55ch;
+  }
+
+  .toolbar button {
+    min-height: 44px;
+    padding: 8px 16px;
+    border: 1px solid var(--color-rule-strong);
+    border-radius: 6px;
+    color: var(--color-ink);
+    background: var(--color-bg);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .selection-status {
+    padding: 12px 16px;
+    min-height: 48px;
+    font-size: var(--text-sm);
+    color: var(--color-accent-ink);
+    border-block: var(--border-hairline);
+  }
+
+  .column-labels {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 16px;
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+
+  .map-scroll {
+    overflow-x: auto;
+    padding: 4px;
+  }
+
+  .map-canvas {
+    min-width: 1100px;
+  }
+
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  path {
+    fill: none;
+    stroke: var(--color-rule-strong);
+    stroke-width: 1;
+    opacity: .6;
+  }
+
+  .map-node {
+    cursor: pointer;
+    outline: none;
+  }
+
+  .hit {
+    fill: transparent;
+  }
+
+  .map-node text {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    fill: var(--color-ink-soft);
+  }
+
+  .source text {
+    font-weight: 500;
+    fill: var(--color-ink);
+  }
+
+  .kind {
+    font-weight: 400;
+    fill: var(--color-muted);
+  }
+
+  .map-node circle {
+    fill: var(--color-bg);
+    stroke: var(--color-ink-soft);
+    stroke-width: 1.5;
+  }
+
+  .map-node:hover text,
+  .map-node.connected text,
+  .map-node[aria-pressed="true"] text {
+    fill: var(--color-accent-ink);
+  }
+
+  .map-node[aria-pressed="true"] text {
+    font-weight: 600;
+  }
+
+  .map-node:focus-visible .hit {
+    stroke: var(--color-focus);
+    stroke-width: 2;
+  }
+
+  .map-node.connected circle,
+  .map-node[aria-pressed="true"] circle {
+    fill: var(--color-accent);
+    stroke: var(--color-accent);
+  }
+
+  .has-selection path {
+    opacity: .1;
+  }
+
+  .has-selection path.connected {
+    opacity: 1;
+    stroke: var(--color-accent);
+    stroke-width: 2;
+  }
+
+  .map-note,
+  .more {
+    color: var(--color-muted);
+    font-size: var(--text-xs);
+    margin-top: 12px;
+  }
+
+  .map-note {
+    padding: 12px 16px;
+    border-top: var(--border-hairline);
+    margin: 0;
+  }
+
+  /* Narrow screens: the same connections as two lists instead of a 1,100px-wide canvas. */
+  .map-list {
+    display: none;
+  }
+
+  .list-label {
+    margin: 16px 16px 8px;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .map-list ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 6px;
+    padding: 0 12px 8px;
+    list-style: none;
+  }
+
+  .list-node {
+    min-height: 40px;
+    padding: 6px 8px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: none;
+    font: inherit;
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
+    cursor: pointer;
+    text-align: left;
+    transition: color var(--duration-fast) var(--ease-out), opacity var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
+  }
+
+  .list-node:hover {
+    color: var(--color-accent-ink);
+  }
+
+  .list-node.connected {
+    color: var(--color-accent-ink);
+  }
+
+  .list-node[aria-pressed="true"] {
+    color: var(--color-accent-ink);
+    font-weight: 600;
+    border-color: var(--color-accent);
+  }
+
+  .explorer.has-selection .list-node:not(.connected):not([aria-pressed="true"]) {
+    opacity: .45;
+  }
+
+  @media (max-width: 47.99rem) {
+    .map-scroll,
+    .column-labels {
+      display: none;
+    }
+
+    .map-list {
+      display: block;
+    }
+
+    .map-note {
+      display: none;
+    }
+
+    .toolbar p {
+      font-size: var(--text-xs);
+    }
+  }
+
+  @media (min-width: 40rem) {
+    .skill-groups {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 68rem) {
+    .skill-groups {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    path {
+      transition: stroke 150ms ease, opacity 150ms ease;
+    }
+  }
 </style>

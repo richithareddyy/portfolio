@@ -1,49 +1,33 @@
 ---
 import { Image } from 'astro:assets';
 import type { Visual } from '../data/projects';
-import ZoomLensPreview from './ZoomLensPreview.astro';
-import PerfCompare from './PerfCompare.astro';
 
 interface Props {
   visual: Visual;
-  /** card: fixed 16:10 frame; feature: larger frame; full: natural height on case studies. */
-  size?: 'card' | 'feature' | 'full';
+  /** feature: fixed 16:10 frame on the homepage; full: natural height on case studies. */
+  size?: 'feature' | 'full';
   eager?: boolean;
-  /** Makes the frame a mouse shortcut to this URL (kept out of the tab order; the title link is the accessible one). */
+  /** Makes the frame a mouse shortcut. It stays out of the tab order since the title link is the accessible one. */
   href?: string;
 }
 
-const { visual, size = 'card', eager = false, href } = Astro.props;
-
-const widths = size === 'card' ? [400, 640, 800] : [640, 960, 1280, 1600];
-const sizes =
-  size === 'card'
-    ? '(min-width: 64rem) 22rem, (min-width: 40rem) 45vw, 92vw'
-    : '(min-width: 64rem) 40rem, 92vw';
+const { visual, size = 'feature', eager = false, href } = Astro.props;
 ---
 
-{
-  visual.kind === 'component' ? (
-    visual.id === 'zoom-lens-site' ? <ZoomLensPreview /> : <PerfCompare />
-  ) : (
-    <figure class:list={['visual', size]}>
-      <div class:list={['frame', { linked: !!href }]}>
-        <Image
-          src={visual.src}
-          alt={visual.alt}
-          widths={widths}
-          sizes={sizes}
-          loading={eager ? 'eager' : 'lazy'}
-          class:list={[{ contain: visual.src.height > visual.src.width * 0.8 }]}
-        />
-        {href && <a class="cover" href={href} tabindex="-1" aria-hidden="true"></a>}
-      </div>
-      <figcaption>
-        {visual.caption}
-      </figcaption>
-    </figure>
-  )
-}
+<figure class:list={['visual', size]}>
+  <div class:list={['frame', { linked: !!href }]}>
+    <Image
+      src={visual.src}
+      alt={visual.alt}
+      widths={[640, 960, 1280, 1600]}
+      sizes="(min-width: 64rem) 40rem, 92vw"
+      loading={eager ? 'eager' : 'lazy'}
+      class:list={[{ contain: visual.src.height > visual.src.width * 0.8 }]}
+    />
+    {href && <a class="cover" href={href} tabindex="-1" aria-hidden="true"></a>}
+  </div>
+  <figcaption>{visual.caption}</figcaption>
+</figure>
 
 <style>
   .visual {
@@ -51,22 +35,15 @@ const sizes =
     min-width: 0;
   }
 
-  .frame {
-    position: relative;
-    background: var(--color-surface);
-    border: var(--border-hairline);
-    border-radius: var(--radius-md);
-  }
-
-  .card .frame {
-    aspect-ratio: 16 / 10;
-  }
-
   .feature .frame {
     aspect-ratio: 16 / 10;
   }
 
   .frame {
+    position: relative;
+    background: var(--color-surface);
+    border: var(--border-hairline);
+    border-radius: var(--radius-md);
     overflow: clip;
   }
 
@@ -115,9 +92,4 @@ const sizes =
     line-height: 1.45;
     color: var(--color-muted);
   }
-
-  .card figcaption {
-    min-height: calc(2 * 1.45em);
-  }
-
 </style>

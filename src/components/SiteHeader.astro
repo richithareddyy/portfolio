@@ -71,112 +71,88 @@ const nav = [
 </header>
 
 <script>
-  // Document-level listeners are registered once; they look up the current
-  // header on each event because page navigations replace it.
-  const getHeader = () => document.querySelector<HTMLElement>('[data-header]');
-  const getToggle = () => document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const header = document.querySelector<HTMLElement>('[data-header]')!;
+  const toggle = header.querySelector<HTMLButtonElement>('[data-menu-toggle]')!;
+  const bar = header.querySelector<HTMLElement>('[data-progress]')!;
+  const rail = header.querySelector<HTMLElement>('[data-progress-rail]')!;
 
   function setOpen(open: boolean) {
-    getToggle()?.setAttribute('aria-expanded', String(open));
-    getHeader()?.classList.toggle('is-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    header.classList.toggle('is-open', open);
   }
 
   document.addEventListener('click', (event) => {
     const target = event.target as HTMLElement;
-    const header = getHeader();
-    if (!header) return;
-    if (target.closest('[data-menu-toggle]')) {
-      setOpen(!header.classList.contains('is-open'));
-    } else if (target.closest('[data-menu] a') || !header.contains(target)) {
-      setOpen(false);
-    }
+    if (target.closest('[data-menu-toggle]')) setOpen(!header.classList.contains('is-open'));
+    else if (target.closest('[data-menu] a') || !header.contains(target)) setOpen(false);
   });
 
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && getHeader()?.classList.contains('is-open')) {
+    if (event.key === 'Escape' && header.classList.contains('is-open')) {
       setOpen(false);
-      getToggle()?.focus();
+      toggle.focus();
     }
   });
 
-  window.matchMedia('(min-width: 48rem)').addEventListener('change', (e) => {
-    if (e.matches) setOpen(false);
-  });
+  matchMedia('(min-width: 48rem)').addEventListener('change', (e) => e.matches && setOpen(false));
 
-  // Header border appears once scrolled; the progress line shows how far down the page you are.
   let ticking = false;
   const onScroll = () => {
     if (ticking) return;
     ticking = true;
     requestAnimationFrame(() => {
       ticking = false;
-      getHeader()?.classList.toggle('is-scrolled', window.scrollY > 8);
-      const bar = document.querySelector<HTMLElement>('[data-progress]');
-      const rail = document.querySelector<HTMLElement>('[data-progress-rail]');
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      const p = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
-      if (bar) bar.style.transform = `scaleX(${p})`;
-      if (rail) rail.style.transform = `translateX(${(p * 100).toFixed(2)}%)`;
+      header.classList.toggle('is-scrolled', scrollY > 8);
+      const max = document.documentElement.scrollHeight - innerHeight;
+      const p = max > 0 ? Math.min(scrollY / max, 1) : 0;
+      bar.style.transform = `scaleX(${p})`;
+      rail.style.transform = `translateX(${(p * 100).toFixed(2)}%)`;
     });
   };
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll, { passive: true });
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', onScroll, { passive: true });
+  onScroll();
 
-  // Active section highlighting. On the home page the link for the section
-  // in view is marked; on case-study pages "Work" stays marked.
-  let sectionObserver: IntersectionObserver | undefined;
+  // On the home page the link for the section in view is marked; on case studies "Work" stays marked.
+  const links = Array.from(header.querySelectorAll<HTMLAnchorElement>('[data-nav-link]'));
+  const indicator = header.querySelector<HTMLElement>('[data-nav-indicator]')!;
 
-  function setupActiveNav() {
-    sectionObserver?.disconnect();
-    const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]'));
-    const indicator = document.querySelector<HTMLElement>('[data-nav-indicator]');
-    const setActive = (id: string | null) => {
-      let active: HTMLAnchorElement | undefined;
-      links.forEach((link) => {
-        if (link.dataset.navLink === id) {
-          link.setAttribute('aria-current', 'true');
-          active = link;
-        } else link.removeAttribute('aria-current');
-      });
-      // One indicator glides to the active link instead of each link animating its own underline.
-      if (indicator) {
-        if (active) {
-          const inset = 12;
-          indicator.style.width = `${active.offsetWidth - inset * 2}px`;
-          indicator.style.transform = `translateX(${active.offsetLeft + inset}px)`;
-          indicator.style.opacity = '1';
-        } else indicator.style.opacity = '0';
-      }
-    };
-
-    const page = document.querySelector<HTMLElement>('[data-page]')?.dataset.page;
-    if (page !== 'home') {
-      setActive(page === 'project' ? 'work' : null);
-      return;
+  function setActive(id: string | null) {
+    const active = links.find((link) => link.dataset.navLink === id);
+    for (const link of links) {
+      if (link === active) link.setAttribute('aria-current', 'true');
+      else link.removeAttribute('aria-current');
     }
+    // One indicator glides to the active link, instead of each link animating its own underline.
+    if (active) {
+      const inset = 12;
+      indicator.style.width = `${active.offsetWidth - inset * 2}px`;
+      indicator.style.transform = `translateX(${active.offsetLeft + inset}px)`;
+      indicator.style.opacity = '1';
+    } else {
+      indicator.style.opacity = '0';
+    }
+  }
 
-    const sections = links
-      .map((link) => document.getElementById(link.dataset.navLink ?? ''))
-      .filter((el): el is HTMLElement => Boolean(el));
-    const visible = new Map<string, number>();
-
-    sectionObserver = new IntersectionObserver(
+  const page = document.querySelector<HTMLElement>('[data-page]')?.dataset.page;
+  if (page === 'home') {
+    const sections = links.map((link) => document.getElementById(link.dataset.navLink!)).filter((el) => el !== null);
+    const visible = new Set<string>();
+    const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (entry.isIntersecting) visible.set(entry.target.id, entry.intersectionRatio);
+          if (entry.isIntersecting) visible.add(entry.target.id);
           else visible.delete(entry.target.id);
         }
-        // The topmost section that is intersecting the band wins.
-        const current = sections.find((section) => visible.has(section.id));
-        setActive(current ? current.id : null);
+        // The topmost section crossing the band wins.
+        setActive(sections.find((section) => visible.has(section.id))?.id ?? null);
       },
       { rootMargin: '-35% 0px -55% 0px', threshold: [0, 0.01] },
     );
-    sections.forEach((section) => sectionObserver?.observe(section));
+    sections.forEach((section) => observer.observe(section));
+  } else {
+    setActive(page === 'project' ? 'work' : null);
   }
-
-  onScroll();
-  setupActiveNav();
 </script>
 
 <style>
@@ -191,7 +167,7 @@ const nav = [
     transition: border-color var(--duration-base) var(--ease-out);
   }
 
-  /* Scroll progress drawn as a data axis: a hairline with quarter ticks and a point that travels along it. */
+  /* Scroll progress: a hairline with quarter ticks and a point that moves along it. */
   .progress {
     position: absolute;
     left: 0;
@@ -274,7 +250,6 @@ const nav = [
     letter-spacing: -0.01em;
   }
 
-  /* The monogram, circled in pen like everything else worth noticing. */
   .mark {
     display: grid;
     place-items: center;
@@ -297,6 +272,7 @@ const nav = [
   }
 
   .menu {
+    position: relative;
     display: flex;
     align-items: center;
     gap: var(--space-1);
@@ -319,9 +295,6 @@ const nav = [
     color: var(--color-ink);
   }
 
-  .menu {
-    position: relative;
-  }
 
   .indicator-wrap {
     position: absolute;
@@ -339,7 +312,7 @@ const nav = [
     height: 1px;
     background: var(--color-accent);
     opacity: 0;
-    transition: transform var(--duration-reveal) var(--ease-out), width var(--duration-reveal) var(--ease-out),
+    transition: transform var(--duration-slow) var(--ease-out), width var(--duration-slow) var(--ease-out),
       opacity var(--duration-base) var(--ease-out);
   }
 
@@ -483,9 +456,20 @@ const nav = [
     }
   }
 
-  .nav-index { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--color-faint); margin-right: 3px; }
-  .menu a[aria-current] .nav-index { color: var(--color-accent-ink); }
-  .menu a { min-height: 2.75rem; display: flex; align-items: center; }
+  .nav-index {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--color-faint);
+    margin-right: 3px;
+  }
+  .menu a[aria-current] .nav-index {
+    color: var(--color-accent-ink);
+  }
+  /* Last on purpose: overrides .menu-resume a's inline-block in the mobile menu. */
+  .menu a {
+    min-height: 2.75rem;
+    display: flex;
+    align-items: center;
+  }
   @media (min-width: 48rem) and (max-width: 64rem) { .wordmark .name, .menu-ext { display: none; } }
-
 </style>
