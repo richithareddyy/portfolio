@@ -47,6 +47,7 @@ const n = String(projects.findIndex((p) => p.slug === project.slug) + 1).padStar
 <style>
   .row {
     position: relative;
+    isolation: isolate;
     display: grid;
     grid-template-columns: 2.25rem minmax(0, 1fr);
     gap: var(--space-2) var(--space-4);
@@ -75,11 +76,40 @@ const n = String(projects.findIndex((p) => p.slug === project.slug) + 1).padStar
     }
   }
 
+  /* A pen-wash highlight that sweeps in behind the hovered row. */
+  .row::before {
+    content: '';
+    position: absolute;
+    inset: 0 calc(var(--space-3) * -1);
+    z-index: -1;
+    border-radius: var(--radius-sm);
+    background: var(--pen-wash);
+    opacity: 0;
+    transform: scaleX(0.6);
+    transform-origin: left;
+    transition: opacity var(--duration-base) var(--ease-out), transform var(--duration-slow) var(--ease-out);
+  }
+
+  .row:hover {
+    z-index: 1;
+  }
+
+  .row:hover::before {
+    opacity: 0.45;
+    transform: none;
+  }
+
   .n {
     padding-top: 0.45em;
     font-family: var(--font-mono);
     font-size: var(--text-xs);
     color: var(--color-muted);
+    transition: color var(--duration-fast) var(--ease-out), transform var(--duration-base) var(--ease-out);
+  }
+
+  .row:hover .n {
+    color: var(--pen-ink);
+    transform: translateX(3px);
   }
 
   .body {
@@ -97,7 +127,15 @@ const n = String(projects.findIndex((p) => p.slug === project.slug) + 1).padStar
 
   h4 a {
     text-decoration: none;
-    transition: color var(--duration-fast) var(--ease-out);
+    background-image: linear-gradient(var(--pen), var(--pen));
+    background-size: 0 2px;
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    transition: color var(--duration-fast) var(--ease-out), background-size var(--duration-base) var(--ease-out);
+  }
+
+  .row:hover h4 a {
+    background-size: 100% 2px;
   }
 
   /* The title link stretches over the row; the secondary links sit above it, so nothing is nested. */
@@ -141,7 +179,13 @@ const n = String(projects.findIndex((p) => p.slug === project.slug) + 1).padStar
   }
 
   .arrow {
+    display: inline-block;
     margin-right: 0.25em;
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .row:hover .arrow {
+    transform: translateX(3px);
   }
 
   .q {
