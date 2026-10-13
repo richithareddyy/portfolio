@@ -21,7 +21,7 @@ interface Props {
 }
 
 const { title, description = profile.description, isHome = false, noindex = false } = Astro.props;
-const pageTitle = title ? `${title} · ${profile.name}` : `${profile.name} · Software Engineering and Applied AI`;
+const pageTitle = title ? `${title} · ${profile.name}` : `${profile.name} · Data Science and Applied AI`;
 const path = Astro.url.pathname.length > 1 ? Astro.url.pathname.replace(/\/$/, '') : '/';
 const canonical = new URL(path, Astro.site);
 const ogImage = new URL('/og-image.png', Astro.site);
@@ -44,7 +44,7 @@ const ogImage = new URL('/og-image.png', Astro.site);
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content={`${profile.name}: software engineering and applied AI`} />
+    <meta property="og:image:alt" content={`${profile.name}: data science and applied AI`} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="theme-color" content="#f7f8fa" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#171c25" media="(prefers-color-scheme: dark)" />

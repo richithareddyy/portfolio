@@ -4,8 +4,8 @@ import Mark from './Mark.astro';
 
 const contents = [
   { slug: 'zoom-lens', title: 'Zoom Lens', what: 'An AI assistant inside live Zoom meetings', proof: 'Zoom Fellowship project' },
-  { slug: 'codeatlas', title: 'CodeAtlas', what: 'What a Rust change can break, with receipts', proof: 'indexes tokio in 3.6 s' },
-  { slug: 'reddit-data-pipeline', title: 'Reddit ETL Pipeline', what: '18.9M records into PostgreSQL, every one accounted for', proof: '584 s → 345 s' },
+  { slug: 'causeway', title: 'CauseWay', what: 'Did the e-mail cause the spending? A causal study', proof: 'naive estimate off by ~50%' },
+  { slug: 'gridcast', title: 'GridCast', what: 'Day-ahead electricity demand, with honest intervals', proof: '22% below the seasonal baseline' },
 ];
 ---
 
@@ -18,11 +18,11 @@ const contents = [
         <span class="last">Rekula<button type="button" class="pen-dot" data-pen-toggle aria-label="Change the pen color used across the site"></button><span class="pen-hint note" aria-hidden="true">← psst. that dot is a pen. try it.</span></span>
       </h1>
       <p class="lede">
-        Software engineer building <Mark kind="circle" delay={150}>applied AI</Mark> and <Mark kind="under" delay={550}>backend systems</Mark>.
+        Data scientist building <Mark kind="circle" delay={150}>applied AI</Mark> and <Mark kind="under" delay={550}>measuring what it does</Mark>.
       </p>
       <p class="desc">
-        I’m a <span class="hl">Zoom Fellow at ASU Next Lab</span>, building an AI assistant that runs inside live Zoom meetings. I also
-        build the systems underneath: a Rust code-analysis engine, and a PostgreSQL pipeline that accounts for every one of 18.9M records.
+        I’m a <span class="hl">Zoom Fellow at ASU Next Lab</span>, building an AI assistant that runs inside live Zoom meetings. The rest
+        of my work is about evidence: a causal study of a randomized experiment, and demand forecasts tested on a year they never saw.
       </p>
 
       <div class="actions">
@@ -43,7 +43,7 @@ const contents = [
         <div><dt>now</dt><dd><b>Zoom Fellow</b>, ASU Next Lab</dd></div>
         <div><dt>studying</dt><dd>M.S. Data Science, Analytics and Engineering, Arizona State ({profile.graduation.replace('Expected ', '')})</dd></div>
         <div><dt>based in</dt><dd>{profile.location}</dd></div>
-        <div><dt>open to</dt><dd>new grad and internship roles in software, applied AI, and backend</dd></div>
+        <div><dt>open to</dt><dd>new grad and internship roles in data science, machine learning, and applied AI</dd></div>
       </dl>
     </aside>
   </div>

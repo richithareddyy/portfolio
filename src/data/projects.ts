@@ -9,6 +9,12 @@ import streamboxHome from '../assets/projects/streambox-home.webp';
 import triageShapPriority from '../assets/projects/triage-shap-priority.png';
 import triageShapResolution from '../assets/projects/triage-shap-resolution.png';
 import parkingCurrent from '../assets/projects/parking-current.jpeg';
+import causewayRecovery from '../assets/projects/causeway-estimator-recovery.png';
+import causewayItt from '../assets/projects/causeway-itt-effects.png';
+import causewaySensitivity from '../assets/projects/causeway-sensitivity.png';
+import gridcastModels from '../assets/projects/gridcast-model-comparison.png';
+import gridcastCalibration from '../assets/projects/gridcast-interval-calibration.png';
+import gridcastConditions from '../assets/projects/gridcast-error-conditions.png';
 
 export type Link = { label: string; href: string };
 
@@ -37,7 +43,7 @@ export type Project = {
   site?: string;
   github?: string;
   caseStudy: boolean;
-  /** Zoom Lens and the Reddit pipeline use purpose-built visuals instead (see FeaturedProject). */
+  /** Zoom Lens shows its product site and the Reddit pipeline its interactive diagram instead. */
   visual?: Visual;
   gallery?: Visual[];
 
@@ -103,11 +109,282 @@ export const projects: Project[] = [
     caseStudy: true,
   },
   {
+    slug: 'causeway',
+    title: 'CauseWay',
+    summary:
+      'A causal study of a randomized e-mail experiment, then a test of how well observational methods recover its answer once randomization is taken away.',
+    tier: 'featured',
+    year: '2026',
+    role: 'Solo project',
+    contribution:
+      'Built a Python package that estimates the experiment’s effects, constructs observational samples from it by rejection sampling, and scores IPW, matching, outcome regression, cross-fitted AIPW, and Double ML against the randomized answer.',
+    result: {
+      headline: 'Naive comparison overstated the effect by about half',
+      qualifier: '200 constructed samples per scenario, from a 64,000-customer experiment',
+    },
+    tech: ['Python', 'statsmodels', 'EconML', 'DoubleML'],
+    hook: 'A company e-mails its best customers and sees them spend more. Did the e-mail cause that, or would they have bought anyway?',
+    story: [
+      {
+        label: 'The setup',
+        text: 'A randomized experiment with 64,000 customers gives the true answer: the Mens e-mail raised two-week spend by $0.77 per customer. Then the randomization is removed on purpose, in a documented way, to see what observational methods recover.',
+      },
+      {
+        label: 'The test',
+        text: 'Seven estimators, from a naive comparison to cross-fitted AIPW and Double ML, are scored against the experimental answer over 200 constructed samples in each of three scenarios.',
+      },
+      {
+        label: 'What held up',
+        text: 'With every confounder observed, weighting and AIPW land within Monte Carlo error, while the naive comparison overstates the effect by about half. Hide one confounder and every method stays biased by 14 to 47% on spend, even though the usual refutation tests still pass.',
+      },
+    ],
+    github: gh('CauseWay'),
+    caseStudy: true,
+    visual: {
+      kind: 'image',
+      src: causewayRecovery,
+      alt: 'Heatmap of mean bias for eight estimators across three selection scenarios: weighting and AIPW near zero when confounders are observed, every estimator biased when one is hidden.',
+      caption: 'Mean bias of each estimator over 200 constructed samples per scenario. Figure from the repository.',
+    },
+    gallery: [
+      {
+        kind: 'image',
+        src: causewayItt,
+        alt: 'Intention-to-treat effects of the Mens and Womens e-mails on spend, visits, and conversions, with 95% intervals.',
+        caption: 'Effects of assignment to each e-mail in the randomized experiment, with 95% intervals.',
+      },
+      {
+        kind: 'image',
+        src: causewaySensitivity,
+        alt: 'Sensitivity summaries for scenarios A and C: robustness values, E-values, and Rosenbaum gamma rise when a confounder is hidden.',
+        caption: 'Sensitivity summaries with every confounder observed (A) and with one hidden (C).',
+      },
+    ],
+    status: 'Complete; lint and tests run in GitHub Actions',
+    problem:
+      'Does a promotional e-mail make customers spend more, or do companies simply e-mail the customers who would have bought anyway? Observational data cannot separate the two. A randomized experiment can, and it also gives a known answer to test observational methods against.',
+    constraints: [
+      'The experiment identifies the effect of being assigned an e-mail, not of receiving or opening one; neither was recorded.',
+      'About 99% of customers spent nothing in the two-week window, so spend estimates are noisy.',
+      'Each observational estimate has to be compared with the benchmark for its own estimand, ATE or ATT.',
+    ],
+    built: [
+      'Data pipeline that verifies the source checksum, runs schema, balance, and domain checks, and stops on any failure',
+      'Experimental estimates with randomization tests, bootstrap intervals, and Holm adjustment',
+      'Three selection scenarios: moderate, strong, and one with a hidden confounder',
+      'Hand-written cross-fitted AIPW and DML orthogonal score, checked against EconML and DoubleML',
+      'Causal-forest heterogeneity tests, targeting-policy evaluation, refutation tests, and E-value, Rosenbaum, and omitted-variable sensitivity analysis',
+    ],
+    stack: ['Python', 'NumPy', 'pandas', 'SciPy', 'statsmodels', 'Scikit-learn', 'EconML', 'DoubleML', 'Matplotlib', 'pytest', 'GitHub Actions'],
+    challenges: [
+      'Naive subsampling to create confounding shifts the covariate distribution and biases even an estimator that knows the true propensity, so selection uses RCT rejection sampling, checked with an oracle IPW first.',
+      'Telling estimator bias from simulation noise: every bias is reported with its Monte Carlo standard error over 200 draws per cell.',
+      'Staying honest after seeing the data: the benchmark and the heterogeneity, robustness, and sensitivity plans were committed before their results.',
+    ],
+    tables: [
+      {
+        caption: 'Mean bias of the spend estimate, % of each estimator’s own benchmark (200 draws per cell)',
+        columns: ['Estimator', 'Mens A', 'Mens B', 'Mens C', 'Womens A', 'Womens B', 'Womens C'],
+        rows: [
+          ['Naive difference', '+48%', '+70%', '+48%', '+57%', '+75%', '+57%'],
+          ['Outcome regression (OLS)', '−4%', '−4%', '+14%', '+10%', '+23%', '+34%'],
+          ['IPW (ATE)', '+0%', '−2%', '+18%', '+0%', '+2%', '+46%'],
+          ['AIPW (cross-fitted)', '+1%', '+1%', '+19%', '+1%', '+3%', '+47%'],
+          ['DML (gradient boosting)', '+0%', '+1%', '+19%', '+7%', '+1%', '+46%'],
+          ['IPW (ATT)', '+1%', '−0%', '+18%', '−3%', '−6%', '+43%'],
+          ['1:1 matching (ATT)', '−12%', '−9%', '−4%', '+20%', '+57%', '+13%'],
+        ],
+        note: 'A: moderate selection on observed covariates. B: twice as strong. C: as A, with recency hidden from the analyst.',
+      },
+    ],
+    decisions: [
+      {
+        heading: 'Rejection sampling, not naive subsampling',
+        body: 'Customers are kept from each randomized pair with a probability that depends on their history. That preserves the covariate distribution, and the full pair still supplies the true answer.',
+        tradeoff: 'The selection rule is smooth and logistic by design; real selection may be stronger, nonlinear, or driven by things nobody recorded.',
+      },
+      {
+        heading: 'Freeze the benchmark before estimating',
+        body: 'The scenarios and scoring rules were committed in configs/benchmark/v1.toml before any observational estimate was computed.',
+        tradeoff: 'Results that look odd afterward are reported as they are rather than fixed by changing the setup.',
+      },
+      {
+        heading: 'Write the estimators, then check them',
+        body: 'Cross-fitted AIPW and the DML orthogonal score are implemented directly and tested against EconML and DoubleML.',
+        tradeoff: 'More code to maintain than calling the libraries, in exchange for knowing exactly what each estimate does.',
+      },
+    ],
+    evaluation: {
+      method: [
+        'Part I: differences in means for each e-mail against no e-mail, with 95% intervals, Holm-adjusted p-values, and randomization tests.',
+        'Part II: 200 constructed samples per scenario, scoring each estimator’s bias, RMSE, and interval coverage against its estimand’s experimental benchmark.',
+        'Heterogeneity: one of six pre-specified tests found variation, and model-based targeting did not beat sending everyone the Mens e-mail.',
+        'Tests use synthetic fixtures and reference calculations; CI runs Ruff, a dependency check, and pytest.',
+      ],
+      metrics: [
+        { value: '+$0.77', label: 'two-week spend per customer from the Mens e-mail', qualifier: '95% CI $0.49 to $1.05' },
+        { value: '+48%, +57%', label: 'naive overstatement of the effect', qualifier: 'moderate selection, Mens and Womens' },
+        { value: '0–3%', label: 'IPW and AIPW bias with every confounder observed', qualifier: 'within Monte Carlo error' },
+        { value: '14–47%', label: 'bias on spend with one confounder hidden', qualifier: 'weighting, regression, AIPW, and DML' },
+      ],
+      evidence: [
+        { label: 'Findings report', href: ghPath('CauseWay', 'docs/findings.md') },
+        { label: 'Design record', href: ghPath('CauseWay', 'docs/design.md') },
+        { label: 'Frozen benchmark spec', href: ghPath('CauseWay', 'configs/benchmark/v1.toml') },
+        { label: 'Estimator tests', href: ghPath('CauseWay', 'tests/test_estimators.py') },
+        { label: 'CI workflow', href: ghPath('CauseWay', '.github/workflows/ci.yml') },
+      ],
+    },
+    limitations: [
+      'One retailer, one campaign, 2008; customer behavior and e-mail practice have changed since.',
+      'Part II shows what estimators recover when assumptions hold or fail by construction. It cannot certify those assumptions on real observational data.',
+      'The outcome window is two weeks, with no cost or margin data, so nothing here speaks to profit.',
+    ],
+  },
+  {
+    slug: 'gridcast',
+    title: 'GridCast',
+    summary: 'Day-ahead forecasts of New England electricity demand, with calibrated intervals and a close look at where the models fail.',
+    tier: 'featured',
+    year: '2026',
+    role: 'Solo project',
+    contribution:
+      'Built a forecasting study that backtests six models on 24-hour paths, selects one on validation only, and evaluates its accuracy and prediction intervals on a reserved 2024 test year.',
+    result: { headline: '705 MW test MAE, 22% below the seasonal baseline', qualifier: 'LightGBM on hourly ISNE demand, 2024 test year' },
+    tech: ['Python', 'LightGBM', 'PyTorch', 'statsmodels'],
+    hook: 'Tomorrow’s hourly electricity demand has to be forecast today, and the hours that matter most, the extreme ones, are where forecasts tend to fail.',
+    story: [
+      {
+        label: 'Protocol',
+        text: 'Six models, from seasonal naive to LightGBM and an LSTM, forecast 24-hour paths using only data that would have been reported by 00:00 UTC. One model is chosen on 2023 validation folds, and the 2024 test year stays closed until then.',
+      },
+      {
+        label: 'Result',
+        text: 'LightGBM reached a 705.2 MW test MAE, 22.3% below the daily seasonal baseline, and its 95% intervals covered 93.8% of hours.',
+      },
+      {
+        label: 'Where it breaks',
+        text: 'During extreme demand that coverage falls to 84.5%, and a simpler harmonic model had lower validation error than LightGBM in those hours.',
+      },
+    ],
+    github: gh('GridCast'),
+    caseStudy: true,
+    visual: {
+      kind: 'image',
+      src: gridcastModels,
+      alt: 'Bar charts of validation MAE and RMSE for six models: naive highest, LightGBM and LSTM lowest.',
+      caption: 'Validation MAE and RMSE for the six models. Figure from the repository.',
+    },
+    gallery: [
+      {
+        kind: 'image',
+        src: gridcastCalibration,
+        alt: 'Prediction-interval coverage by operating condition on the test year, falling below nominal during extreme demand.',
+        caption: 'Interval coverage by operating condition on the 2024 test year.',
+      },
+      {
+        kind: 'image',
+        src: gridcastConditions,
+        alt: 'Forecast errors across weekdays, weekends, holidays, peak hours, extreme demand, and extreme temperatures.',
+        caption: 'Errors by operating condition; the groups overlap.',
+      },
+    ],
+    status: 'Complete; CI checks tests, saved results, and the README',
+    problem:
+      'How accurately can tomorrow’s hourly electricity demand be forecast, how uncertain are those forecasts, and when does a model actually beat a strong seasonal baseline? An average error hides the hours that matter most to a grid.',
+    constraints: [
+      'Each forecast is made at 00:00 UTC for the next 24 hours, and demand is reported an hour late, so the newest usable hour is two hours old.',
+      'Observed weather never enters a predictor, since it would not be known at forecast time.',
+      'The test year stays closed until the model, tree count, and thresholds are fixed on earlier data.',
+    ],
+    built: [
+      'Data pipeline for EIA-930 demand and NOAA temperature, with source checksums and validation',
+      'Six models: naive, daily and weekly seasonal naive, harmonic regression with AR(1) errors, LightGBM, and an LSTM',
+      'Nine expanding monthly validation folds, then monthly refits through the test year',
+      'Prediction intervals from rolling 90-day residuals, computed separately for each horizon',
+      'Anomaly flags for hours outside the 95% interval, grouped into episodes',
+    ],
+    stack: ['Python', 'pandas', 'NumPy', 'LightGBM', 'PyTorch', 'statsmodels', 'Matplotlib', 'Jupyter', 'pytest', 'GitHub Actions'],
+    challenges: [
+      'Leakage is easy in time series: every feature, early-stopping window, and threshold may only use labels that would already have been reported.',
+      'Daylight-saving gaps, repeated autumn hours, and leap days all have to survive the move from local hour-ending timestamps to UTC interval starts.',
+      'Good average accuracy can hide poor coverage during extreme demand, so errors and intervals are reported by operating condition.',
+    ],
+    tables: [
+      {
+        caption: 'Validation results, nine monthly folds (January to September 2023)',
+        columns: ['Model', 'MAE (MW)', 'RMSE (MW)', 'WAPE', 'MASE'],
+        rows: [
+          ['LightGBM', '723.7', '1,019.2', '5.60%', '0.539'],
+          ['LSTM', '751.9', '1,043.4', '5.82%', '0.560'],
+          ['Daily seasonal naive', '924.3', '1,288.9', '7.15%', '0.689'],
+          ['Harmonic regression', '1,008.5', '1,283.8', '7.80%', '0.752'],
+          ['Weekly seasonal naive', '1,438.3', '1,987.1', '11.13%', '1.072'],
+          ['Naive', '2,515.5', '3,003.1', '19.46%', '1.876'],
+        ],
+        note: 'Harmonic regression had the lowest validation MAE during extreme demand (1,415.5 MW).',
+      },
+      {
+        caption: 'Prediction intervals on the 2024 test year',
+        columns: ['Nominal', 'Coverage', 'Mean width (MW)', 'Extreme-demand coverage'],
+        rows: [
+          ['50%', '51.25%', '1,152.2', '25.15%'],
+          ['80%', '78.85%', '2,268.5', '58.19%'],
+          ['95%', '93.84%', '3,939.9', '84.50%'],
+        ],
+      },
+    ],
+    decisions: [
+      {
+        heading: 'Predict a correction to the seasonal baseline',
+        body: 'LightGBM and the LSTM forecast the difference from the daily seasonal naive forecast. LightGBM works from lags, rolling summaries, calendar features, and the horizon; the LSTM encodes the last available week.',
+        tradeoff: 'The lowest average error does not mean the best under stress: harmonic regression did better during extreme demand.',
+      },
+      {
+        heading: 'Select on validation, test once',
+        body: 'Validation fixes the model and tree count before calibration or test outcomes are opened, and only the selected model and the predeclared daily baseline are scored on 2024.',
+        tradeoff: 'No retuning after seeing the test year, even where it might have helped.',
+      },
+      {
+        heading: 'Intervals from recent residuals',
+        body: 'Intervals use the last 90 days of absolute residuals for each horizon, counting only residuals whose labels have been reported.',
+        tradeoff: 'Serial dependence and drift rule out a distribution-free coverage guarantee, and coverage drops during extreme demand.',
+      },
+    ],
+    evaluation: {
+      method: [
+        'Validation: nine expanding monthly folds, January to September 2023, selecting by overall MAE.',
+        'Final test: 2024, with monthly refits on labels already reported and hyperparameters frozen.',
+        'Paired model comparisons use daily MAE differences with HAC intervals and Holm-adjusted p-values.',
+        'Tests change future data and corrupt saved evidence to check that leakage and stale results are rejected.',
+      ],
+      metrics: [
+        { value: '705.2 MW', label: 'test MAE (LightGBM)', qualifier: '907.8 MW for daily seasonal naive' },
+        { value: '22.3%', label: 'lower MAE than the seasonal baseline', qualifier: '2024 test year' },
+        { value: '93.8%', label: 'coverage of the 95% interval', qualifier: '84.5% during extreme demand' },
+        { value: '541', label: 'flagged hours in 175 episodes', qualifier: 'unusual against the forecast, not verified outages' },
+      ],
+      evidence: [
+        { label: 'Results summary', href: ghPath('GridCast', 'reports/results/summary.json') },
+        { label: 'Reliability findings', href: ghPath('GridCast', 'reports/reliability_findings.md') },
+        { label: 'Leakage tests', href: ghPath('GridCast', 'tests/test_leakage.py') },
+        { label: 'Interval code', href: ghPath('GridCast', 'src/gridcast/uncertainty.py') },
+        { label: 'CI workflow', href: ghPath('GridCast', '.github/workflows/ci.yml') },
+      ],
+    },
+    limitations: [
+      'One region, a small model search, and one neural training seed do not show that any model family is better in general.',
+      'Three weather stations stand in for a six-state grid, and operational weather forecasts are not used.',
+      'The data are retrospective and may have been revised since they were first published.',
+      'There is no ground truth for reading flagged hours as outages or failures.',
+    ],
+  },
+  {
     slug: 'codeatlas',
     title: 'CodeAtlas',
     summary:
       'Static analysis for Rust that traces which functions, modules, and tests a code change can affect, with the source line behind each step.',
-    tier: 'featured',
+    tier: 'more',
     year: '2026',
     role: 'Solo project',
     contribution:
@@ -251,7 +528,7 @@ export const projects: Project[] = [
     slug: 'reddit-data-pipeline',
     title: 'Reddit Data ETL Pipeline',
     summary: 'A PostgreSQL ETL pipeline that loads 18.9M Reddit-format records and accounts for every line it rejects.',
-    tier: 'featured',
+    tier: 'more',
     year: '2026',
     role: 'Solo project',
     contribution:
@@ -520,7 +797,7 @@ export const projects: Project[] = [
     result: { headline: 'Live demo available', qualifier: 'AI features use the host’s Gemini API quota' },
     tech: ['Python', 'Streamlit', 'Gemini API', 'PyMuPDF'],
     demo: 'https://researchpapersummerizer-3bmsmrmm7glsxfeavslfb6.streamlit.app/',
-    github: gh('Researchpaper_summerizer'),
+    github: gh('research-paper-summarizer'),
     caseStudy: false,
     visual: {
       kind: 'image',

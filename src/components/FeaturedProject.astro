@@ -1,11 +1,8 @@
 ---
 import type { Project } from '../data/projects';
 import { techId } from '../data/graph';
-import ProjectVisual from './ProjectVisual.astro';
 import ProjectLinks from './ProjectLinks.astro';
 import ZoomLensPreview from './ZoomLensPreview.astro';
-import CodeAtlasTrace from './visuals/CodeAtlasTrace.astro';
-import EtlLedger from './visuals/EtlLedger.astro';
 
 interface Props {
   project: Project;
@@ -16,66 +13,66 @@ interface Props {
 const { project, index = 0, eager = false } = Astro.props;
 const href = project.caseStudy ? `/work/${project.slug}` : undefined;
 const flip = index % 2 === 1;
+// Only Zoom Lens carries a visual here; the others keep their figures on the case study.
+const media = project.slug === 'zoom-lens';
 ---
 
 <article
-  class:list={['featured', `is-${project.slug}`, { flip }]}
+  class:list={['featured', { flip: flip && media, 'text-only': !media }]}
   id={`project-${project.slug}`}
   aria-labelledby={`${project.slug}-title`}
   data-project-id={`project:${project.slug}`}
 >
   <div class="text">
-    <p class="meta">
-      <span class="num" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-      <span>{[project.role, project.year].filter(Boolean).join(' · ')}</span>
-    </p>
-    <h3 id={`${project.slug}-title`}>
-      {href ? <a href={href}>{project.title}</a> : project.title}
-    </h3>
-    {project.hook && <p class="hook">{project.hook}</p>}
-    <p class="summary">{project.summary}</p>
+    <div class="lead">
+      <p class="meta">
+        <span class="num" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+        <span>{[project.role, project.year].filter(Boolean).join(' · ')}</span>
+      </p>
+      <h3 id={`${project.slug}-title`}>
+        {href ? <a href={href}>{project.title}</a> : project.title}
+      </h3>
+      {project.hook && <p class="hook">{project.hook}</p>}
+      <p class="summary">{project.summary}</p>
+    </div>
 
-    {
-      project.story && (
-        <dl class="story">
-          {project.story.map((beat) => (
-            <div>
-              <dt>{beat.label}</dt>
-              <dd>{beat.text}</dd>
-            </div>
-          ))}
-        </dl>
-      )
-    }
-
-    <ul class="stack" aria-label={`${project.title} technologies`}>
+    <div class="detail">
       {
-        project.tech.map((t) => (
-          <li>
-            <a class="tech-link" href="#skills" data-tech-link={techId(t)}>
-              {t}
-              <span class="visually-hidden">: show in skills map</span>
-            </a>
-          </li>
-        ))
+        project.story && (
+          <dl class="story">
+            {project.story.map((beat) => (
+              <div>
+                <dt>{beat.label}</dt>
+                <dd>{beat.text}</dd>
+              </div>
+            ))}
+          </dl>
+        )
       }
-    </ul>
-    <ProjectLinks project={project} />
+
+      <ul class="stack" aria-label={`${project.title} technologies`}>
+        {
+          project.tech.map((t) => (
+            <li>
+              <a class="tech-link" href="#skills" data-tech-link={techId(t)}>
+                {t}
+                <span class="visually-hidden">: show in skills map</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <ProjectLinks project={project} />
+    </div>
   </div>
 
-  <div class="media">
-    {
-      project.slug === 'zoom-lens' ? (
+  {
+    media && (
+      <div class="media">
         <ZoomLensPreview eager={eager} />
-      ) : project.slug === 'codeatlas' ? (
-        <CodeAtlasTrace />
-      ) : project.slug === 'reddit-data-pipeline' ? (
-        <EtlLedger />
-      ) : (
-        project.visual && <ProjectVisual visual={project.visual} eager={eager} href={href} />
-      )
-    }
-  </div>
+      </div>
+    )
+  }
 </article>
 
 <style>
@@ -93,7 +90,7 @@ const flip = index % 2 === 1;
   }
 
   @media (min-width: 60rem) {
-    .featured {
+    .featured:not(.text-only) {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap: var(--space-9);
       /* Top-aligned so the text stays put when an interactive visual changes height. */
@@ -104,20 +101,28 @@ const flip = index % 2 === 1;
       order: 2;
     }
 
-    /* The receipt is narrow; give the text more room beside it. */
-    .is-reddit-data-pipeline {
-      grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
-    }
-
     .media {
       position: sticky;
       top: calc(var(--header-height) + var(--space-6));
     }
+
+    /* Without a visual, the problem and the story sit side by side. */
+    .text-only .text {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      column-gap: var(--space-9);
+    }
+
+    .text-only .story {
+      margin-top: 0;
+    }
   }
 
-  .text {
+  .text,
+  .lead,
+  .detail {
     display: grid;
     gap: var(--space-4);
+    align-content: start;
     justify-items: start;
     min-width: 0;
   }

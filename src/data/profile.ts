@@ -9,7 +9,7 @@ export const profile = {
     resume: '/Richitha_Rekula_Resume.pdf',
   },
   description:
-    'Software engineering and applied AI portfolio of Richitha Rekula: Zoom Lens, CodeAtlas, data pipelines, and ML projects. M.S. student at Arizona State University and Zoom Fellow at ASU Next Lab.',
+    'Data science and applied AI portfolio of Richitha Rekula: Zoom Lens, causal inference, forecasting, and the engineering behind them. M.S. Data Science student at Arizona State University and Zoom Fellow at ASU Next Lab.',
 } as const;
 
 export const education = [
