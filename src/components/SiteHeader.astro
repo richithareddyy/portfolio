@@ -27,7 +27,27 @@ const nav = [
           <path class="legs" d="M29.7 60H42.3L52.3 92H39.7ZM69.3 60H82.7L98.7 92H85.3Z" />
         </g>
       </svg>
-      <span class="name">{profile.name}</span>
+      <svg class="name" viewBox="0 0 470 40" aria-hidden="true">
+        <g fill="none" stroke="currentColor" stroke-width="6">
+          <path transform="translate(0 0)" d="M3 40V3H17l6 6v5l-6 6H3"/>
+          <path transform="translate(0 0)" d="M9.6 20H16.4L26.4 40H19.6Z" fill="currentColor" stroke="none"/>
+          <path transform="translate(36 0)" d="M3 0V40"/>
+          <path transform="translate(52 0)" d="M25 3H9L3 9V31l6 6H25"/>
+          <path transform="translate(88 0)" d="M3 0V40M23 0V40M3 20H23"/>
+          <path transform="translate(124 0)" d="M3 0V40"/>
+          <path transform="translate(140 0)" d="M0 3H26M13 3V40"/>
+          <path transform="translate(176 0)" d="M3 0V40M23 0V40M3 20H23"/>
+          <path transform="translate(212 0)" d="M3 40V9l6-6h8l6 6V40M3 22H23"/>
+          <path transform="translate(264 0)" d="M3 40V3H17l6 6v5l-6 6H3"/>
+          <path transform="translate(264 0)" d="M9.6 20H16.4L26.4 40H19.6Z" fill="currentColor" stroke="none"/>
+          <path transform="translate(300 0)" d="M25 3H3V37H25M3 20H19"/>
+          <path transform="translate(336 0)" d="M3 0V40M3 20H10"/>
+          <path transform="translate(336 0)" d="M6.4 20H13.6L26.6 40H19.4ZM6.4 20H13.6L26.6 0H19.4Z" fill="currentColor" stroke="none"/>
+          <path transform="translate(372 0)" d="M3 0V31l6 6h8l6-6V0"/>
+          <path transform="translate(408 0)" d="M3 0V37H25"/>
+          <path transform="translate(444 0)" d="M3 40V9l6-6h8l6 6V40M3 22H23"/>
+        </g>
+      </svg>
     </a>
 
     <nav class="nav" aria-label="Primary">
@@ -251,10 +271,13 @@ const nav = [
     gap: var(--space-3);
     color: var(--color-ink);
     text-decoration: none;
-    font-family: var(--font-display);
-    font-weight: 500;
-    font-size: var(--text-lg);
-    letter-spacing: -0.01em;
+  }
+
+  .name {
+    display: block;
+    width: auto;
+    height: 0.875rem;
+    overflow: visible;
   }
 
   /* Brand colors by default; once a different pen is picked with the dot in the hero, the logo follows it. */
@@ -368,7 +391,7 @@ const nav = [
     }
 
     .wordmark .name {
-      font-size: var(--text-md);
+      height: 0.75rem;
     }
 
     .menu-toggle {
