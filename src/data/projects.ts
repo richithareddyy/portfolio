@@ -843,7 +843,7 @@ export const projects: Project[] = [
     visual: {
       kind: 'image',
       src: parkingCurrent,
-      alt: 'Overhead photo of a parking lot with 18 marked spaces, some occupied.',
+      alt: 'Synthetic parking-lot sample showing 18 marked spaces, some occupied.',
       caption: 'Sample input image from the repository, not a detection result.',
     },
   },
