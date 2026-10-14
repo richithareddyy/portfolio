@@ -27,7 +27,7 @@ Type-checks the project and writes the static site to `dist/`.
 
 The site presents projects as case studies so there is room for implementation choices, evaluation, and limitations alongside screenshots. Astro generates the pages at build time; small TypeScript scripts handle browser interactions without a client-side UI framework.
 
-Most project content lives in `src/data/projects.ts`. `src/pages/work/[slug].astro` generates those case-study pages, while Zoom Lens has a dedicated page at `src/pages/work/zoom-lens.astro`. Profile, experience, and skills have separate data files.
+Most project content lives in `src/data/projects.ts`. `src/pages/work/[slug].astro` generates those case-study pages, while ZoomLens has a dedicated page at `src/pages/work/zoom-lens.astro`. Profile, experience, and skills have separate data files.
 
 ## Structure
 

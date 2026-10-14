@@ -21,11 +21,11 @@ export const experience: Role[] = [
     current: true,
     points: [
       'Selected from 200+ applicants for a Zoom-sponsored fellowship at ASU Next Lab.',
-      'Building Zoom Lens, an AI assistant that runs inside live Zoom meetings, on the Zoom Apps SDK and Realtime Media Streams API.',
+      'Building ZoomLens, an AI assistant that runs inside live Zoom meetings, on the Zoom Apps SDK and Realtime Media Streams API.',
       'Wrote the Node.js WebSocket server that sends each answer only to the participant who asked, with automated tests for that isolation.',
     ],
     tech: ['Node.js', 'Zoom Apps SDK', 'Zoom Realtime Media Streams API', 'Claude'],
-    link: { label: 'Zoom Lens case study', href: '/work/zoom-lens' },
+    link: { label: 'ZoomLens case study', href: '/work/zoom-lens' },
   },
   {
     title: 'Deskside Support Intern',

@@ -17,7 +17,7 @@ import EtlPipeline from '../../components/visuals/EtlPipeline.astro';
 import StreamBoxFlow from '../../components/visuals/StreamBoxFlow.astro';
 
 export function getStaticPaths() {
-  // Zoom Lens has its own page.
+  // ZoomLens has its own page.
   return caseStudies
     .filter((p) => p.slug !== 'zoom-lens')
     .map((project) => ({ params: { slug: project.slug }, props: { project } }));

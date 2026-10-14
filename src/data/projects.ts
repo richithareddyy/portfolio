@@ -43,7 +43,7 @@ export type Project = {
   site?: string;
   github?: string;
   caseStudy: boolean;
-  /** Zoom Lens shows its product site and the Reddit pipeline its interactive diagram instead. */
+  /** ZoomLens shows its product site and the Reddit pipeline its interactive diagram instead. */
   visual?: Visual;
   gallery?: Visual[];
 
@@ -72,7 +72,7 @@ const ghTree = (repo: string, path: string) => `https://github.com/richithareddy
 export const projects: Project[] = [
   {
     slug: 'zoom-lens',
-    title: 'Zoom Lens',
+    title: 'ZoomLens',
     summary:
       'An AI assistant inside Zoom that privately explains whatever someone is sharing on screen: a spreadsheet, a chart, a slide, a paper, or code.',
     tier: 'featured',
@@ -89,7 +89,7 @@ export const projects: Project[] = [
     story: [
       {
         label: 'The experience',
-        text: 'Open Zoom Lens from the Apps panel, press Describe or Explain, or type a question about the shared screen. Only you see the answer, and the presenter is never interrupted.',
+        text: 'Open ZoomLens from the Apps panel, press Describe or Explain, or type a question about the shared screen. Only you see the answer, and the presenter is never interrupted.',
       },
       {
         label: 'How it works',
@@ -853,7 +853,7 @@ export const featured = projects.filter((p) => p.tier === 'featured');
 export const more = projects.filter((p) => p.tier === 'more');
 export const caseStudies = projects.filter((p) => p.caseStudy);
 
-/** Zoom Lens case-study details that do not fit the shared shape. */
+/** ZoomLens case-study details that do not fit the shared shape. */
 export const zoomLens = {
   role: 'Zoom Fellow, ASU Next Lab (a fellowship in partnership with Zoom)',
   /** Demo recording. Put the file in public/ and set the path, e.g. '/zoom-lens-demo.mp4'. */
@@ -867,12 +867,12 @@ export const zoomLens = {
       'need one thing clarified, not the whole talk repeated',
       'would rather not interrupt the presenter in front of everyone',
     ],
-    close: 'Zoom Lens gives them a private way to understand what is on screen right now.',
+    close: 'ZoomLens gives them a private way to understand what is on screen right now.',
   },
   steps: [
     {
       title: 'Ask',
-      body: 'Open Zoom Lens from the Apps panel during a meeting. Press Describe screen or Explain this, or type a question. The panel knows which meeting and which participant it belongs to through the Zoom Apps SDK.',
+      body: 'Open ZoomLens from the Apps panel during a meeting. Press Describe screen or Explain this, or type a question. The panel knows which meeting and which participant it belongs to through the Zoom Apps SDK.',
       files: ['public/panel.js'],
     },
     {
@@ -917,7 +917,7 @@ export const zoomLens = {
     },
     {
       title: 'Prompts per kind of request',
-      body: 'Separate instructions and reasoning effort for describe, explain, questions and follow-ups. Follow-ups carry the previous answer for scope, and every prompt tells the model to ignore Zoom Lens’s own panel in the image.',
+      body: 'Separate instructions and reasoning effort for describe, explain, questions and follow-ups. Follow-ups carry the previous answer for scope, and every prompt tells the model to ignore ZoomLens’s own panel in the image.',
       files: ['answer.js'],
     },
     {

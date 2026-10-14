@@ -13,7 +13,7 @@ interface Props {
 const { project, index = 0, eager = false } = Astro.props;
 const href = project.caseStudy ? `/work/${project.slug}` : undefined;
 const flip = index % 2 === 1;
-// Only Zoom Lens carries a visual here; the others keep their figures on the case study.
+// Only ZoomLens carries a visual here; the others keep their figures on the case study.
 const media = project.slug === 'zoom-lens';
 ---
 
