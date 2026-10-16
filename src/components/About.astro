@@ -1,6 +1,8 @@
 ---
+import { Image } from 'astro:assets';
 import SectionHeading from './SectionHeading.astro';
 import Mark from './Mark.astro';
+import photo from '../assets/about/richitha.jpg';
 ---
 
 <section class="wrap section" id="about" aria-labelledby="about-title">
@@ -12,25 +14,68 @@ import Mark from './Mark.astro';
         I studied AI and machine learning at Anurag University in Hyderabad, and I’m now doing my M.S. in Data Science, Analytics and
         Engineering at Arizona State University.
       </p>
-      <p>
-        The part I enjoy most is <Mark kind="under">finding out whether something actually works</Mark>. Getting an answer to exactly one
-        person in a live meeting, checking which methods still recover a known effect once randomization is gone, seeing where a forecast
-        breaks during extreme demand: those are the problems I keep coming back to.
-      </p>
-      <p>I like work I can measure, and I would rather write down what something can’t do yet than leave it out.</p>
+      <details class="fold">
+        <summary>more about me</summary>
+        <div class="rest">
+          <p>
+            The part I enjoy most is finding out whether something <Mark kind="under">actually works</Mark>. Getting an answer to exactly
+            one person in a live meeting, checking which methods still recover a known effect once randomization is gone, seeing where a
+            forecast breaks during extreme demand: those are the problems I keep coming back to.
+          </p>
+          <p>I like work I can measure, and I would rather write down what something can’t do yet than leave it out.</p>
+        </div>
+      </details>
     </div>
 
-    <aside class="margin note" aria-label="Where I studied">
-      <p class="route">
-        <span>Hyderabad</span>
-        <span class="line" aria-hidden="true"></span>
-        <span>Tempe, AZ</span>
-      </p>
-      <p>B.Tech, AI and Machine Learning<br />Anurag University, 2025</p>
-      <p>M.S., Data Science, Analytics and Engineering<br />Arizona State University, May 2027</p>
+    <aside class="margin" aria-label="Photo">
+      <div class="scrapbook">
+        <button
+          type="button"
+          class="card"
+          aria-pressed="false"
+          aria-label="Photo of Richitha Rekula, smiling in the sun. Select to flip it over."
+          data-flip
+        >
+          <span class="inner">
+            <span class="face front">
+              <Image src={photo} alt="" widths={[320, 640]} sizes="16.5rem" />
+              <span class="caption note">that’s me</span>
+            </span>
+            <span class="face back note" aria-hidden="true">
+              <span class="back-title">on the back</span>
+              <span class="route">
+                <span>Hyderabad</span>
+                <span class="line"></span>
+                <span>Tempe, AZ</span>
+              </span>
+              <span>B.Tech, AI and Machine Learning<br />Anurag University, 2025</span>
+              <span>M.S., Data Science, Analytics and Engineering<br />Arizona State University, May 2027</span>
+            </span>
+          </span>
+        </button>
+
+        <span class="sticker" aria-hidden="true">hi!</span>
+        <svg class="doodle sun" viewBox="0 0 40 40" aria-hidden="true">
+          <circle cx="20" cy="20" r="7" />
+          <g class="rays">
+            <path d="M20 4v6M20 30v6M4 20h6M30 20h6M8.7 8.7l4.2 4.2M27.1 27.1l4.2 4.2M8.7 31.3l4.2-4.2M27.1 12.9l4.2-4.2" />
+          </g>
+        </svg>
+        <svg class="doodle sparkle one" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1 Q11 9 19 10 Q11 11 10 19 Q9 11 1 10 Q9 9 10 1Z" /></svg>
+        <svg class="doodle sparkle two" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1 Q11 9 19 10 Q11 11 10 19 Q9 11 1 10 Q9 9 10 1Z" /></svg>
+        <p class="hint note" aria-hidden="true">↑ tap to flip</p>
+      </div>
     </aside>
   </div>
 </section>
+
+<script>
+  for (const card of document.querySelectorAll<HTMLButtonElement>('[data-flip]')) {
+    card.addEventListener('click', () => {
+      card.setAttribute('aria-pressed', String(card.getAttribute('aria-pressed') !== 'true'));
+    });
+  }
+</script>
 
 <style>
   .section {
@@ -40,12 +85,12 @@ import Mark from './Mark.astro';
   .layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-6) var(--space-8);
+    gap: var(--space-7) var(--space-8);
   }
 
   @media (min-width: 64rem) {
     .layout {
-      grid-template-columns: minmax(0, 1fr) var(--width-margin);
+      grid-template-columns: minmax(0, 1fr) 20rem;
     }
 
     .margin {
@@ -56,14 +101,15 @@ import Mark from './Mark.astro';
 
   .prose {
     display: grid;
-    gap: var(--space-5);
+    gap: var(--space-3);
+    align-content: start;
     max-width: 40rem;
     font-family: var(--font-display);
     font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
     line-height: 1.5;
   }
 
-  .prose p:first-child::first-letter {
+  .prose > p:first-child::first-letter {
     float: left;
     margin: 0.06em 0.08em 0 0;
     font-size: 3.4em;
@@ -72,11 +118,104 @@ import Mark from './Mark.astro';
     color: var(--pen);
   }
 
-  .margin {
+  .rest {
     display: grid;
-    align-content: start;
-    gap: var(--space-4);
+    gap: var(--space-5);
+    padding-top: var(--space-3);
+  }
+
+  /* The photo is a print taped into the margin; clicking turns it over. */
+  .scrapbook {
+    position: relative;
+    width: min(16.5rem, 100%);
+    padding-top: var(--space-3);
+  }
+
+  .card {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    perspective: 900px;
+    transform: rotate(-2.5deg);
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .card:hover {
+    transform: rotate(0deg);
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    z-index: 2;
+    width: 4.5rem;
+    height: 1.25rem;
+    background: color-mix(in srgb, var(--pen-wash) 80%, transparent);
+    transform: translateX(-50%) rotate(3deg);
+  }
+
+  .inner {
+    position: relative;
+    display: grid;
+    transform-style: preserve-3d;
+    transition: transform 600ms var(--ease-out);
+  }
+
+  .card[aria-pressed='true'] .inner {
+    transform: rotateY(180deg);
+  }
+
+  .face {
+    grid-area: 1 / 1;
+    display: block;
+    background: var(--color-surface);
+    box-shadow: var(--shadow-md);
+    backface-visibility: hidden;
+  }
+
+  .front {
+    padding: 8px 8px 0;
+  }
+
+  .front :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .caption {
+    display: block;
+    padding: 6px 0 8px;
+    text-align: center;
+  }
+
+  .back {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    align-content: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    overflow: hidden;
+    font-size: var(--text-2xs);
+    line-height: 1.5;
     color: var(--color-ink-soft);
+    transform: rotateY(180deg);
+  }
+
+  .back-title {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-lg);
+    color: var(--color-ink);
   }
 
   .route {
@@ -87,8 +226,115 @@ import Mark from './Mark.astro';
 
   .line {
     width: 1px;
-    height: 2.5rem;
+    height: 1rem;
     margin-left: 0.5em;
     border-left: 2px dashed var(--pen);
+  }
+
+  /* Doodles around the print. */
+  .doodle {
+    position: absolute;
+    overflow: visible;
+    pointer-events: none;
+    fill: none;
+    stroke: var(--pen);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  .sun {
+    top: -0.75rem;
+    right: -1.6rem;
+    width: 2.6rem;
+  }
+
+  .sun .rays {
+    transform-origin: 20px 20px;
+    animation: spin 40s linear infinite;
+  }
+
+  .sparkle {
+    width: 1rem;
+    fill: var(--pen);
+    stroke: none;
+    animation: twinkle 2.4s var(--ease-out) infinite;
+  }
+
+  .sparkle.one {
+    left: -1.4rem;
+    top: 38%;
+  }
+
+  .sparkle.two {
+    right: -1.2rem;
+    top: 62%;
+    width: 0.7rem;
+    animation-delay: 1.2s;
+  }
+
+  .sticker {
+    position: absolute;
+    left: -1rem;
+    top: 0.25rem;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 50%;
+    background: var(--pen);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-md);
+    color: var(--color-on-accent);
+    transform: rotate(-14deg);
+    box-shadow: var(--shadow-md);
+    transition:
+      opacity var(--duration-base) var(--ease-out),
+      transform var(--duration-base) var(--ease-out);
+  }
+
+  .card[aria-pressed='true'] ~ .sticker {
+    opacity: 0;
+    transform: rotate(-40deg) scale(0.4);
+  }
+
+  .hint {
+    margin-top: var(--space-3);
+    font-size: var(--text-2xs);
+    color: var(--color-muted);
+    text-align: center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card,
+    .inner,
+    .sticker {
+      transition: none;
+    }
+
+    .sun .rays,
+    .sparkle {
+      animation: none;
+    }
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes twinkle {
+    0%,
+    100% {
+      opacity: 0.35;
+      transform: scale(0.75);
+    }
+
+    50% {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
 </style>

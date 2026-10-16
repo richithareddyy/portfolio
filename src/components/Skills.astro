@@ -4,6 +4,8 @@ import { profile } from '../data/profile';
 import { sources, techs, edges, graphData } from '../data/graph';
 import SectionHeading from './SectionHeading.astro';
 const orderedSources = sources;
+// Each group shows its first few tools; the rest sit behind a fold.
+const SHOWN = 4;
 const mapHeight = techs.length * 28 + 24;
 const sourceY = Object.fromEntries(orderedSources.map((s, i) => [s.id, (i + .5) / orderedSources.length * 100]));
 const techY = Object.fromEntries(techs.map((t, i) => [t.id, (i + .5) / techs.length * 100]));
@@ -11,7 +13,22 @@ const techY = Object.fromEntries(techs.map((t, i) => [t.id, (i + .5) / techs.len
 <section class="wrap section" id="skills" aria-labelledby="skills-title" data-lab>
   <SectionHeading id="skills" note="the map below shows where I actually used each one.">What I build <em>with</em></SectionHeading>
   <dl class="skill-groups">
-    {skills.map(group => <div><dt>{group.name}</dt><dd><ul>{group.items.map(item => <li>{item}</li>)}</ul></dd></div>)}
+    {
+      skills.map((group) => (
+        <div>
+          <dt>{group.name}</dt>
+          <dd>
+            <ul>{group.items.slice(0, SHOWN).map((item) => <li>{item}</li>)}</ul>
+            {group.items.length > SHOWN && (
+              <details class="fold">
+                <summary>{group.items.length - SHOWN} more<span class="visually-hidden"> in {group.name}</span></summary>
+                <ul>{group.items.slice(SHOWN).map((item) => <li>{item}</li>)}</ul>
+              </details>
+            )}
+          </dd>
+        </div>
+      ))
+    }
   </dl>
   <details class="map-disclosure" data-map-disclosure>
     <summary>Open the map <span class="summary-note">projects ↔ tools, with receipts</span></summary>

@@ -39,14 +39,17 @@ const media = project.slug === 'zoom-lens';
     <div class="detail">
       {
         project.story && (
-          <dl class="story">
-            {project.story.map((beat) => (
-              <div>
-                <dt>{beat.label}</dt>
-                <dd>{beat.text}</dd>
-              </div>
-            ))}
-          </dl>
+          <details class="fold">
+            <summary>the full story<span class="visually-hidden"> of {project.title}</span></summary>
+            <dl class="story">
+              {project.story.map((beat) => (
+                <div>
+                  <dt>{beat.label}</dt>
+                  <dd>{beat.text}</dd>
+                </div>
+              ))}
+            </dl>
+          </details>
         )
       }
 
