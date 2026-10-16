@@ -1,9 +1,11 @@
 ---
 import { profile } from '../data/profile';
+import Doodle from './Doodle.astro';
 const year = new Date().getFullYear();
 ---
 
 <footer class="site-footer">
+  <p class="wrap fin">that’s the last page. thanks for reading<Doodle kind="heart" class="is-drawn" /></p>
   <div class="wrap row">
     <p>© {year} {profile.name} <span class="aside">· <a href="#top">back to the top ↑</a></span></p>
     <ul>
@@ -21,6 +23,22 @@ const year = new Date().getFullYear();
     padding-block: var(--space-6);
     font-size: var(--text-sm);
     color: var(--color-muted);
+  }
+
+  .fin {
+    margin-bottom: var(--space-5);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-lg);
+    color: var(--color-ink-soft);
+    text-align: center;
+  }
+
+  .fin :global(.pen-doodle) {
+    width: 1em;
+    height: 1em;
+    margin-left: 0.3em;
+    vertical-align: -0.15em;
   }
 
   .row {

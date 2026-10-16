@@ -49,6 +49,7 @@ const contents = [
   </div>
 
   <nav class="contents" aria-labelledby="contents-title">
+    <svg class="clip" viewBox="0 0 24 48" aria-hidden="true"><path d="M8 14 V36 a5 5 0 0 0 10 0 V8 a7 7 0 0 0 -14 0 V34" /></svg>
     <p id="contents-title" class="contents-title">In this notebook</p>
     <ol>
       {
@@ -297,7 +298,25 @@ const contents = [
   }
 
   .contents {
+    position: relative;
     margin-top: var(--space-8);
+  }
+
+  .clip {
+    position: absolute;
+    top: -1.4rem;
+    right: 1.5rem;
+    width: 1.35rem;
+    fill: none;
+    stroke: var(--color-faint);
+    stroke-width: 2;
+    stroke-linecap: round;
+    transform: rotate(12deg);
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .contents:hover .clip {
+    transform: rotate(4deg) translateY(-2px);
   }
 
   .contents-title {

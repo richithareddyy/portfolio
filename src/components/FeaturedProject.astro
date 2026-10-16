@@ -1,6 +1,7 @@
 ---
 import type { Project } from '../data/projects';
 import { techId } from '../data/graph';
+import Mark from './Mark.astro';
 import ProjectLinks from './ProjectLinks.astro';
 import ZoomLensPreview from './ZoomLensPreview.astro';
 
@@ -26,7 +27,7 @@ const media = project.slug === 'zoom-lens';
   <div class="text">
     <div class="lead">
       <p class="meta">
-        <span class="num" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+        <span class="num" aria-hidden="true"><Mark kind="circle">{String(index + 1).padStart(2, '0')}</Mark></span>
         <span>{[project.role, project.year].filter(Boolean).join(' · ')}</span>
       </p>
       <h3 id={`${project.slug}-title`}>

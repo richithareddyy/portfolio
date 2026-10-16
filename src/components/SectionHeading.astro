@@ -1,4 +1,6 @@
 ---
+import Doodle from './Doodle.astro';
+
 interface Props {
   id: string;
   note?: string;
@@ -7,12 +9,14 @@ interface Props {
 const { id, note } = Astro.props;
 const numbers: Record<string, string> = { work: '01', experience: '02', skills: '03', about: '04', contact: '05' };
 const kickers: Record<string, string> = { work: 'the work', experience: 'where I’ve been', skills: 'toolbox', about: 'about me', contact: 'say hello' };
+const doodles = { work: 'star', experience: 'trail', skills: 'pencil', about: 'heart', contact: 'plane' } as const;
+const doodle = doodles[id as keyof typeof doodles];
 ---
 
 <header class="section-heading">
   <p class="kicker"><span class="num">Nº {numbers[id] ?? '00'}</span> <span class="what">{kickers[id] ?? id}</span></p>
   <h2 id={`${id}-title`}>
-    <slot />
+    <slot />{doodle && <Doodle kind={doodle} />}
   </h2>
   {note && <p class="note aside">{note}</p>}
 </header>

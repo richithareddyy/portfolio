@@ -1,13 +1,13 @@
 :root {
-  --color-bg: #f7f8fa;
-  --color-surface: #ffffff;
-  --color-surface-sunken: #eef1f6;
-  --color-ink: #111318;
-  --color-ink-soft: #374151;
-  --color-muted: #5c6678;
-  --color-faint: #647185;
-  --color-rule: #dce2eb;
-  --color-rule-strong: #aab6c8;
+  --color-bg: #f3ecdf;
+  --color-surface: #fbf8f2;
+  --color-surface-sunken: #ebe2d2;
+  --color-ink: #1c1915;
+  --color-ink-soft: #3e3830;
+  --color-muted: #665d50;
+  --color-faint: #685e51;
+  --color-rule: #e0d5c2;
+  --color-rule-strong: #b5a78f;
   --color-highlight: var(--pen-wash);
   --color-positive: #2f6b45;
   --color-pending: #7a5a12;
@@ -25,7 +25,7 @@
   --color-selection: var(--pen-wash);
   --color-on-accent: #ffffff;
 
-  /* Background behind screenshots and dark diagram panels, same in both themes */
+  /* Background behind screenshots and dark diagram panels */
   --color-panel: #1a202c;
 
   --font-display: 'Newsreader Variable', 'Iowan Old Style', Georgia, serif;
@@ -88,30 +88,3 @@
 :root[data-pen='red'] { --pen: #d64527; --pen-ink: #b2341a; --pen-wash: #f9e1d8; }
 :root[data-pen='green'] { --pen: #2f8a55; --pen-ink: #22673f; --pen-wash: #dcebdc; }
 :root[data-pen='violet'] { --pen: #8343cc; --pen-ink: #6c32ad; --pen-wash: #e9def4; }
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: #171c25;
-    --color-surface: #1e2531;
-    --color-surface-sunken: #131922;
-    --color-ink: #e7ecf4;
-    --color-ink-soft: #c7d1e0;
-    --color-muted: #a6b3c6;
-    --color-faint: #8998ac;
-    --color-rule: #323e50;
-    --color-rule-strong: #53657d;
-    --color-positive: #7fbf93;
-    --color-pending: #d9b35c;
-    --pen: #82adff;
-    --pen-ink: #a4c2ff;
-    --pen-wash: #243657;
-    /* The dark-mode pen is light, so text on it is dark. */
-    --color-on-accent: #0f1726;
-    --shadow-md: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 28px -12px rgb(0 0 0 / 0.6);
-    color-scheme: dark;
-  }
-
-  :root[data-pen='red'] { --pen: #ff7d5c; --pen-ink: #ff9a7e; --pen-wash: #3d2620; }
-  :root[data-pen='green'] { --pen: #6fd09a; --pen-ink: #8adcae; --pen-wash: #1e3326; }
-  :root[data-pen='violet'] { --pen: #c39bff; --pen-ink: #d2b3ff; --pen-wash: #31234a; }
-}
