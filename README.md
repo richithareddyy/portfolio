@@ -1,48 +1,32 @@
 # Portfolio
 
-Personal portfolio of Richitha Rekula: software engineering and applied AI projects, experience, and contact details.
+My personal site for software engineering, applied AI, and data-science projects, with case studies, experience, and contact details.
 
-Built with Astro and TypeScript. Static output, no client-side framework, self-hosted fonts.
+**Astro · TypeScript · Static output**
+
+[Visit the site](https://richitharekula.vercel.app)
 
 ## Run locally
 
-Requires Node.js 22 or newer.
+Requires Node.js 22+.
 
 ```bash
 npm ci
 npm run dev
 ```
 
-The site runs at http://localhost:4321.
+Open http://localhost:4321. `npm run build` checks the project and writes the site to `dist/`; `npm run preview` serves that build locally.
 
-## Build
+## Editing content
 
-```bash
-npm run build
-```
+Most project content lives in `src/data/projects.ts`. Profile, experience, and skills have separate files in `src/data/`. Astro generates case-study pages from that content; ZoomLens has its own dedicated page.
 
-Type-checks the project and writes the static site to `dist/`.
+Components live in `src/components/`, pages in `src/pages/`, and shared visual tokens in `src/styles/tokens.css`. Fonts are self-hosted. Small TypeScript scripts handle browser interactions without a client-side UI framework.
 
-## Content and page generation
+## Checks and deployment
 
-The site presents projects as case studies so there is room for implementation choices, evaluation, and limitations alongside screenshots. Astro generates the pages at build time; small TypeScript scripts handle browser interactions without a client-side UI framework.
+Run `npm run check` for Astro checks. There is no automated browser test suite, so also check project links, the résumé download, narrow-screen layouts, and keyboard navigation after changes.
 
-Most project content lives in `src/data/projects.ts`. `src/pages/work/[slug].astro` generates those case-study pages, while ZoomLens has a dedicated page at `src/pages/work/zoom-lens.astro`. Profile, experience, and skills have separate data files.
+The static output can run on a static host. Vercel’s Astro preset handles the current deployment.
 
-## Structure
-
-| Path | Purpose |
-| --- | --- |
-| `src/data/` | Shared content: profile, projects, experience, skills |
-| `src/styles/tokens.css` | Design tokens: color, type, spacing, radius, borders, shadows, motion |
-| `src/components/` | Page sections and reusable pieces |
-| `src/pages/` | Home page, project case studies, 404 |
-| `public/` | Résumé PDF and favicon |
-
-## Checks
-
-`npm run check` runs Astro's checks; `npm run build` checks and builds; `npm run preview` serves the built site locally. No automated browser test suite is included. Check the home page, project links, résumé download, narrow-screen layout, and keyboard navigation when changing content or components.
-
-## Deploy
-
-Static output works on any static host. On Vercel, import the repository; the Astro preset needs no extra settings.
+[Content structure and deployment notes](GUIDE.md)
