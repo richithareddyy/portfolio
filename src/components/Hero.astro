@@ -16,7 +16,7 @@ const contents = [
       <span>Richitha<Doodle kind="star" class="name-star" /></span>
       <span class="last">Rekula<button type="button" class="pen-dot" data-pen-toggle aria-label="Change the pen color used across the site"></button><span class="pen-hint note" aria-hidden="true">← click the dot to change the pen color</span></span>
     </h1>
-    <p class="pen-hint-below note" aria-hidden="true">↑ tap the dot to change the pen color</p>
+    <p class="pen-hint-below note" aria-hidden="true">↑ click or tap the dot to change the pen color</p>
 
     <div class="actions">
       <a class="button primary" href="#work">See the work <span aria-hidden="true">↓</span></a>
@@ -109,7 +109,6 @@ const contents = [
     width: 0.7rem;
     opacity: 0.6;
   }
-
 
   .pen-hint-below {
     margin-top: var(--space-5);
@@ -287,6 +286,37 @@ const contents = [
   @keyframes draw {
     to {
       stroke-dashoffset: 0;
+    }
+  }
+
+  /* Hint next to the dot; only shown where there's room beside the name. */
+  .last {
+    position: relative;
+  }
+
+  .pen-hint {
+    display: none;
+    position: absolute;
+    left: calc(100% + 0.9rem);
+    bottom: 0.35em;
+    width: 11rem;
+    font-size: var(--text-xs);
+    font-style: normal;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.4;
+    white-space: normal;
+    transform: rotate(-3deg);
+    transform-origin: left bottom;
+  }
+
+  @media (min-width: 64rem) {
+    .pen-hint {
+      display: block;
+    }
+
+    .pen-hint-below {
+      display: none;
     }
   }
 
