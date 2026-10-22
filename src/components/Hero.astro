@@ -1,6 +1,5 @@
 ---
 import { profile } from '../data/profile';
-import Mark from './Mark.astro';
 import Doodle from './Doodle.astro';
 
 const contents = [
@@ -38,23 +37,7 @@ const contents = [
     <svg class="sparkle one" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1 Q11 9 19 10 Q11 11 10 19 Q9 11 1 10 Q9 9 10 1Z" /></svg>
     <svg class="sparkle two" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1 Q11 9 19 10 Q11 11 10 19 Q9 11 1 10 Q9 9 10 1Z" /></svg>
 
-    <svg class="stamp" viewBox="0 0 160 160" aria-hidden="true">
-      <defs><path id="stamp-ring" d="M80 80 m-58 0 a58 58 0 1 1 116 0 a58 58 0 1 1 -116 0" /></defs>
-      <circle class="ring" cx="80" cy="80" r="74" />
-      <circle class="ring inner" cx="80" cy="80" r="44" />
-      <text><textPath href="#stamp-ring" textLength="362">data scientist ✦ zoom fellow ✦ tempe, az ✦</textPath></text>
-      <path class="heart" d="M80 98 C67 89 61 81 63 74 C65 67 75 66 80 74 C85 66 95 67 97 74 C99 81 93 89 80 98 Z" />
-    </svg>
   </div>
-
-  <div class="layout">
-    <div class="main">
-      <p class="lede">I like building what happens <Mark kind="under" delay={250}>after the model works</Mark>.</p>
-      <p class="desc">
-        I’m a data scientist and a <span class="hl">Zoom Fellow at ASU Next Lab</span>, working across applied AI, machine learning, and
-        data-heavy software.
-      </p>
-    </div>
 
     <aside class="margin" aria-label="Quick facts">
       <dl class="facts note">
@@ -64,7 +47,6 @@ const contents = [
         <div><dt>open to</dt><dd>new grad and internship roles in data science, machine learning, and applied AI</dd></div>
       </dl>
     </aside>
-  </div>
 
   <nav class="contents" aria-labelledby="contents-title">
     <svg class="clip" viewBox="0 0 24 48" aria-hidden="true"><path d="M8 14 V36 a5 5 0 0 0 10 0 V8 a7 7 0 0 0 -14 0 V34" /></svg>
@@ -116,10 +98,18 @@ const contents = [
   }
 
   .sparkle.one {
-    top: calc(50% - 7rem);
-    left: 52%;
+    top: 30%;
+    right: 8%;
     width: 1.1rem;
     opacity: 0.8;
+  }
+
+  @media (min-width: 64rem) {
+    .sparkle.one {
+      top: calc(50% - 7rem);
+      right: auto;
+      left: 52%;
+    }
   }
 
   .sparkle.two {
@@ -129,74 +119,12 @@ const contents = [
     opacity: 0.6;
   }
 
-  /* A round notebook stamp; it sits under the name on phones and beside it on wide screens. */
-  .stamp {
-    width: 7.5rem;
-    margin-top: var(--space-6);
-    overflow: visible;
-    transform: rotate(-10deg);
-  }
-
-  @media (min-width: 64rem) {
-    .stamp {
-      position: absolute;
-      top: 50%;
-      right: 4%;
-      width: 10rem;
-      margin: 0;
-      translate: 0 -50%;
-    }
-  }
-
-  .stamp .ring {
-    fill: none;
-    stroke: var(--pen);
-    stroke-width: 1.5;
-    stroke-dasharray: 3 4;
-  }
-
-  .stamp .inner {
-    stroke-dasharray: none;
-    opacity: 0.5;
-  }
-
-  .stamp text {
-    font-family: var(--font-mono);
-    font-size: 11.5px;
-    letter-spacing: 0.02em;
-    fill: var(--pen-ink);
-    text-transform: uppercase;
-  }
-
-  .stamp .heart {
-    fill: var(--pen-wash);
-    stroke: var(--pen);
-    stroke-width: 1.5;
-    stroke-linejoin: round;
-  }
 
   .pen-hint-below {
     margin-top: var(--space-5);
     font-size: var(--text-xs);
     transform: rotate(-2deg);
     transform-origin: left;
-  }
-
-  .layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-6) var(--space-8);
-  }
-
-  @media (min-width: 64rem) {
-    .layout {
-      grid-template-columns: minmax(0, 1fr) var(--width-margin);
-      align-items: end;
-    }
-  }
-
-  .main {
-    min-width: 0;
   }
 
   .hello {
@@ -254,22 +182,6 @@ const contents = [
   .pen-dot:focus-visible {
     outline-offset: 0.06em;
     border-radius: 50%;
-  }
-
-  .lede {
-    max-width: 36rem;
-    font-family: var(--font-display);
-    font-size: clamp(1.75rem, 1.25rem + 1.7vw, 2.6rem);
-    line-height: 1.2;
-    letter-spacing: -0.01em;
-    text-wrap: balance;
-  }
-
-  .desc {
-    max-width: 50ch;
-    margin-top: var(--space-4);
-    font-size: var(--text-md);
-    color: var(--color-ink-soft);
   }
 
   .actions {
@@ -387,7 +299,7 @@ const contents = [
     }
   }
 
-  /* Margin notes: a right column on wide screens, a list under the actions otherwise. */
+  /* Quick facts, written like margin notes. */
   .margin {
     display: grid;
     gap: var(--space-5);
@@ -416,13 +328,6 @@ const contents = [
   }
 
   @media (min-width: 64rem) {
-    .margin {
-      align-self: stretch;
-      align-content: end;
-      padding-left: var(--space-5);
-      border-left: 1px dashed var(--color-rule-strong);
-    }
-
     .pen-hint {
       display: block;
     }
@@ -451,10 +356,17 @@ const contents = [
     color: var(--color-ink-soft);
   }
 
-  @media (min-width: 40rem) and (max-width: 63.99rem) {
+  /* With the name on its own screen, the quick facts read as one row of margin notes. */
+  @media (min-width: 40rem) {
     .facts {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: var(--space-3) var(--space-6);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .facts {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
 
