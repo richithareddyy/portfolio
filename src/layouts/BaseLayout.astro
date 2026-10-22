@@ -25,6 +25,24 @@ const pageTitle = title ? `${title} · ${profile.name}` : `${profile.name} · Da
 const path = Astro.url.pathname.length > 1 ? Astro.url.pathname.replace(/\/$/, '') : '/';
 const canonical = new URL(path, Astro.site);
 const ogImage = new URL('/og-image.png', Astro.site);
+
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: profile.name,
+  url: Astro.site?.href,
+  image: ogImage.href,
+  email: `mailto:${profile.email}`,
+  jobTitle: 'Zoom Fellow',
+  worksFor: { '@type': 'Organization', name: 'ASU Next Lab' },
+  alumniOf: [
+    { '@type': 'CollegeOrUniversity', name: 'Arizona State University' },
+    { '@type': 'CollegeOrUniversity', name: 'Anurag University' },
+  ],
+  address: { '@type': 'PostalAddress', addressLocality: 'Tempe', addressRegion: 'AZ', addressCountry: 'US' },
+  knowsAbout: ['Data science', 'Machine learning', 'Causal inference', 'Time series forecasting', 'Applied AI'],
+  sameAs: [profile.links.github, profile.links.linkedin],
+};
 ---
 
 <!doctype html>
@@ -51,6 +69,7 @@ const ogImage = new URL('/og-image.png', Astro.site);
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="icon" href="/favicon-16.png" sizes="16x16" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    {isHome && <script type="application/ld+json" set:html={JSON.stringify(person)} />}
     <script is:inline>
       // Apply the saved pen color before the first paint, and let the marks animate only when scripts run.
       document.documentElement.classList.add('js');

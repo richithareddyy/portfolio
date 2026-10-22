@@ -1,29 +1,123 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Mark from '../components/Mark.astro';
+import Doodle from '../components/Doodle.astro';
 ---
 
 <BaseLayout title="Page not found" noindex>
   <section class="wrap nf" data-page="404">
-    <p class="label">404</p>
-    <h1>That page doesn't exist.</h1>
-    <p>The link may be out of date.</p>
-    <a class="arrow-link" href="/">Back to the home page <span class="arrow" aria-hidden="true">→</span></a>
+    <div class="copy">
+      <p class="label note">page <Mark kind="circle"><span class="big">404</span></Mark></p>
+      <h1>This page got torn out of the <em>notebook</em>.</h1>
+      <p class="why">The link may be out of date, or I moved things around.</p>
+      <div class="links">
+        <a class="arrow-link" href="/">Back to the first page <span class="arrow" aria-hidden="true">→</span></a>
+        <a class="arrow-link" href="/#work">See the work <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+
+    <div class="scrap" aria-hidden="true">
+      <p class="blank">this page intentionally left blank<Doodle kind="heart" class="is-drawn" /></p>
+    </div>
   </section>
 </BaseLayout>
 
 <style>
   .nf {
     display: grid;
-    gap: var(--space-4);
-    justify-items: start;
+    gap: var(--space-8);
+    align-items: center;
     padding-block: var(--space-10);
   }
 
-  h1 {
-    font-size: var(--text-3xl);
+  @media (min-width: 56rem) {
+    .nf {
+      grid-template-columns: minmax(0, 1fr) 18rem;
+    }
   }
 
-  p:not(.label) {
+  .copy {
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+  }
+
+  .label {
+    font-size: var(--text-sm);
     color: var(--color-muted);
+  }
+
+  .label :global(.mk) {
+    margin-left: 0.5em;
+  }
+
+  .big {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-2xl);
+    line-height: 1;
+    color: var(--pen-ink);
+  }
+
+  .blank :global(.pen-doodle) {
+    width: 1em;
+    height: 1em;
+    margin-left: 0.3em;
+    vertical-align: -0.15em;
+  }
+
+  h1 {
+    max-width: 16ch;
+    font-size: var(--text-3xl);
+    font-weight: 450;
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+  }
+
+  .why {
+    color: var(--color-muted);
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-6);
+    margin-top: var(--space-2);
+  }
+
+  /* A scrap of ruled paper with a torn bottom edge, taped on at an angle. */
+  .scrap {
+    position: relative;
+    justify-self: center;
+    width: min(18rem, 100%);
+    aspect-ratio: 4 / 5;
+    display: grid;
+    place-items: center;
+    padding: var(--space-5);
+    background:
+      repeating-linear-gradient(transparent 0 1.7rem, var(--color-rule) 1.7rem calc(1.7rem + 1px)),
+      var(--color-surface);
+    box-shadow: var(--shadow-md);
+    transform: rotate(3deg);
+    clip-path: polygon(0 0, 100% 0, 100% 92%, 94% 96%, 88% 91%, 80% 97%, 72% 92%, 63% 98%, 55% 92%, 46% 97%, 38% 91%, 29% 96%, 21% 91%, 12% 97%, 5% 92%, 0 95%);
+  }
+
+  .scrap::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 5rem;
+    height: 1.25rem;
+    background: color-mix(in srgb, var(--pen-wash) 80%, transparent);
+    transform: translateX(-50%) rotate(-4deg);
+  }
+
+  .blank {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-lg);
+    color: var(--color-muted);
+    text-align: center;
   }
 </style>
