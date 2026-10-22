@@ -1,5 +1,5 @@
 ---
-import type { Project } from '../data/projects';
+import { zoomLens, type Project } from '../data/projects';
 interface Props {
   project: Project;
 }
@@ -12,6 +12,15 @@ const { project } = Astro.props;
       <li>
         <a class="arrow-link" href={`/work/${project.slug}`}>
           Case study<span class="visually-hidden">: {project.title}</span> <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </li>
+    )
+  }
+  {
+    project.slug === 'zoom-lens' && zoomLens.demoVideo && (
+      <li>
+        <a class="arrow-link" href="/work/zoom-lens#demo">
+          Watch the 3-minute demo <span class="arrow" aria-hidden="true">→</span>
         </a>
       </li>
     )

@@ -13,8 +13,8 @@ const contents = [
   <div class="cover">
     <p class="hello note">hi, I'm</p>
     <h1 id="hero-title" class="name" aria-label="Richitha Rekula">
-      <span>Richitha<Doodle kind="star" class="name-star" /></span>
-      <span class="last">Rekula<button type="button" class="pen-dot" data-pen-toggle aria-label="Change the pen color used across the site"></button><span class="pen-hint note" aria-hidden="true">← click the dot to change the pen color</span></span>
+      <span class="first">Richitha<Doodle kind="star" class="name-star" /><svg class="sparkle one" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1 Q11 9 19 10 Q11 11 10 19 Q9 11 1 10 Q9 9 10 1Z" /></svg></span>
+      <span class="last"><svg class="sparkle two" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1 Q11 9 19 10 Q11 11 10 19 Q9 11 1 10 Q9 9 10 1Z" /></svg>Rekula<button type="button" class="pen-dot" data-pen-toggle aria-label="Change the pen color used across the site"></button><span class="pen-hint note" aria-hidden="true">← click the dot to change the pen color</span></span>
     </h1>
     <p class="pen-hint-below note" aria-hidden="true">↑ click or tap the dot to change the pen color</p>
 
@@ -34,8 +34,6 @@ const contents = [
       </ul>
     </div>
 
-    <svg class="sparkle one" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1 Q11 9 19 10 Q11 11 10 19 Q9 11 1 10 Q9 9 10 1Z" /></svg>
-    <svg class="sparkle two" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1 Q11 9 19 10 Q11 11 10 19 Q9 11 1 10 Q9 9 10 1Z" /></svg>
 
   </div>
 
@@ -82,6 +80,11 @@ const contents = [
     transform: rotate(-12deg);
   }
 
+  /* Sized and placed in em, so they stay beside the name at every width. */
+  .first {
+    position: relative;
+  }
+
   .sparkle {
     position: absolute;
     fill: var(--pen);
@@ -89,24 +92,16 @@ const contents = [
   }
 
   .sparkle.one {
-    top: 30%;
-    right: 8%;
-    width: 1.1rem;
+    top: 0.22em;
+    left: 4.15em;
+    width: max(0.75rem, 0.11em);
     opacity: 0.8;
   }
 
-  @media (min-width: 64rem) {
-    .sparkle.one {
-      top: calc(50% - 7rem);
-      right: auto;
-      left: 52%;
-    }
-  }
-
   .sparkle.two {
-    top: calc(50% + 3.5rem);
-    left: -0.4rem;
-    width: 0.7rem;
+    top: 0.42em;
+    left: -0.07em;
+    width: max(0.5rem, 0.07em);
     opacity: 0.6;
   }
 
@@ -320,9 +315,10 @@ const contents = [
     }
   }
 
+  /* Starts clear of the first screen, so its paperclip doesn't peek in. */
   .contents {
     position: relative;
-    margin-top: var(--space-4);
+    margin-top: var(--space-8);
   }
 
   .clip {

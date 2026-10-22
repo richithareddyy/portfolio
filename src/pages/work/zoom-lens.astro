@@ -42,9 +42,18 @@ const metrics = [
       <div class="lead-visual">
         {
           zoomLens.demoVideo ? (
-            <figure class="video">
-              <video src={zoomLens.demoVideo} controls muted playsinline preload="metadata" aria-label="ZoomLens demo recording" />
-              <figcaption>ZoomLens running in a live meeting.</figcaption>
+            <figure class="video" id="demo">
+              <video
+                src={zoomLens.demoVideo}
+                poster={zoomLens.demoPoster}
+                width="1280"
+                height="832"
+                controls
+                playsinline
+                preload="none"
+                aria-label="ZoomLens demo: describing a spreadsheet, follow-up questions, and the accessibility features in a live Zoom meeting"
+              />
+              <figcaption>A three-minute walkthrough in a live Zoom meeting, with captions. The spreadsheet data is fictional.</figcaption>
             </figure>
           ) : (
             <ZoomLensPreview eager />
@@ -232,7 +241,10 @@ const metrics = [
   }
 
   .video video {
+    display: block;
     width: 100%;
+    height: auto;
+    background: var(--color-panel);
     border: var(--border-hairline);
     border-radius: var(--radius-md);
   }

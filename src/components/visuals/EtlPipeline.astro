@@ -61,7 +61,7 @@ const uid = `etl-${Math.random().toString(36).slice(2, 7)}`;
   <ol class="stages" role="tablist" aria-label="Pipeline stages">
     {
       stages.map((s, i) => (
-        <li>
+        <li role="presentation">
           <button
             type="button"
             role="tab"

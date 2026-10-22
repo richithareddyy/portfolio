@@ -458,7 +458,7 @@ export const projects: Project[] = [
     tables: [
       {
         caption: 'Indexing and query benchmarks',
-        columns: ['', 'CodeAtlas', 'ripgrep', 'tokio'],
+        columns: ['Measure', 'CodeAtlas', 'ripgrep', 'tokio'],
         rows: [
           ['Rust files / non-blank LOC', '130 / 20,943', '110 / 50,953', '808 / 163,157'],
           ['Symbols', '1,405', '3,536', '9,554'],
@@ -869,7 +869,8 @@ export const caseStudies = [...featured, ...more].filter((p) => p.caseStudy);
 export const zoomLens = {
   role: 'Zoom Fellow, ASU Next Lab (a fellowship in partnership with Zoom)',
   /** Demo recording. Put the file in public/ and set the path, e.g. '/zoom-lens-demo.mp4'. */
-  demoVideo: null as string | null,
+  demoVideo: '/media/zoomlens-demo.mp4' as string | null,
+  demoPoster: '/media/zoomlens-demo-poster.webp',
   problem: {
     intro: 'During a screen share, people often:',
     points: [
