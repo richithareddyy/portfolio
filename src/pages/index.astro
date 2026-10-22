@@ -5,10 +5,10 @@ import SectionHeading from '../components/SectionHeading.astro';
 import FeaturedProject from '../components/FeaturedProject.astro';
 import ProjectRow from '../components/ProjectRow.astro';
 import Experience from '../components/Experience.astro';
-import Skills from '../components/Skills.astro';
 import About from '../components/About.astro';
 import Contact from '../components/Contact.astro';
-import { featured, more } from '../data/projects';
+import { featured, more, archived } from '../data/projects';
+import { profile } from '../data/profile';
 ---
 
 <BaseLayout isHome>
@@ -16,8 +16,8 @@ import { featured, more } from '../data/projects';
     <Hero />
 
     <section id="work" class="wrap" aria-labelledby="work-title">
-      <SectionHeading id="work" note="each one starts with the problem, then the engineering. limits are in the case studies.">
-        Things I’ve <em>built</em>
+      <SectionHeading id="work" note="three I’d show first. each opens with the problem; the limits are in the case studies.">
+        Selected <em>work</em>
       </SectionHeading>
 
       {featured.map((p, i) => <FeaturedProject project={p} index={i} eager={i === 0} />)}
@@ -25,16 +25,19 @@ import { featured, more } from '../data/projects';
       <div class="more">
         <div class="more-head">
           <h3 class="more-title">Also in the notebook</h3>
-          <p class="note">smaller projects. still real code, still measured where I could.</p>
+          <p class="note">smaller, still measured.</p>
         </div>
         <div class="rows">
           {more.map((p) => <ProjectRow project={p} />)}
         </div>
+        <p class="elsewhere">
+          {archived[0]!.title}, {archived[1]!.title}, and {archived.length - 2} more projects are
+          <a href={profile.links.github} target="_blank" rel="me noopener">on GitHub<span class="visually-hidden"> (opens in a new tab)</span> <span aria-hidden="true">↗</span></a>
+        </p>
       </div>
     </section>
 
     <Experience />
-    <Skills />
     <About />
     <Contact />
   </div>
@@ -61,5 +64,19 @@ import { featured, more } from '../data/projects';
 
   .rows {
     border-top: var(--border-ink);
+  }
+
+  .elsewhere {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+
+  .elsewhere a {
+    color: var(--color-ink-soft);
+    text-underline-offset: 0.2em;
+  }
+
+  .elsewhere a:hover {
+    color: var(--pen-ink);
   }
 </style>

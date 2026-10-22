@@ -31,7 +31,8 @@ export type Project = {
   slug: string;
   title: string;
   summary: string;
-  tier: 'featured' | 'more';
+  /** featured: the three flagships. more: the short supporting list. archive: kept off the homepage. */
+  tier: 'featured' | 'more' | 'archive';
   year: string;
   role: string;
   contribution: string;
@@ -49,6 +50,8 @@ export type Project = {
 
   // Featured projects on the homepage
   hook?: string;
+  /** A few short facts shown as a list on the homepage card. */
+  highlights?: string[];
   story?: { label: string; text: string }[];
 
   // Case-study content
@@ -86,6 +89,12 @@ export const projects: Project[] = [
     },
     tech: ['Node.js', 'Zoom Apps SDK', 'Zoom Realtime Media Streams API', 'WebSockets', 'Claude', 'ffmpeg'],
     hook: 'You join a meeting late, someone is sharing a dense chart, and you would rather not interrupt everyone to ask what it means.',
+    highlights: [
+      'Zoom Fellowship project at ASU Next Lab',
+      'Answers reach only the person who asked',
+      'Privacy enforced on the server, covered by isolation tests',
+      'One still of the screen per question, labeled with its source',
+    ],
     story: [
       {
         label: 'The experience',
@@ -384,7 +393,7 @@ export const projects: Project[] = [
     title: 'CodeAtlas',
     summary:
       'Static analysis for Rust that traces which functions, modules, and tests a code change can affect, with the source line behind each step.',
-    tier: 'more',
+    tier: 'archive',
     year: '2026',
     role: 'Solo project',
     contribution:
@@ -644,7 +653,7 @@ export const projects: Project[] = [
     slug: 'streambox',
     title: 'StreamBox',
     summary: 'A streaming web app whose backend stays consistent when many users write to the same data.',
-    tier: 'more',
+    tier: 'archive',
     year: '2024',
     role: 'Solo project',
     contribution:
@@ -789,7 +798,7 @@ export const projects: Project[] = [
     slug: 'research-paper-summarizer',
     title: 'Research Paper Summarizer',
     summary: 'Summarize, question, and compare academic papers from a PDF, DOI, or arXiv link.',
-    tier: 'more',
+    tier: 'archive',
     year: '2025',
     role: 'Solo project',
     contribution:
@@ -810,7 +819,7 @@ export const projects: Project[] = [
     slug: 'meeting-insights',
     title: 'Meeting Insights',
     summary: 'Turns a meeting transcript into action items, decisions, and open questions.',
-    tier: 'more',
+    tier: 'archive',
     year: '',
     role: 'Solo project',
     contribution:
@@ -831,7 +840,7 @@ export const projects: Project[] = [
     slug: 'smart-parking',
     title: 'Smart Parking',
     summary: 'Estimates parking-space occupancy by comparing a camera image with an empty reference.',
-    tier: 'more',
+    tier: 'archive',
     year: '',
     role: 'Solo project',
     contribution:
@@ -850,8 +859,13 @@ export const projects: Project[] = [
 ];
 
 export const featured = projects.filter((p) => p.tier === 'featured');
-export const more = projects.filter((p) => p.tier === 'more');
-export const caseStudies = projects.filter((p) => p.caseStudy);
+// Supporting projects, in the order the résumé lists them.
+export const more = ['ticket-triage', 'reddit-data-pipeline'].map((slug) => projects.find((p) => p.slug === slug)!);
+export const archived = projects.filter((p) => p.tier === 'archive');
+/** Every case-study page that gets built, including archived ones so old links keep working. */
+export const allCaseStudies = projects.filter((p) => p.caseStudy);
+/** The case studies linked from the homepage, in homepage order. */
+export const caseStudies = [...featured, ...more].filter((p) => p.caseStudy);
 
 /** ZoomLens case-study details that do not fit the shared shape. */
 export const zoomLens = {

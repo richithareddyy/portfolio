@@ -1,24 +1,24 @@
 ---
-import { projects, type Project } from '../data/projects';
+import type { Project } from '../data/projects';
 
 interface Props {
   project: Project;
   role?: string;
+  /** Overrides project.result when a page has a better headline fact. */
+  result?: { headline: string; qualifier?: string };
   sections: { id: string; label: string }[];
 }
 
 const { project, sections } = Astro.props;
 const role = Astro.props.role ?? project.role;
-const links = [
-  project.site && { label: 'Product site', href: project.site },
-  project.demo && { label: 'Live demo', href: project.demo },
-  project.github && { label: 'GitHub', href: project.github },
-].filter(Boolean) as { label: string; href: string }[];
+const result = Astro.props.result ?? project.result;
+// Archived projects are not on the homepage, so their back link goes to the work section.
+const back = project.tier === 'archive' ? '/#work' : `/#project-${project.slug}`;
 ---
 
 <header class="case-header wrap">
-  <a class="back" href={`/#project-${project.slug}`}><span aria-hidden="true">←</span> All work</a>
-  <p class="lab-id note">case study Nº {String(projects.findIndex(p => p.slug === project.slug) + 1).padStart(2, '0')} / the long version</p>
+  <a class="back" href={back}><span aria-hidden="true">←</span> All work</a>
+  <p class="lab-id note">case study · {project.year}</p>
   <h1>{project.title}</h1>
   <p class="summary">{project.summary}</p>
 
@@ -31,33 +31,21 @@ const links = [
         </div>
       )
     }
-    <div>
-      <dt>Status</dt>
-      <dd>{project.status ?? project.result.headline}</dd>
-    </div>
-    <div>
-      <dt>{project.slug === 'zoom-lens' ? 'Current scope' : 'Observation'}</dt>
-      <dd>
-        <strong>{project.slug === 'zoom-lens' ? project.result.qualifier : project.result.headline}</strong>
-        {project.slug !== 'zoom-lens' && project.result.qualifier && <span class="q">{project.result.qualifier}</span>}
-      </dd>
-    </div>
     {
-      links.length > 0 && (
+      project.status && (
         <div>
-          <dt>Links</dt>
-          <dd class="links">
-            {links.map((l) => (
-              <a href={l.href} target="_blank" rel="noopener">
-                {l.label}
-                <span class="visually-hidden"> (opens in a new tab)</span>
-                <span aria-hidden="true"> ↗</span>
-              </a>
-            ))}
-          </dd>
+          <dt>Status</dt>
+          <dd>{project.status}</dd>
         </div>
       )
     }
+    <div class="key">
+      <dt>Key result</dt>
+      <dd>
+        <strong>{result.headline}</strong>
+        {result.qualifier && <span class="q">{result.qualifier}</span>}
+      </dd>
+    </div>
   </dl>
 
   <nav class="toc" aria-label="On this page">
@@ -130,27 +118,16 @@ const links = [
     font-weight: 600;
   }
 
+  @media (min-width: 48rem) {
+    .key {
+      grid-column: span 2;
+    }
+  }
+
   .q {
     display: block;
     font-size: var(--text-xs);
     color: var(--color-muted);
-  }
-
-  .links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-1) var(--space-4);
-  }
-
-  .links a {
-    font-weight: 500;
-    text-decoration: underline;
-    text-decoration-color: var(--color-rule-strong);
-    text-underline-offset: 0.2em;
-  }
-
-  .links a:hover {
-    color: var(--color-accent-ink);
   }
 
   .toc {

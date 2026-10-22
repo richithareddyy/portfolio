@@ -7,9 +7,9 @@ interface Props {
 }
 
 const { id, note } = Astro.props;
-const numbers: Record<string, string> = { work: '01', experience: '02', skills: '03', about: '04', contact: '05' };
-const kickers: Record<string, string> = { work: 'the work', experience: 'where I’ve been', skills: 'toolbox', about: 'about me', contact: 'say hello' };
-const doodles = { work: 'star', experience: 'trail', skills: 'pencil', about: 'heart', contact: 'plane' } as const;
+const numbers: Record<string, string> = { work: '01', experience: '02', about: '03', contact: '04' };
+const kickers: Record<string, string> = { work: 'the work', experience: 'where I’ve been', about: 'about me', contact: 'say hello' };
+const doodles = { work: 'star', experience: 'trail', about: 'heart', contact: 'plane' } as const;
 const doodle = doodles[id as keyof typeof doodles];
 ---
 
@@ -76,5 +76,22 @@ const doodle = doodles[id as keyof typeof doodles];
 
   h2 :global(em) {
     font-weight: 400;
+  }
+
+  /* The doodle gives one small wiggle when you point at the heading. */
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    h2:hover :global(.pen-doodle) {
+      animation: wiggle 500ms var(--ease-out);
+    }
+  }
+
+  @keyframes wiggle {
+    30% {
+      transform: rotate(-20deg) scale(1.15);
+    }
+
+    65% {
+      transform: rotate(4deg);
+    }
   }
 </style>

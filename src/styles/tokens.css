@@ -84,6 +84,34 @@
   color-scheme: light;
 }
 
+/* Registered as colors so a new pen can fade in rather than switch abruptly. */
+@property --pen {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #2563eb;
+}
+
+@property --pen-ink {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #1d4ed8;
+}
+
+@property --pen-wash {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #dce7ff;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root {
+    transition:
+      --pen 400ms var(--ease-out),
+      --pen-ink 400ms var(--ease-out),
+      --pen-wash 400ms var(--ease-out);
+  }
+}
+
 /* Pens picked with the dot after the name. Blue is the default. */
 :root[data-pen='red'] { --pen: #d64527; --pen-ink: #b2341a; --pen-wash: #f9e1d8; }
 :root[data-pen='green'] { --pen: #2f8a55; --pen-ink: #22673f; --pen-wash: #dcebdc; }

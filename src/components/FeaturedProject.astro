@@ -1,7 +1,7 @@
 ---
 import type { Project } from '../data/projects';
-import { techId } from '../data/graph';
 import Mark from './Mark.astro';
+import Doodle from './Doodle.astro';
 import ProjectLinks from './ProjectLinks.astro';
 import ZoomLensPreview from './ZoomLensPreview.astro';
 
@@ -35,9 +35,20 @@ const media = project.slug === 'zoom-lens';
       </h3>
       {project.hook && <p class="hook">{project.hook}</p>}
       <p class="summary">{project.summary}</p>
+      <p class="result">
+        <strong>{project.result.headline}<Doodle kind="star" class="result-star" /></strong>
+        {project.result.qualifier && <span>{project.result.qualifier}</span>}
+      </p>
     </div>
 
     <div class="detail">
+      {
+        project.highlights && (
+          <ul class="highlights">
+            {project.highlights.map((h) => <li>{h}</li>)}
+          </ul>
+        )
+      }
       {
         project.story && (
           <details class="fold">
@@ -56,14 +67,7 @@ const media = project.slug === 'zoom-lens';
 
       <ul class="stack" aria-label={`${project.title} technologies`}>
         {
-          project.tech.map((t) => (
-            <li>
-              <a class="tech-link" href="#skills" data-tech-link={techId(t)}>
-                {t}
-                <span class="visually-hidden">: show in skills map</span>
-              </a>
-            </li>
-          ))
+          project.tech.map((t) => <li>{t}</li>)
         }
       </ul>
       <ProjectLinks project={project} />
@@ -94,8 +98,9 @@ const media = project.slug === 'zoom-lens';
   }
 
   @media (min-width: 60rem) {
+    /* The one project with a visual gets the wider column, so it leads the section. */
     .featured:not(.text-only) {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
       gap: var(--space-9);
       /* Top-aligned so the text stays put when an interactive visual changes height. */
       align-items: start;
@@ -190,6 +195,60 @@ const media = project.slug === 'zoom-lens';
     max-width: 38rem;
     font-size: var(--text-md);
     color: var(--color-ink-soft);
+  }
+
+  /* The headline result, marked like a margin note so it is the first thing a skim lands on. */
+  .result {
+    display: grid;
+    gap: 2px;
+    max-width: 34rem;
+    padding-left: var(--space-3);
+    border-left: 3px solid var(--pen);
+  }
+
+  .result strong {
+    font-size: var(--text-md);
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .result strong :global(.result-star) {
+    width: 0.85em;
+    height: 0.85em;
+    margin-left: 0.3em;
+    vertical-align: -0.05em;
+  }
+
+  .result > span {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+
+  .highlights {
+    display: grid;
+    gap: var(--space-2);
+    list-style: none;
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
+  }
+
+  .highlights li {
+    position: relative;
+    padding-left: 1.5em;
+  }
+
+  /* A pen tick, like checking items off in the margin. */
+  .highlights li::before {
+    content: '';
+    position: absolute;
+    left: 0.1em;
+    top: 0.3em;
+    width: 0.45em;
+    height: 0.8em;
+    border: solid var(--pen);
+    border-width: 0 2px 2px 0;
+    transform: rotate(40deg);
   }
 
   .story {

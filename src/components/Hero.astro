@@ -1,6 +1,7 @@
 ---
 import { profile } from '../data/profile';
 import Mark from './Mark.astro';
+import Doodle from './Doodle.astro';
 
 const contents = [
   { slug: 'zoom-lens', title: 'ZoomLens', what: 'An AI assistant inside live Zoom meetings', proof: 'Zoom Fellowship project' },
@@ -10,32 +11,49 @@ const contents = [
 ---
 
 <section class="hero wrap" id="top" aria-labelledby="hero-title">
+  <div class="cover">
+    <p class="hello note">hi, I'm</p>
+    <h1 id="hero-title" class="name" aria-label="Richitha Rekula">
+      <span>Richitha<Doodle kind="star" class="name-star" /></span>
+      <span class="last">Rekula<button type="button" class="pen-dot" data-pen-toggle aria-label="Change the pen color used across the site"></button><span class="pen-hint note" aria-hidden="true">← click the dot to change the pen color</span></span>
+    </h1>
+    <p class="pen-hint-below note" aria-hidden="true">↑ tap the dot to change the pen color</p>
+
+    <div class="actions">
+      <a class="button primary" href="#work">See the work <span aria-hidden="true">↓</span></a>
+      <p class="start note" aria-hidden="true">
+        <svg viewBox="0 0 30 30"><path d="M5 28 C 3 18, 8 9, 19 5" pathLength="1" /><path class="head" d="M12 3 L 19 5 L 16 11" pathLength="1" /></svg>
+        start here
+      </p>
+      <a class="button" href={profile.links.resume} target="_blank" rel="noopener">
+        Résumé <span class="ext-arrow" aria-hidden="true">↗</span><span class="visually-hidden"> (PDF, opens in a new tab)</span>
+      </a>
+      <ul class="quiet" aria-label="Profiles and email">
+        <li><a href={profile.links.github} target="_blank" rel="me noopener">GitHub<span class="visually-hidden"> (opens in a new tab)</span></a></li>
+        <li><a href={profile.links.linkedin} target="_blank" rel="me noopener">LinkedIn<span class="visually-hidden"> (opens in a new tab)</span></a></li>
+        <li><a href={`mailto:${profile.email}`}>Email</a></li>
+      </ul>
+    </div>
+
+    <svg class="sparkle one" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1 Q11 9 19 10 Q11 11 10 19 Q9 11 1 10 Q9 9 10 1Z" /></svg>
+    <svg class="sparkle two" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1 Q11 9 19 10 Q11 11 10 19 Q9 11 1 10 Q9 9 10 1Z" /></svg>
+
+    <svg class="stamp" viewBox="0 0 160 160" aria-hidden="true">
+      <defs><path id="stamp-ring" d="M80 80 m-58 0 a58 58 0 1 1 116 0 a58 58 0 1 1 -116 0" /></defs>
+      <circle class="ring" cx="80" cy="80" r="74" />
+      <circle class="ring inner" cx="80" cy="80" r="44" />
+      <text><textPath href="#stamp-ring" textLength="362">data scientist ✦ zoom fellow ✦ tempe, az ✦</textPath></text>
+      <path class="heart" d="M80 98 C67 89 61 81 63 74 C65 67 75 66 80 74 C85 66 95 67 97 74 C99 81 93 89 80 98 Z" />
+    </svg>
+  </div>
+
   <div class="layout">
     <div class="main">
-      <p class="hello note">hi, I'm</p>
-      <h1 id="hero-title" class="name" aria-label="Richitha Rekula">
-        <span>Richitha</span>
-        <span class="last">Rekula<button type="button" class="pen-dot" data-pen-toggle aria-label="Change the pen color used across the site"></button><span class="pen-hint note" aria-hidden="true">← click the dot to change the pen color</span></span>
-      </h1>
-      <p class="lede">
-        Data scientist building <Mark kind="circle" delay={150}>applied AI</Mark> and <Mark kind="under" delay={550}>measuring what it does</Mark>.
-      </p>
+      <p class="lede">I like building what happens <Mark kind="under" delay={250}>after the model works</Mark>.</p>
       <p class="desc">
-        I’m a <span class="hl">Zoom Fellow at ASU Next Lab</span>, building an AI assistant that runs inside live Zoom meetings. The rest
-        of my work is about evidence: a causal study of a randomized experiment, and demand forecasts tested on a year they never saw.
+        I’m a data scientist and a <span class="hl">Zoom Fellow at ASU Next Lab</span>, working across applied AI, machine learning, and
+        data-heavy software.
       </p>
-
-      <div class="actions">
-        <a class="button primary" href="#work">See the work <span aria-hidden="true">↓</span></a>
-        <a class="button" href={profile.links.resume} target="_blank" rel="noopener">
-          Résumé <span class="ext-arrow" aria-hidden="true">↗</span><span class="visually-hidden"> (PDF, opens in a new tab)</span>
-        </a>
-        <ul class="quiet" aria-label="Profiles and email">
-          <li><a href={profile.links.github} target="_blank" rel="me noopener">GitHub<span class="visually-hidden"> (opens in a new tab)</span></a></li>
-          <li><a href={profile.links.linkedin} target="_blank" rel="me noopener">LinkedIn<span class="visually-hidden"> (opens in a new tab)</span></a></li>
-          <li><a href={`mailto:${profile.email}`}>Email</a></li>
-        </ul>
-      </div>
     </div>
 
     <aside class="margin" aria-label="Quick facts">
@@ -71,7 +89,97 @@ const contents = [
 
 <style>
   .hero {
-    padding-block: var(--space-8) var(--space-6);
+    padding-bottom: var(--space-6);
+  }
+
+  /* The first screen is only the name; everything else starts below it. */
+  .cover {
+    position: relative;
+    display: grid;
+    align-content: center;
+    min-height: calc(100svh - var(--header-height));
+    padding-block: var(--space-7);
+  }
+
+  .cover :global(.name-star) {
+    width: 0.3em;
+    height: 0.3em;
+    margin-left: 0.08em;
+    vertical-align: 0.9em;
+    transform: rotate(-12deg);
+  }
+
+  .sparkle {
+    position: absolute;
+    fill: var(--pen);
+    pointer-events: none;
+  }
+
+  .sparkle.one {
+    top: calc(50% - 7rem);
+    left: 52%;
+    width: 1.1rem;
+    opacity: 0.8;
+  }
+
+  .sparkle.two {
+    top: calc(50% + 3.5rem);
+    left: -0.4rem;
+    width: 0.7rem;
+    opacity: 0.6;
+  }
+
+  /* A round notebook stamp; it sits under the name on phones and beside it on wide screens. */
+  .stamp {
+    width: 7.5rem;
+    margin-top: var(--space-6);
+    overflow: visible;
+    transform: rotate(-10deg);
+  }
+
+  @media (min-width: 64rem) {
+    .stamp {
+      position: absolute;
+      top: 50%;
+      right: 4%;
+      width: 10rem;
+      margin: 0;
+      translate: 0 -50%;
+    }
+  }
+
+  .stamp .ring {
+    fill: none;
+    stroke: var(--pen);
+    stroke-width: 1.5;
+    stroke-dasharray: 3 4;
+  }
+
+  .stamp .inner {
+    stroke-dasharray: none;
+    opacity: 0.5;
+  }
+
+  .stamp text {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.02em;
+    fill: var(--pen-ink);
+    text-transform: uppercase;
+  }
+
+  .stamp .heart {
+    fill: var(--pen-wash);
+    stroke: var(--pen);
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+  }
+
+  .pen-hint-below {
+    margin-top: var(--space-5);
+    font-size: var(--text-xs);
+    transform: rotate(-2deg);
+    transform-origin: left;
   }
 
   .layout {
@@ -96,7 +204,7 @@ const contents = [
   }
 
   .name {
-    font-size: clamp(3.75rem, 1.6rem + 8vw, 8.5rem);
+    font-size: clamp(3.75rem, 1.4rem + 10vw, 10.5rem);
     font-weight: 450;
     line-height: 0.88;
     letter-spacing: -0.035em;
@@ -149,11 +257,12 @@ const contents = [
   }
 
   .lede {
-    max-width: 34rem;
-    margin-top: var(--space-6);
+    max-width: 36rem;
     font-family: var(--font-display);
-    font-size: clamp(1.5rem, 1.15rem + 1.2vw, 2.1rem);
-    line-height: 1.3;
+    font-size: clamp(1.75rem, 1.25rem + 1.7vw, 2.6rem);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
   }
 
   .desc {
@@ -164,6 +273,7 @@ const contents = [
   }
 
   .actions {
+    position: relative;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -230,6 +340,53 @@ const contents = [
     text-decoration-color: currentColor;
   }
 
+  /* A pen note pointing at the main button, on wide screens where there is room under it. */
+  .start {
+    display: none;
+  }
+
+  @media (min-width: 64rem) {
+    .start {
+      position: absolute;
+      top: calc(100% + 2px);
+      left: 2.5rem;
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      font-size: var(--text-xs);
+      transform: rotate(-3deg);
+    }
+  }
+
+  .start svg {
+    width: 1.6em;
+    height: 1.6em;
+    overflow: visible;
+    fill: none;
+    stroke: var(--pen);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .start path {
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+      animation: draw 600ms var(--ease-out) 900ms forwards;
+    }
+
+    :global(.js) .start .head {
+      animation-delay: 1400ms;
+    }
+  }
+
+  @keyframes draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
   /* Margin notes: a right column on wide screens, a list under the actions otherwise. */
   .margin {
     display: grid;
@@ -268,6 +425,10 @@ const contents = [
 
     .pen-hint {
       display: block;
+    }
+
+    .pen-hint-below {
+      display: none;
     }
   }
 

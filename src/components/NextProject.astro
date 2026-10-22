@@ -4,10 +4,11 @@ import { caseStudies } from '../data/projects';
 interface Props {
   slug: string;
 }
+// Archived case studies are not in the list, so they lead back into it from either end.
 const i = caseStudies.findIndex((c) => c.slug === Astro.props.slug);
 const n = caseStudies.length;
-const prev = caseStudies[(i - 1 + n) % n]!;
-const next = caseStudies[(i + 1) % n]!;
+const prev = caseStudies[i < 0 ? n - 1 : (i - 1 + n) % n]!;
+const next = caseStudies[i < 0 ? 0 : (i + 1) % n]!;
 ---
 
 <nav class="next wrap" aria-label="More case studies">

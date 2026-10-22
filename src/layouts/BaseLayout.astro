@@ -8,6 +8,9 @@ import '@fontsource/ibm-plex-sans/latin-600.css';
 import '@fontsource/ibm-plex-mono/latin-400.css';
 import '@fontsource/ibm-plex-mono/latin-500.css';
 import '../styles/global.css';
+import serif from '@fontsource-variable/newsreader/files/newsreader-latin-opsz-normal.woff2?url';
+import serifItalic from '@fontsource-variable/newsreader/files/newsreader-latin-opsz-italic.woff2?url';
+import sans from '@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2?url';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import { profile } from '../data/profile';
@@ -65,6 +68,10 @@ const person = {
     <meta property="og:image:alt" content={`${profile.name}: data science and applied AI`} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="theme-color" content="#f3ecdf" />
+    <!-- The hero is set in these three; fetching them early keeps the text from reflowing when they arrive. -->
+    <link rel="preload" href={serif} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={serifItalic} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={sans} as="font" type="font/woff2" crossorigin />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="icon" href="/favicon-16.png" sizes="16x16" type="image/png" />

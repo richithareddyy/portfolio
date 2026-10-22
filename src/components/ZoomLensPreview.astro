@@ -13,7 +13,7 @@ const { eager = false } = Astro.props;
   <a class="frame" href="https://zoomlens.vercel.app/" target="_blank" rel="noopener">
     <span class="bar" aria-hidden="true">
       <span class="dots"><i></i><i></i><i></i></span>
-      <span class="url"><span class="url-text">zoomlens.vercel.app</span></span>
+      <span class="url">zoomlens.vercel.app</span>
       <span class="open">open <span class="ext-arrow">↗</span></span>
     </span>
     <span class="shot">
@@ -30,7 +30,6 @@ const { eager = false } = Astro.props;
         <svg viewBox="0 0 16 22"><path d="M1 1 L1 17 L5.2 13.2 L8 20 L11 18.8 L8.2 12.2 L14 12 Z" /></svg>
       </span>
     </span>
-    <span class="glare" aria-hidden="true"></span>
     <span class="visually-hidden"> (ZoomLens product site, opens in a new tab)</span>
   </a>
   <p class="pin note" aria-hidden="true">
@@ -43,23 +42,12 @@ const { eager = false } = Astro.props;
 <script>
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-  const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
 
   for (const fig of document.querySelectorAll<HTMLElement>('[data-zl-site]')) {
-    const frame = fig.querySelector<HTMLElement>('.frame')!;
-    const url = fig.querySelector<HTMLElement>('.url-text')!;
-    const full = url.textContent!;
-
-    // Once mostly in view: the pen arrow draws, the address types itself, and a pointer goes and presses the demo button.
+    // Once mostly in view, the pen arrow draws and a pointer presses the demo button, to show the site is live.
     const start = async () => {
       fig.classList.add('is-live');
       if (reduce) return;
-      url.textContent = '';
-      fig.dataset.step = 'typing';
-      for (let i = 1; i <= full.length; i++) {
-        url.textContent = full.slice(0, i);
-        await sleep(60);
-      }
       for (const [step, ms] of [['point', 350], ['move', 1000], ['click', 700]] as const) {
         fig.dataset.step = step;
         await sleep(ms);
@@ -75,28 +63,6 @@ const { eager = false } = Astro.props;
       { threshold: 0.5 },
     );
     observer.observe(fig);
-
-    if (reduce || !fine) continue;
-
-    // Tilt toward the cursor, with a soft sheen that follows it.
-    let raf = 0;
-    frame.addEventListener('pointermove', (e) => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const box = frame.getBoundingClientRect();
-        const x = (e.clientX - box.left) / box.width - 0.5;
-        const y = (e.clientY - box.top) / box.height - 0.5;
-        frame.style.setProperty('--ry', `${(x * 12).toFixed(2)}deg`);
-        frame.style.setProperty('--rx', `${(-y * 10).toFixed(2)}deg`);
-        frame.style.setProperty('--gx', `${((x + 0.5) * 100).toFixed(1)}%`);
-        frame.style.setProperty('--gy', `${((y + 0.5) * 100).toFixed(1)}%`);
-      });
-    });
-    frame.addEventListener('pointerleave', () => {
-      cancelAnimationFrame(raf);
-      frame.style.removeProperty('--rx');
-      frame.style.removeProperty('--ry');
-    });
   }
 </script>
 
@@ -117,12 +83,11 @@ const { eager = false } = Astro.props;
     color: var(--color-ink);
     text-decoration: none;
     box-shadow: 6px 6px 0 var(--color-rule);
-    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
     transition: transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-base) var(--ease-out);
   }
 
   .frame:hover {
-    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translate(-2px, -2px);
+    transform: translate(-2px, -2px);
     box-shadow: 8px 8px 0 var(--pen-wash);
   }
 
@@ -146,24 +111,6 @@ const { eager = false } = Astro.props;
     height: 9px;
     border: 1px solid var(--color-ink);
     border-radius: 50%;
-    transition: background-color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
-  }
-
-  .frame:hover .dots i:nth-child(1) {
-    background: #ff5f57;
-    border-color: #e0443e;
-  }
-
-  .frame:hover .dots i:nth-child(2) {
-    background: #febc2e;
-    border-color: #dea123;
-    transition-delay: 40ms;
-  }
-
-  .frame:hover .dots i:nth-child(3) {
-    background: #28c840;
-    border-color: #1aab29;
-    transition-delay: 80ms;
   }
 
   .url {
@@ -173,17 +120,6 @@ const { eager = false } = Astro.props;
     color: var(--color-muted);
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  [data-step='typing'] .url::after {
-    content: '';
-    display: inline-block;
-    width: 1px;
-    height: 1.1em;
-    margin-left: 1px;
-    vertical-align: -0.2em;
-    background: currentColor;
-    animation: caret 0.8s steps(1) infinite;
   }
 
   .open {
@@ -199,24 +135,6 @@ const { eager = false } = Astro.props;
     display: block;
     width: 100%;
     height: auto;
-    transition: scale var(--duration-slow) var(--ease-out);
-  }
-
-  .frame:hover :global(img) {
-    scale: 1.02;
-  }
-
-  .glare {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: radial-gradient(circle at var(--gx, 50%) var(--gy, 0%), rgb(255 255 255 / 0.22), transparent 50%);
-    opacity: 0;
-    transition: opacity var(--duration-base) var(--ease-out);
-  }
-
-  .frame:hover .glare {
-    opacity: 1;
   }
 
   .pointer {
@@ -326,12 +244,6 @@ const { eager = false } = Astro.props;
     stroke-dashoffset: 0;
   }
 
-  @keyframes caret {
-    50% {
-      opacity: 0;
-    }
-  }
-
   @keyframes press {
     50% {
       transform: scale(0.82);
@@ -367,10 +279,6 @@ const { eager = false } = Astro.props;
     .frame,
     .frame:hover {
       transform: none;
-    }
-
-    .frame:hover :global(img) {
-      scale: none;
     }
 
     :global(.js) .pen-arrow path {

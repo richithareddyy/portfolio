@@ -1,34 +1,12 @@
 export type SkillGroup = { name: string; items: string[] };
 
-// From the résumé, plus tools the projects use that the résumé doesn't list yet.
+// Tools the projects and current role actually use, not everything ever touched.
 export const skills: SkillGroup[] = [
-  { name: 'Languages', items: ['Python', 'SQL', 'JavaScript', 'Rust', 'Java', 'C++', 'C', 'R', 'MATLAB'] },
+  { name: 'Languages', items: ['Python', 'SQL', 'JavaScript'] },
   {
-    name: 'AI / ML',
-    items: [
-      'Claude API',
-      'Google Gemini API',
-      'Scikit-learn',
-      'XGBoost',
-      'LightGBM',
-      'PyTorch',
-      'SHAP',
-      'EconML',
-      'DoubleML',
-      'TensorFlow',
-      'NLTK',
-      'VADER',
-      'OpenCV',
-    ],
+    name: 'Data science & ML',
+    items: ['pandas', 'NumPy', 'statsmodels', 'scikit-learn', 'XGBoost', 'LightGBM', 'PyTorch', 'SHAP', 'EconML', 'DoubleML'],
   },
-  {
-    name: 'Backend',
-    items: ['Node.js', 'Express.js', 'Flask', 'REST APIs', 'GraphQL', 'WebSockets', 'Zoom Apps SDK', 'Zoom Realtime Media Streams API', 'Zoom Video SDK'],
-  },
-  { name: 'Databases', items: ['PostgreSQL', 'MongoDB', 'Neo4j', 'SQLite', 'Snowflake', 'Databricks'] },
-  {
-    name: 'Data & analytics',
-    items: ['Pandas', 'NumPy', 'SciPy', 'statsmodels', 'PySpark', 'Matplotlib', 'Jupyter', 'Streamlit', 'Power BI', 'Tableau'],
-  },
-  { name: 'Infrastructure & tools', items: ['Docker', 'Git', 'GitHub Actions', 'pytest', 'ffmpeg', 'ServiceNow'] },
+  { name: 'Applied AI & backend', items: ['Claude API', 'Gemini API', 'Node.js', 'WebSockets', 'Flask', 'Zoom Apps SDK', 'Zoom Realtime Media Streams API'] },
+  { name: 'Data & infrastructure', items: ['PostgreSQL', 'Docker', 'GitHub Actions', 'pytest'] },
 ];

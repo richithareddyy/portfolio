@@ -6,25 +6,37 @@ import ZoomLensStatus from '../../components/ZoomLensStatus.astro';
 import ZoomLensArchitecture from '../../components/visuals/ZoomLensArchitecture.astro';
 import ZoomLensPreview from '../../components/ZoomLensPreview.astro';
 import NextProject from '../../components/NextProject.astro';
+import CaseLinks from '../../components/CaseLinks.astro';
+import Metrics from '../../components/Metrics.astro';
 import { projects, zoomLens } from '../../data/projects';
 
 const project = projects.find((p) => p.slug === 'zoom-lens')!;
 const repo = (file: string) => `https://github.com/richithareddyy/ZoomLens/blob/main/${file}`;
 const sections = [
   { id: 'problem', label: 'Problem' },
-  { id: 'how', label: 'How it works' },
-  { id: 'product', label: 'What you can ask' },
-  { id: 'architecture', label: 'Architecture' },
   { id: 'built', label: 'What I built' },
+  { id: 'architecture', label: 'Architecture' },
   { id: 'decisions', label: 'Decisions' },
-  { id: 'stack', label: 'Stack' },
-  { id: 'status', label: 'Limitations' },
+  { id: 'results', label: 'Results' },
+  { id: 'limitations', label: 'Limitations' },
+  { id: 'links', label: 'Code and demo' },
+];
+const extra = zoomLens.decisions.length - 3;
+// Only what has been measured; the per-mode wait times are UI estimates, so they stay with the modes.
+const metrics = [
+  { value: '7', label: 'isolation tests against the real server', qualifier: 'including 10 participants asking at once' },
+  { value: '25–110 ms', label: 'to decode a still from the meeting stream', qualifier: 'in testing' },
 ];
 ---
 
 <BaseLayout title={project.title} description={project.summary}>
   <div data-page="project">
-    <CaseHeader project={{ ...project, status: 'Working prototype' }} role={zoomLens.role} sections={sections} />
+    <CaseHeader
+      project={{ ...project, status: 'Working prototype' }}
+      role={zoomLens.role}
+      result={{ headline: 'Answers stay with the person who asked', qualifier: 'enforced on the server, covered by isolation tests' }}
+      sections={sections}
+    />
 
     <div class="wrap">
       <div class="lead-visual">
@@ -44,7 +56,7 @@ const sections = [
         </p>
       </div>
 
-      <CaseSection title="The problem" id="problem">
+      <CaseSection title="Problem" id="problem">
         <p>{zoomLens.problem.intro}</p>
         <ul class="plain">
           {zoomLens.problem.points.map((p) => <li>{p}</li>)}
@@ -52,7 +64,8 @@ const sections = [
         <p class="close">{zoomLens.problem.close}</p>
       </CaseSection>
 
-      <CaseSection title="How it works" id="how">
+      <CaseSection title="What I built" id="built">
+        <p>Everything in the repository, end to end, in JavaScript on Node.js. Each question goes through four steps:</p>
         <ol class="steps">
           {
             zoomLens.steps.map((s, i) => (
@@ -72,103 +85,124 @@ const sections = [
             ))
           }
         </ol>
-      </CaseSection>
 
-      <CaseSection title="What you can ask" id="product">
-        <dl class="modes">
-          {
-            zoomLens.modes.map((m) => (
-              <div>
-                <dt>
-                  {m.name} <span class="ui">“{m.label}”</span>
-                </dt>
-                <dd>{m.body}</dd>
-                <dd class="est">{m.estimate}</dd>
-              </div>
-            ))
-          }
-        </dl>
-        <p class="note">{zoomLens.timingContext}</p>
-        <p>
-          <a class="cta" href={project.site} target="_blank" rel="noopener">
-            Try the interactive demo on the product site<span class="visually-hidden"> (opens in a new tab)</span>
-            <span aria-hidden="true"> ↗</span>
-          </a>
-        </p>
+        <details class="fold">
+          <summary>what you can ask</summary>
+          <div class="folded">
+            <dl class="modes">
+              {
+                zoomLens.modes.map((m) => (
+                  <div>
+                    <dt>
+                      {m.name} <span class="ui">“{m.label}”</span>
+                    </dt>
+                    <dd>{m.body}</dd>
+                    <dd class="est">{m.estimate}</dd>
+                  </div>
+                ))
+              }
+            </dl>
+            <p class="note">{zoomLens.timingContext}</p>
+          </div>
+        </details>
+
+        <details class="fold">
+          <summary>every part, with the files</summary>
+          <div class="folded">
+            <dl class="built">
+              {
+                zoomLens.built.map((b) => (
+                  <div>
+                    <dt>{b.title}</dt>
+                    <dd>
+                      {b.body}
+                      <span class="files">
+                        {b.files.map((f) => (
+                          <a href={repo(f)} target="_blank" rel="noopener">
+                            {f}
+                            <span class="visually-hidden"> on GitHub (opens in a new tab)</span>
+                          </a>
+                        ))}
+                      </span>
+                    </dd>
+                  </div>
+                ))
+              }
+            </dl>
+          </div>
+        </details>
+
+        <details class="fold">
+          <summary>the stack, and what each piece does</summary>
+          <div class="folded">
+            <dl class="stack">
+              {
+                zoomLens.stack.map((t) => (
+                  <div>
+                    <dt>{t.name}</dt>
+                    <dd>{t.use}</dd>
+                  </div>
+                ))
+              }
+            </dl>
+          </div>
+        </details>
       </CaseSection>
 
       <CaseSection title="Architecture" id="architecture">
         <ZoomLensArchitecture />
       </CaseSection>
 
-      <CaseSection title="What I built" id="built">
-        <p>Everything in the repository, end to end, in JavaScript on Node.js.</p>
-        <dl class="built">
-          {
-            zoomLens.built.map((b) => (
-              <div>
-                <dt>{b.title}</dt>
-                <dd>
-                  {b.body}
-                  <span class="files">
-                    {b.files.map((f) => (
-                      <a href={repo(f)} target="_blank" rel="noopener">
-                        {f}
-                        <span class="visually-hidden"> on GitHub (opens in a new tab)</span>
-                      </a>
-                    ))}
-                  </span>
-                </dd>
-              </div>
-            ))
-          }
-        </dl>
-      </CaseSection>
-
-      <CaseSection title="Engineering decisions" id="decisions">
+      <CaseSection title="Decisions" id="decisions">
         <div class="decisions">
-          {
-            zoomLens.decisions.map((d) => (
-              <article>
-                <h3>{d.heading}</h3>
-                <dl>
-                  <dt>Problem</dt>
-                  <dd>{d.problem}</dd>
-                  <dt>Decision</dt>
-                  <dd>{d.decision}</dd>
-                  <dt>Why</dt>
-                  <dd>{d.why}</dd>
-                </dl>
-              </article>
-            ))
-          }
+          {zoomLens.decisions.slice(0, 3).map((d) => (
+            <article>
+              <h3>{d.heading}</h3>
+              <dl>
+                <dt>Problem</dt>
+                <dd>{d.problem}</dd>
+                <dt>Decision</dt>
+                <dd>{d.decision}</dd>
+                <dt>Why</dt>
+                <dd>{d.why}</dd>
+              </dl>
+            </article>
+          ))}
         </div>
+        <details class="fold">
+          <summary>{extra} more {extra === 1 ? 'decision' : 'decisions'}</summary>
+          <div class="decisions folded">
+            {zoomLens.decisions.slice(3).map((d) => (
+            <article>
+              <h3>{d.heading}</h3>
+              <dl>
+                <dt>Problem</dt>
+                <dd>{d.problem}</dd>
+                <dt>Decision</dt>
+                <dd>{d.decision}</dd>
+                <dt>Why</dt>
+                <dd>{d.why}</dd>
+              </dl>
+            </article>
+          ))}
+          </div>
+        </details>
       </CaseSection>
 
-      <CaseSection title="Stack" id="stack">
-        <dl class="stack">
-          {
-            zoomLens.stack.map((t) => (
-              <div>
-                <dt>{t.name}</dt>
-                <dd>{t.use}</dd>
-              </div>
-            ))
-          }
-        </dl>
+      <CaseSection title="Results" id="results">
+        <Metrics metrics={metrics} />
+        <h3>Working today</h3>
+        <ul class="plain">
+          {zoomLens.progress.built.map((item) => <li>{item}</li>)}
+        </ul>
+        <p class="note">There is no formal evaluation of answer quality yet; that is listed under the limitations.</p>
       </CaseSection>
 
-      <CaseSection title="Limitations and next steps" id="status">
+      <CaseSection title="Limitations" id="limitations">
         <ZoomLensStatus />
-        <p class="links">
-          <a href={project.site} target="_blank" rel="noopener">
-            Product site and interactive demo<span class="visually-hidden"> (opens in a new tab)</span><span aria-hidden="true"> ↗</span>
-          </a>
-          <a href={project.github} target="_blank" rel="noopener">
-            Source on GitHub<span class="visually-hidden"> (opens in a new tab)</span><span aria-hidden="true"> ↗</span>
-          </a>
-        </p>
       </CaseSection>
+
+      <CaseLinks project={project} />
     </div>
 
     <NextProject slug={project.slug} />
@@ -318,20 +352,6 @@ const sections = [
     color: var(--color-muted);
   }
 
-  .cta,
-  .links a {
-    font-weight: 500;
-    color: var(--color-ink);
-    text-decoration: underline;
-    text-decoration-color: var(--color-rule-strong);
-    text-underline-offset: 0.2em;
-  }
-
-  .cta:hover,
-  .links a:hover {
-    color: var(--color-accent-ink);
-  }
-
   .built,
   .stack {
     margin: 0;
@@ -409,10 +429,9 @@ const sections = [
     margin: 0;
   }
 
-  .links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2) var(--space-6);
+  .folded {
+    display: grid;
+    gap: var(--space-4);
     padding-top: var(--space-3);
   }
 </style>

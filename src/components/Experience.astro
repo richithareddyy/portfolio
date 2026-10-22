@@ -1,12 +1,12 @@
 ---
 import { experience } from '../data/experience';
 import { education } from '../data/profile';
+import { skills } from '../data/skills';
 import SectionHeading from './SectionHeading.astro';
-import { techId } from '../data/graph';
 ---
 
 <section class="wrap section" id="experience" aria-labelledby="experience-title">
-  <SectionHeading id="experience" note="newest first. school is at the bottom.">Where I’ve <em>been</em></SectionHeading>
+  <SectionHeading id="experience" note="newest first. school and tools are at the bottom.">Where I’ve <em>been</em></SectionHeading>
 
   <ol class="timeline">
     {
@@ -30,7 +30,7 @@ import { techId } from '../data/graph';
             </details>
             {role.current && (
               <ul class="stack role-tech" aria-label="Technologies">
-                {role.tech.map((t) => <li><a class="tech-link" href="#skills" data-tech-link={techId(t)}>{t}<span class="visually-hidden">: show in skills map</span></a></li>)}
+                {role.tech.map((t) => <li>{t}</li>)}
               </ul>
             )}
             {role.link && (
@@ -61,6 +61,22 @@ import { techId } from '../data/graph';
       ))
     }
   </ul>
+
+  <h3 class="sub" id="tools">Tools</h3>
+  <dl class="tools">
+    {
+      skills.map((group) => (
+        <div>
+          <dt>{group.name}</dt>
+          <dd>
+            <ul class="stack">
+              {group.items.map((item) => <li>{item}</li>)}
+            </ul>
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
 </section>
 
 <style>
@@ -216,6 +232,42 @@ import { techId } from '../data/graph';
     letter-spacing: -0.01em;
     line-height: 1.25;
     text-wrap: balance;
+  }
+
+  .tools {
+    margin: 0;
+    border-top: var(--border-hairline);
+  }
+
+  .tools div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-1) var(--space-7);
+    padding-block: var(--space-3);
+    border-bottom: var(--border-hairline);
+  }
+
+  @media (min-width: 48rem) {
+    .tools div {
+      grid-template-columns: 11rem minmax(0, 1fr);
+      align-items: baseline;
+    }
+  }
+
+  .tools dt {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    color: var(--color-muted);
+  }
+
+  .tools dd {
+    margin: 0;
+  }
+
+  .tools .stack {
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
   }
 
   .meta {

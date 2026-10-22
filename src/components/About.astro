@@ -18,9 +18,9 @@ import photo from '../assets/about/richitha.jpg';
         <summary>more about me</summary>
         <div class="rest">
           <p>
-            The part I enjoy most is finding out whether something <Mark kind="under">actually works</Mark>. Getting an answer to exactly
-            one person in a live meeting, checking which methods still recover a known effect once randomization is gone, seeing where a
-            forecast breaks during extreme demand: those are the problems I keep coming back to.
+            The part I enjoy most is what happens <Mark kind="under">after the model works</Mark>. Getting an answer to exactly one person
+            in a live meeting, checking which methods still recover a known effect once randomization is gone, seeing where a forecast
+            breaks during extreme demand: those are the problems I keep coming back to.
           </p>
           <p>I like work I can measure, and I would rather write down what something can’t do yet than leave it out.</p>
         </div>
@@ -248,16 +248,11 @@ import photo from '../assets/about/richitha.jpg';
     width: 2.6rem;
   }
 
-  .sun .rays {
-    transform-origin: 20px 20px;
-    animation: spin 40s linear infinite;
-  }
-
   .sparkle {
     width: 1rem;
     fill: var(--pen);
     stroke: none;
-    animation: twinkle 2.4s var(--ease-out) infinite;
+    opacity: 0.8;
   }
 
   .sparkle.one {
@@ -269,7 +264,6 @@ import photo from '../assets/about/richitha.jpg';
     right: -1.2rem;
     top: 62%;
     width: 0.7rem;
-    animation-delay: 1.2s;
   }
 
   .sticker {
@@ -313,28 +307,5 @@ import photo from '../assets/about/richitha.jpg';
       transition: none;
     }
 
-    .sun .rays,
-    .sparkle {
-      animation: none;
-    }
-  }
-
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  @keyframes twinkle {
-    0%,
-    100% {
-      opacity: 0.35;
-      transform: scale(0.75);
-    }
-
-    50% {
-      opacity: 1;
-      transform: scale(1);
-    }
   }
 </style>

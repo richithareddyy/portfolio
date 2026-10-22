@@ -4,13 +4,6 @@ const { progress } = zoomLens;
 ---
 
 <div class="status">
-  <section class="col built" aria-labelledby="status-built">
-    <h3 id="status-built"><span class="dot" aria-hidden="true"></span>Working today</h3>
-    <ul>
-      {progress.built.map((item) => <li>{item}</li>)}
-    </ul>
-  </section>
-
   <section class="col pending" aria-labelledby="status-pending">
     <h3 id="status-pending"><span class="dot" aria-hidden="true"></span>Current limitations</h3>
     <ul>
@@ -36,7 +29,7 @@ const { progress } = zoomLens;
 
   @media (min-width: 56rem) {
     .status {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
       gap: var(--space-6);
     }
   }
@@ -45,10 +38,6 @@ const { progress } = zoomLens;
     padding-top: var(--space-3);
     border-top: 2px solid var(--tone);
     font-size: var(--text-sm);
-  }
-
-  .built {
-    --tone: var(--color-positive);
   }
 
   .pending {

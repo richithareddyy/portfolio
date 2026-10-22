@@ -1,0 +1,41 @@
+---
+import type { Project } from '../data/projects';
+import CaseSection from './CaseSection.astro';
+
+interface Props {
+  project: Project;
+}
+const { project } = Astro.props;
+const links = [
+  project.site && { label: 'Product site and interactive demo', href: project.site },
+  project.demo && { label: 'Live demo', href: project.demo },
+  project.github && { label: 'Source on GitHub', href: project.github },
+].filter(Boolean) as { label: string; href: string }[];
+---
+
+{
+  links.length > 0 && (
+    <CaseSection title="Code and demo" id="links">
+      <ul class="links">
+        {links.map((l) => (
+          <li>
+            <a class="arrow-link" href={l.href} target="_blank" rel="noopener">
+              {l.label}
+              <span class="visually-hidden"> (opens in a new tab)</span>
+              <span class="ext-arrow" aria-hidden="true">↗</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </CaseSection>
+  )
+}
+
+<style>
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-6);
+    list-style: none;
+  }
+</style>

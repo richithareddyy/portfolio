@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CaseHeader from '../../components/CaseHeader.astro';
 import CaseSection from '../../components/CaseSection.astro';
+import CaseLinks from '../../components/CaseLinks.astro';
 import BulletList from '../../components/BulletList.astro';
 import ProjectVisual from '../../components/ProjectVisual.astro';
 import Metrics from '../../components/Metrics.astro';
@@ -10,15 +11,14 @@ import EvidenceLinks from '../../components/EvidenceLinks.astro';
 import DataTable from '../../components/DataTable.astro';
 import PerfCompare from '../../components/PerfCompare.astro';
 import NextProject from '../../components/NextProject.astro';
-import { caseStudies, type Project } from '../../data/projects';
-import { techId } from '../../data/graph';
+import { allCaseStudies, type Project } from '../../data/projects';
 import CodeAtlasGraph from '../../components/visuals/CodeAtlasGraph.astro';
 import EtlPipeline from '../../components/visuals/EtlPipeline.astro';
 import StreamBoxFlow from '../../components/visuals/StreamBoxFlow.astro';
 
 export function getStaticPaths() {
   // ZoomLens has its own page.
-  return caseStudies
+  return allCaseStudies
     .filter((p) => p.slug !== 'zoom-lens')
     .map((project) => ({ params: { slug: project.slug }, props: { project } }));
 }
@@ -29,74 +29,19 @@ interface Props {
 
 const { project } = Astro.props;
 
-type Key = 'problem' | 'challenges' | 'contribution' | 'decisions' | 'evaluation' | 'limitations';
-// Each case study follows the order that tells its story best.
-const layouts: Record<string, [Key, string][]> = {
-  codeatlas: [
-    ['problem', 'The engineering problem'],
-    ['contribution', 'Architecture'],
-    ['challenges', 'What makes it hard'],
-    ['evaluation', 'Benchmarks'],
-    ['decisions', 'Decisions and tradeoffs'],
-    ['limitations', 'Limitations and next steps'],
-  ],
-  'reddit-data-pipeline': [
-    ['problem', 'The problem'],
-    ['challenges', 'Working at scale'],
-    ['contribution', 'The pipeline'],
-    ['evaluation', 'Performance and reconciliation'],
-    ['decisions', 'Decisions and tradeoffs'],
-    ['limitations', 'Limitations'],
-  ],
-  streambox: [
-    ['problem', 'The race conditions'],
-    ['contribution', 'Concurrency safeguards'],
-    ['decisions', 'Decisions and tradeoffs'],
-    ['evaluation', 'Load testing'],
-    ['limitations', 'Limitations'],
-  ],
-  causeway: [
-    ['problem', 'The question'],
-    ['challenges', 'What makes it hard'],
-    ['contribution', 'Study design'],
-    ['evaluation', 'Results'],
-    ['decisions', 'Decisions and tradeoffs'],
-    ['limitations', 'Limitations'],
-  ],
-  gridcast: [
-    ['problem', 'The question'],
-    ['challenges', 'Keeping the future out'],
-    ['contribution', 'Models and protocol'],
-    ['evaluation', 'Accuracy and uncertainty'],
-    ['decisions', 'Decisions and tradeoffs'],
-    ['limitations', 'Limits'],
-  ],
-  'ticket-triage': [
-    ['problem', 'The ML problem'],
-    ['evaluation', 'Evaluation'],
-    ['decisions', 'Explainability'],
-    ['contribution', 'What I built'],
-    ['limitations', 'Limitations'],
-  ],
-};
-const fallback: [Key, string][] = [
-  ['problem', 'Problem and constraints'],
-  ['challenges', 'What makes it hard'],
-  ['contribution', 'My contribution'],
-  ['decisions', 'Decisions and tradeoffs'],
-  ['evaluation', 'Evaluation'],
-  ['limitations', project.next ? 'Limitations and next steps' : 'Limitations'],
-];
-const has: Record<Key, boolean> = {
-  problem: !!project.problem,
-  challenges: !!project.challenges,
-  contribution: true,
-  decisions: !!project.decisions,
-  evaluation: !!project.evaluation,
-  limitations: !!(project.limitations || project.next),
-};
-const order = (layouts[project.slug] ?? fallback).filter(([key]) => has[key]);
-const sections = order.map(([id, label]) => ({ id, label }));
+// Every case study uses the same order; a section only appears when the project has something for it.
+const diagrams: Record<string, typeof CodeAtlasGraph | undefined> = { codeatlas: CodeAtlasGraph, streambox: StreamBoxFlow };
+const Architecture = diagrams[project.slug];
+const extraDecisions = project.decisions?.slice(3) ?? [];
+const sections = [
+  project.problem && { id: 'problem', label: 'Problem' },
+  { id: 'built', label: 'What I built' },
+  Architecture && { id: 'architecture', label: 'Architecture' },
+  project.decisions && { id: 'decisions', label: 'Decisions' },
+  project.evaluation && { id: 'results', label: 'Results' },
+  (project.limitations || project.next) && { id: 'limitations', label: 'Limitations' },
+  (project.github || project.demo || project.site) && { id: 'links', label: 'Code and demo' },
+].filter(Boolean) as { id: string; label: string }[];
 ---
 
 <BaseLayout title={project.title} description={project.summary}>
@@ -109,73 +54,95 @@ const sections = order.map(([id, label]) => ({ id, label }));
       </div>
 
       {
-        order.map(([key, title]) =>
-          key === 'problem' ? (
-            <CaseSection title={title} id="problem">
-              <p>{project.problem}</p>
-              {project.constraints && <BulletList items={project.constraints} />}
-            </CaseSection>
-          ) : key === 'challenges' ? (
-            <CaseSection title={title} id="challenges">
-              <BulletList items={project.challenges!} />
-            </CaseSection>
-          ) : key === 'contribution' ? (
-            <CaseSection title={title} id="contribution">
-              <p>{project.contribution}</p>
-              {project.built && <BulletList items={project.built} />}
-              {project.slug === 'codeatlas' && <CodeAtlasGraph />}
-              {project.slug === 'streambox' && <StreamBoxFlow />}
-              {project.stack && (
-                <ul class="stack" aria-label="Full stack">
-                  {project.stack.map((s) => (
-                    <li>
-                      <a class="tech-link" href={`/?tech=${encodeURIComponent(techId(s))}#skills`} data-tech-link={techId(s)}>
-                        {s}
-                        <span class="visually-hidden">: show in skills map</span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </CaseSection>
-          ) : key === 'decisions' ? (
-            <CaseSection title={title} id="decisions">
-              <DecisionList items={project.decisions!} />
-            </CaseSection>
-          ) : key === 'evaluation' ? (
-            <CaseSection title={title} id="evaluation">
-              <h3>Method</h3>
-              <BulletList items={project.evaluation!.method} />
-              <Metrics metrics={project.evaluation!.metrics} />
-              {project.slug === 'reddit-data-pipeline' && <PerfCompare />}
-              {project.tables?.map((t) => <DataTable table={t} />)}
-              <EvidenceLinks links={project.evaluation!.evidence} />
-            </CaseSection>
-          ) : (
-            <CaseSection title={title} id="limitations">
-              {project.limitations && <BulletList items={project.limitations} />}
-              {project.next && (
-                <>
-                  <h3>Next steps</h3>
-                  <BulletList items={project.next} />
-                </>
-              )}
-            </CaseSection>
-          ),
+        project.problem && (
+          <CaseSection title="Problem" id="problem">
+            <p>{project.problem}</p>
+            {(project.constraints || project.challenges) && (
+              <details class="fold">
+                <summary>constraints and what makes it hard</summary>
+                <div class="folded">
+                  {project.constraints && <BulletList items={project.constraints} />}
+                  {project.challenges && <BulletList items={project.challenges} />}
+                </div>
+              </details>
+            )}
+          </CaseSection>
+        )
+      }
+
+      <CaseSection title="What I built" id="built">
+        <p>{project.contribution}</p>
+        {project.built && <BulletList items={project.built} />}
+        {
+          project.stack && (
+            <ul class="stack" aria-label="Full stack">
+              {project.stack.map((s) => <li>{s}</li>)}
+            </ul>
+          )
+        }
+      </CaseSection>
+
+      {
+        Architecture && (
+          <CaseSection title="Architecture" id="architecture">
+            <Architecture />
+          </CaseSection>
         )
       }
 
       {
-        project.gallery && (
-          <CaseSection title="More screens" id="gallery">
-            <div class="gallery">
-              {project.gallery.map((v) => (
-                <ProjectVisual visual={v} size="full" />
-              ))}
-            </div>
+        project.decisions && (
+          <CaseSection title="Decisions" id="decisions">
+            <DecisionList items={project.decisions.slice(0, 3)} />
+            {extraDecisions.length > 0 && (
+              <details class="fold">
+                <summary>{extraDecisions.length} more {extraDecisions.length === 1 ? 'decision' : 'decisions'}</summary>
+                <DecisionList items={extraDecisions} />
+              </details>
+            )}
           </CaseSection>
         )
       }
+
+      {
+        project.evaluation && (
+          <CaseSection title="Results" id="results">
+            <Metrics metrics={project.evaluation.metrics} />
+            {project.slug === 'reddit-data-pipeline' && <PerfCompare />}
+            {project.gallery && (
+              <div class="gallery">
+                {project.gallery.map((v) => (
+                  <ProjectVisual visual={v} size="full" />
+                ))}
+              </div>
+            )}
+            <details class="fold">
+              <summary>how it was measured{project.tables?.length ? ', with the full tables' : ''}</summary>
+              <div class="folded">
+                <BulletList items={project.evaluation.method} />
+                {project.tables?.map((t) => <DataTable table={t} />)}
+              </div>
+            </details>
+            <EvidenceLinks links={project.evaluation.evidence} />
+          </CaseSection>
+        )
+      }
+
+      {
+        (project.limitations || project.next) && (
+          <CaseSection title="Limitations" id="limitations">
+            {project.limitations && <BulletList items={project.limitations} />}
+            {project.next && (
+              <>
+                <h3>Next steps</h3>
+                <BulletList items={project.next} />
+              </>
+            )}
+          </CaseSection>
+        )
+      }
+
+      <CaseLinks project={project} />
     </div>
 
     <NextProject slug={project.slug} />
@@ -186,6 +153,12 @@ const sections = order.map(([id, label]) => ({ id, label }));
   .lead-visual {
     max-width: 60rem;
     padding-bottom: var(--space-6);
+  }
+
+  .folded {
+    display: grid;
+    gap: var(--space-4);
+    padding-top: var(--space-3);
   }
 
   .gallery {

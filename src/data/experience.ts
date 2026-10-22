@@ -6,7 +6,7 @@ export type Role = {
   dates: string;
   current?: boolean;
   points: string[];
-  /** Tools named for this role in the résumé; used by the skills connection map. */
+  /** Tools named for this role in the résumé. */
   tech: string[];
   link?: { label: string; href: string };
 };
