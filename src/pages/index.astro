@@ -7,7 +7,7 @@ import ProjectRow from '../components/ProjectRow.astro';
 import Experience from '../components/Experience.astro';
 import About from '../components/About.astro';
 import Contact from '../components/Contact.astro';
-import { featured, more, archived } from '../data/projects';
+import { featured, more } from '../data/projects';
 import { profile } from '../data/profile';
 ---
 
@@ -30,10 +30,9 @@ import { profile } from '../data/profile';
         <div class="rows">
           {more.map((p) => <ProjectRow project={p} />)}
         </div>
-        <p class="elsewhere">
-          {archived[0]!.title}, {archived[1]!.title}, and {archived.length - 2} more projects are
-          <a href={profile.links.github} target="_blank" rel="me noopener">on GitHub<span class="visually-hidden"> (opens in a new tab)</span> <span aria-hidden="true">↗</span></a>
-        </p>
+        <a class="elsewhere arrow-link" href={profile.links.github} target="_blank" rel="me noopener">
+          View everything on GitHub <span class="arrow" aria-hidden="true">→</span><span class="visually-hidden"> (opens in a new tab)</span>
+        </a>
       </div>
     </section>
 
@@ -67,16 +66,7 @@ import { profile } from '../data/profile';
   }
 
   .elsewhere {
+    justify-self: start;
     font-size: var(--text-sm);
-    color: var(--color-muted);
-  }
-
-  .elsewhere a {
-    color: var(--color-ink-soft);
-    text-underline-offset: 0.2em;
-  }
-
-  .elsewhere a:hover {
-    color: var(--pen-ink);
   }
 </style>

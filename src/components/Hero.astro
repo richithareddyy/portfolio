@@ -39,15 +39,6 @@ const contents = [
 
   </div>
 
-    <aside class="margin" aria-label="Quick facts">
-      <dl class="facts note">
-        <div><dt>now</dt><dd><b>Zoom Fellow</b>, ASU Next Lab</dd></div>
-        <div><dt>studying</dt><dd>M.S. Data Science, Analytics and Engineering, Arizona State ({profile.graduation.replace('Expected ', '')})</dd></div>
-        <div><dt>based in</dt><dd>{profile.location}</dd></div>
-        <div><dt>open to</dt><dd>new grad and internship roles in data science, machine learning, and applied AI</dd></div>
-      </dl>
-    </aside>
-
   <nav class="contents" aria-labelledby="contents-title">
     <svg class="clip" viewBox="0 0 24 48" aria-hidden="true"><path d="M8 14 V36 a5 5 0 0 0 10 0 V8 a7 7 0 0 0 -14 0 V34" /></svg>
     <p id="contents-title" class="contents-title">In this notebook</p>
@@ -299,80 +290,9 @@ const contents = [
     }
   }
 
-  /* Quick facts, written like margin notes. */
-  .margin {
-    display: grid;
-    gap: var(--space-5);
-    min-width: 0;
-  }
-
-  /* Hint next to the dot; only shown where there's room beside the name. */
-  .last {
-    position: relative;
-  }
-
-  .pen-hint {
-    display: none;
-    position: absolute;
-    left: calc(100% + 0.9rem);
-    bottom: 0.35em;
-    width: 11rem;
-    font-size: var(--text-xs);
-    font-style: normal;
-    font-weight: 400;
-    letter-spacing: 0;
-    line-height: 1.4;
-    white-space: normal;
-    transform: rotate(-3deg);
-    transform-origin: left bottom;
-  }
-
-  @media (min-width: 64rem) {
-    .pen-hint {
-      display: block;
-    }
-
-    .pen-hint-below {
-      display: none;
-    }
-  }
-
-  .facts {
-    display: grid;
-    gap: var(--space-3);
-    margin: 0;
-  }
-
-  .facts dt {
-    color: var(--color-muted);
-  }
-
-  .facts dt::after {
-    content: ':';
-  }
-
-  .facts dd {
-    margin: 0;
-    color: var(--color-ink-soft);
-  }
-
-  /* With the name on its own screen, the quick facts read as one row of margin notes. */
-  @media (min-width: 40rem) {
-    .facts {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: var(--space-3) var(--space-6);
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .facts {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-  }
-
   .contents {
     position: relative;
-    margin-top: var(--space-8);
+    margin-top: var(--space-4);
   }
 
   .clip {

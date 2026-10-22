@@ -393,7 +393,7 @@ export const projects: Project[] = [
     title: 'CodeAtlas',
     summary:
       'Static analysis for Rust that traces which functions, modules, and tests a code change can affect, with the source line behind each step.',
-    tier: 'archive',
+    tier: 'more',
     year: '2026',
     role: 'Solo project',
     contribution:
@@ -653,7 +653,7 @@ export const projects: Project[] = [
     slug: 'streambox',
     title: 'StreamBox',
     summary: 'A streaming web app whose backend stays consistent when many users write to the same data.',
-    tier: 'archive',
+    tier: 'more',
     year: '2024',
     role: 'Solo project',
     contribution:
@@ -723,7 +723,7 @@ export const projects: Project[] = [
     slug: 'ticket-triage',
     title: 'Support Ticket Triage',
     summary: 'Predicts support-ticket priority and resolution time, and explains each prediction.',
-    tier: 'more',
+    tier: 'archive',
     year: '2026',
     role: 'Solo project',
     contribution:
@@ -859,9 +859,7 @@ export const projects: Project[] = [
 ];
 
 export const featured = projects.filter((p) => p.tier === 'featured');
-// Supporting projects, in the order the résumé lists them.
-export const more = ['ticket-triage', 'reddit-data-pipeline'].map((slug) => projects.find((p) => p.slug === slug)!);
-export const archived = projects.filter((p) => p.tier === 'archive');
+export const more = projects.filter((p) => p.tier === 'more');
 /** Every case-study page that gets built, including archived ones so old links keep working. */
 export const allCaseStudies = projects.filter((p) => p.caseStudy);
 /** The case studies linked from the homepage, in homepage order. */
