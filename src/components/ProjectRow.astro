@@ -1,5 +1,4 @@
 ---
-import { Image } from 'astro:assets';
 import { projects, type Project } from '../data/projects';
 import ProjectLinks from './ProjectLinks.astro';
 
@@ -35,13 +34,6 @@ const n = String(projects.findIndex((p) => p.slug === project.slug) + 1).padStar
 
   <div class="links-cell"><ProjectLinks project={project} /></div>
 
-  {
-    project.visual && (
-      <div class="peek" aria-hidden="true">
-        <Image src={project.visual.src} alt="" widths={[320, 640]} sizes="16rem" loading="lazy" />
-      </div>
-    )
-  }
 </article>
 
 <style>
@@ -195,48 +187,5 @@ const n = String(projects.findIndex((p) => p.slug === project.slug) + 1).padStar
 
   .row:hover h4 a {
     color: var(--pen-ink);
-  }
-
-  /* Screenshot peek on hover. Fine pointers only, since touch has no hover. */
-  .peek {
-    display: none;
-  }
-
-  @media (hover: hover) and (pointer: fine) and (min-width: 64rem) {
-    .peek {
-      display: block;
-      position: absolute;
-      right: calc(15rem + var(--space-7));
-      top: 50%;
-      z-index: 0;
-      width: 15rem;
-      padding: 6px 6px 18px;
-      background: var(--color-surface);
-      box-shadow: var(--shadow-md);
-      opacity: 0;
-      pointer-events: none;
-      transform: translateY(-50%) rotate(-4deg) translateX(12px);
-      transition: opacity var(--duration-base) var(--ease-out), transform var(--duration-base) var(--ease-out);
-    }
-
-    .peek :global(img) {
-      display: block;
-      width: 100%;
-      height: auto;
-      aspect-ratio: 16 / 10;
-      object-fit: cover;
-      object-position: top left;
-    }
-
-    .row:hover .peek {
-      opacity: 1;
-      transform: translateY(-50%) rotate(-3deg) translateX(0);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .peek {
-      transition: none;
-    }
   }
 </style>
