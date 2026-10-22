@@ -16,7 +16,7 @@ function onFirstView(elements: Iterable<Element>, className: string, rootMargin:
 }
 
 // The dot after the name: cycles the pen color used for every mark and accent.
-const pens = ['blue', 'red', 'green', 'violet'];
+const pens = ['blue', 'violet', 'rose', 'red', 'forest'];
 const root = document.documentElement;
 for (const button of document.querySelectorAll<HTMLButtonElement>('[data-pen-toggle]')) {
   const label = (pen: string) => `Change the pen color used across the site (now ${pen})`;

@@ -113,6 +113,7 @@
 }
 
 /* Pens picked with the dot after the name. Blue is the default. */
-:root[data-pen='red'] { --pen: #d64527; --pen-ink: #b2341a; --pen-wash: #f9e1d8; }
-:root[data-pen='green'] { --pen: #2f8a55; --pen-ink: #22673f; --pen-wash: #dcebdc; }
 :root[data-pen='violet'] { --pen: #8343cc; --pen-ink: #6c32ad; --pen-wash: #e9def4; }
+:root[data-pen='rose'] { --pen: #c2386e; --pen-ink: #a02a5a; --pen-wash: #f8dce7; }
+:root[data-pen='red'] { --pen: #d64527; --pen-ink: #b2341a; --pen-wash: #f9e1d8; }
+:root[data-pen='forest'] { --pen: #25603e; --pen-ink: #1d4d31; --pen-wash: #dbe8dd; }
