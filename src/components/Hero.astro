@@ -81,7 +81,7 @@ const contents = [
 
 <script>
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const cover = document.querySelector<HTMLElement>('.cover')!;
+  const cover = document.querySelector<HTMLElement>('#top .cover')!;
   let onScreen = true;
   new IntersectionObserver(([entry]) => (onScreen = entry.isIntersecting)).observe(cover);
 
@@ -111,7 +111,7 @@ const contents = [
   const trail = flight.querySelector<SVGPathElement>('[data-trail]')!;
   const reveal = flight.querySelector<SVGPathElement>('[data-trail-reveal]')!;
   const startMark = document.querySelector<HTMLElement>('[data-plane-start]')!;
-  const landing = document.querySelector<HTMLElement>('.cover .quiet li:last-child')!;
+  const landing = document.querySelector<HTMLElement>('#top .cover .quiet li:last-child')!;
   let flying = false;
 
   const local = (el: Element) => {
@@ -189,14 +189,25 @@ const contents = [
   } catch {
     // Storage can be blocked; the plane then simply flies on each visit.
   }
-  if (reduce || seen) settle();
-  else setTimeout(fly, 700);
+  const begin = () => {
+    if (reduce || seen) settle();
+    else setTimeout(fly, 700);
+  };
+  // On a first visit the notebook cover opens first; the plane waits for it.
+  if (document.documentElement.classList.contains('intro')) document.addEventListener('intro:done', begin, { once: true });
+  else begin();
 
   plane.addEventListener('click', () => {
     if (reduce) return;
     fly();
   });
-  addEventListener('resize', () => !flying && settle(), { passive: true });
+  // The landing spot moves when the first screen reflows: the name's web font arriving, or a resize. The cover keeps
+  // its height, so the name and the links are watched too.
+  const resettle = () => !flying && plane.classList.contains('is-ready') && settle();
+  const reflow = new ResizeObserver(resettle);
+  for (const el of [cover, document.querySelector('#hero-title'), landing]) if (el) reflow.observe(el);
+  document.fonts?.addEventListener('loadingdone', resettle);
+  addEventListener('load', resettle);
 </script>
 
 <style>
