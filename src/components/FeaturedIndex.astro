@@ -1,0 +1,147 @@
+---
+const rows = [
+  { slug: 'zoom-lens', title: 'ZoomLens', what: 'An AI assistant inside live Zoom meetings', proof: 'Zoom Fellowship project' },
+  { slug: 'causeway', title: 'CauseWay', what: 'Did the e-mail cause the spending? A causal study', proof: 'Naive estimate off by ~50%' },
+  { slug: 'gridcast', title: 'GridCast', what: 'Day-ahead electricity demand, with honest intervals', proof: '22% below the seasonal baseline' },
+];
+---
+
+<section class="wrap page index" id="featured" aria-labelledby="featured-title" data-snap>
+  <div class="body" data-reveal>
+    <svg class="clip" viewBox="0 0 24 48" aria-hidden="true"><path d="M8 14 V36 a5 5 0 0 0 10 0 V8 a7 7 0 0 0 -14 0 V34" /></svg>
+    <h2 id="featured-title">Featured <em>projects</em></h2>
+    <p class="note">Three projects, each with its own page below.</p>
+    <ol>
+      {
+        rows.map((r, i) => (
+          <li>
+            <a href={`#project-${r.slug}`}>
+              <span class="n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+              <span class="t">{r.title}</span>
+              <span class="w">
+                {r.what}
+                <span class="p note">{r.proof}</span>
+              </span>
+              <span class="go" aria-hidden="true">↓</span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .body {
+    position: relative;
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  h2 {
+    font-size: clamp(2rem, 1.3rem + 2.2vw, 3.1rem);
+    font-weight: 450;
+    letter-spacing: -0.03em;
+  }
+
+  h2 em {
+    font-style: italic;
+  }
+
+  .clip {
+    position: absolute;
+    top: -1.2rem;
+    right: 1.5rem;
+    width: 1.35rem;
+    fill: none;
+    stroke: var(--color-faint);
+    stroke-width: 2;
+    stroke-linecap: round;
+    transform: rotate(12deg);
+  }
+
+  ol {
+    margin-top: var(--space-6);
+    list-style: none;
+    border-top: var(--border-ink);
+  }
+
+  li {
+    border-bottom: var(--border-hairline);
+  }
+
+  a {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr) auto;
+    gap: var(--space-1) var(--space-4);
+    align-items: baseline;
+    padding-block: var(--space-5);
+    text-decoration: none;
+  }
+
+  .n {
+    grid-row: span 2;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--text-lg);
+    color: var(--pen);
+  }
+
+  .t {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.4rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .go {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: center;
+    font-size: var(--text-xl);
+    color: var(--color-muted);
+    transition: transform var(--duration-base) var(--ease-out), color var(--duration-fast) var(--ease-out);
+  }
+
+  .w {
+    grid-column: 2 / span 2;
+    display: grid;
+    gap: var(--space-1);
+    font-size: var(--text-base);
+    color: var(--color-ink-soft);
+  }
+
+  a:hover .t,
+  a:focus-visible .t {
+    color: var(--pen-ink);
+  }
+
+  a:hover .go {
+    color: var(--pen-ink);
+    transform: translateY(3px);
+  }
+
+  @media (min-width: 56rem) {
+    a {
+      grid-template-columns: 3.5rem minmax(11rem, 0.9fr) minmax(0, 1.4fr) auto;
+      gap: var(--space-5);
+    }
+
+    .n {
+      grid-row: auto;
+    }
+
+    a {
+      align-items: center;
+    }
+
+    .w {
+      grid-column: 3;
+    }
+
+    .go {
+      grid-column: 4;
+    }
+  }
+</style>

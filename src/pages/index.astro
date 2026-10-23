@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
+import FeaturedIndex from '../components/FeaturedIndex.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import FeaturedProject from '../components/FeaturedProject.astro';
 import ProjectRow from '../components/ProjectRow.astro';
@@ -14,15 +15,19 @@ import { profile } from '../data/profile';
 <BaseLayout isHome>
   <div data-page="home">
     <Hero />
+    <FeaturedIndex />
 
     <section id="work" class="wrap" aria-labelledby="work-title">
-      <SectionHeading id="work" note="Each project covers the problem, the approach, and measured results. Limitations are in the case studies.">
-        Selected <em>work</em>
-      </SectionHeading>
+      <div class="page work-lead" data-snap>
+        <SectionHeading id="work" note="Each project covers the problem, the approach, and measured results. Limitations are in the case studies.">
+          Selected <em>work</em>
+        </SectionHeading>
+        <FeaturedProject project={featured[0]} index={0} />
+      </div>
 
-      {featured.map((p, i) => <FeaturedProject project={p} index={i} eager={i === 0} />)}
+      {featured.slice(1).map((p, i) => <FeaturedProject project={p} index={i + 1} />)}
 
-      <div class="more">
+      <div class="more" data-reveal data-snap>
         <div class="more-head">
           <h3 class="more-title">More projects</h3>
           <p class="note">Smaller builds, each with a measured result.</p>

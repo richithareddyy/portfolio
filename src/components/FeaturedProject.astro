@@ -22,12 +22,13 @@ const media = project.slug === 'zoom-lens' || !!Chart;
 ---
 
 <article
-  class:list={['featured', { flip: flip && media, 'text-only': !media }]}
+  class:list={['featured', { lead: index === 0, flip: flip && media, 'text-only': !media }]}
   id={`project-${project.slug}`}
   aria-labelledby={`${project.slug}-title`}
   data-project-id={`project:${project.slug}`}
+  data-snap={index === 0 ? undefined : ''}
 >
-  <div class="text">
+  <div class="text" data-reveal>
     <div class="lead">
       <p class="meta">
         <span class="num" aria-hidden="true"><Mark kind="circle">{String(index + 1).padStart(2, '0')}</Mark></span>
@@ -69,7 +70,7 @@ const media = project.slug === 'zoom-lens' || !!Chart;
 
   {
     Chart && (
-      <div class="media">
+      <div class="media" data-reveal>
         <Chart />
       </div>
     )
@@ -77,7 +78,7 @@ const media = project.slug === 'zoom-lens' || !!Chart;
 
   {
     project.slug === 'zoom-lens' && (
-      <div class="media">
+      <div class="media" data-reveal>
         <ZoomLensPreview eager={eager} />
         {zoomLens.demoVideo && (
           <figure class="demo">
@@ -113,9 +114,17 @@ const media = project.slug === 'zoom-lens' || !!Chart;
     border-top: var(--border-hairline);
   }
 
-  .featured:first-of-type {
+  .featured.lead {
     border-top: 0;
     padding-top: 0;
+  }
+
+  /* Each study after the first gets a page of its own on screens tall enough for it. */
+  @media (min-width: 64rem) and (min-height: 42rem) {
+    .featured:not(.lead) {
+      min-height: calc(100svh - var(--header-height));
+      align-content: center;
+    }
   }
 
   /* A slight paper lift on hover, and when keyboard focus is inside the project. */

@@ -21,13 +21,12 @@ export const experience: Role[] = [
     current: true,
     points: [
       'Selected from 200+ applicants for a Zoom-sponsored fellowship at ASU Next Lab.',
-      'Designed and built ZoomLens, an assistant inside Zoom that privately describes or explains whatever is on the shared screen, so a participant can catch up without interrupting the presenter.',
-      'Wrote the Node.js WebSocket server and made privacy a server guarantee: each connection is bound to one participant with no broadcast path, verified by seven isolation tests, including ten participants asking at once.',
-      'Built capture from the meeting’s Realtime Media Streams feed: a decodable H.264 clip kept in memory and turned into a still with ffmpeg only on request, in 25 to 110 ms in testing.',
-      'The meeting feed does not yet deliver video on the current Zoom account, so the working demo uses a clearly labeled fallback to the participant’s own display.',
-      'Added per-participant rate limits and daily caps that a reload cannot reset.',
+      'Built ZoomLens end to end in Node.js: a Zoom Apps SDK panel, a WebSocket server, and Claude vision prompts that describe or explain whatever is on the shared screen for the one participant who asked, without interrupting the presenter.',
+      'Made privacy a server-side guarantee: each WebSocket session is bound to one participant and a single session-addressed send is the only way out, verified by seven isolation tests against the real server, including ten participants asking at once.',
+      'Integrated Zoom’s Realtime Media Streams with signed webhook validation, an in-memory H.264 buffer that always holds a decodable clip, and on-demand ffmpeg decoding to a still in 25 to 110 ms in testing. Until the account’s feed delivers video, answers use a clearly labeled fallback to the participant’s own display.',
+      'Added Zoom OAuth sign-in with refresh-token rotation, plus per-participant rate limits and daily caps keyed to identity, so a reload cannot reset them.',
     ],
-    tech: ['Node.js', 'Zoom Apps SDK', 'Zoom Realtime Media Streams API', 'Claude'],
+    tech: ['Node.js', 'WebSockets', 'Zoom Apps SDK', 'Zoom Realtime Media Streams API', 'Zoom OAuth', 'ffmpeg', 'Claude'],
     link: { label: 'ZoomLens case study', href: '/work/zoom-lens' },
   },
   {
@@ -36,10 +35,10 @@ export const experience: Role[] = [
     place: 'Mesa, AZ',
     dates: 'May 2026 – Aug 2026',
     points: [
-      'Set up and maintained Windows, macOS, and Linux machines with Jamf Pro, hardware diagnostics, and enterprise software deployment tools.',
-      'Worked support incidents through ServiceNow and wrote up recurring issues with their fixes, so IT teams could troubleshoot them faster.',
+      'Provisioned and maintained Windows, macOS, and Linux machines using Jamf Pro, hardware diagnostics, and enterprise software deployment tools.',
+      'Resolved support incidents in ServiceNow and documented recurring issues with their fixes, so IT teams could troubleshoot repeat problems faster.',
     ],
-    tech: ['ServiceNow', 'Jamf Pro'],
+    tech: ['Jamf Pro', 'ServiceNow', 'Windows', 'macOS', 'Linux'],
   },
   {
     title: 'Research Assistant',
@@ -47,9 +46,9 @@ export const experience: Role[] = [
     place: 'Hyderabad, India',
     dates: 'Aug 2023 – May 2025',
     points: [
-      'Audited datasets from 5+ departments in Excel (Power Query, VLOOKUP, pivot tables), tracing and correcting inconsistent records so reports were accurate.',
-      'Standardized how shared files were organized across SharePoint and Google Workspace, cutting the time to find information by 20%.',
+      'Audited and reconciled datasets from 5+ departments with Excel Power Query, VLOOKUP, and pivot tables, tracing and correcting inconsistent records so department reports were accurate.',
+      'Standardized file organization across SharePoint and Google Workspace, cutting the time to find information by 20%.',
     ],
-    tech: ['Excel', 'SharePoint'],
+    tech: ['Excel', 'Power Query', 'SharePoint', 'Google Workspace'],
   },
 ];

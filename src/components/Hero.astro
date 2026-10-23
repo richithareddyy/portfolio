@@ -5,14 +5,9 @@ import HeroScene from './HeroScene.astro';
 
 const phrases = ['Data scientist, Zoom Fellow', 'Causal inference and forecasting', 'M.S. Data Science, ASU 2027'];
 
-const contents = [
-  { slug: 'zoom-lens', title: 'ZoomLens', what: 'An AI assistant inside live Zoom meetings', proof: 'Zoom Fellowship project' },
-  { slug: 'causeway', title: 'CauseWay', what: 'Did the e-mail cause the spending? A causal study', proof: 'naive estimate off by ~50%' },
-  { slug: 'gridcast', title: 'GridCast', what: 'Day-ahead electricity demand, with honest intervals', proof: '22% below the seasonal baseline' },
-];
 ---
 
-<section class="hero wrap" id="top" aria-labelledby="hero-title">
+<section class="hero wrap" id="top" aria-labelledby="hero-title" data-snap>
   <div class="cover">
     <p class="hello note">Hi, I'm</p>
     <h1 id="hero-title" class="name" aria-label="Richitha Rekula">
@@ -21,7 +16,6 @@ const contents = [
     </h1>
     <p class="phrases" aria-hidden="true" data-phrases={JSON.stringify(phrases)}><span class="phrase is-in">{phrases[0]}</span></p>
     <p class="visually-hidden">{phrases.join(', ')}.</p>
-    <p class="tagline">I build AI tools and study when models can be trusted.</p>
     <p class="pen-hint-below note" aria-hidden="true">↑ tap the dot to paint the page</p>
 
     <div class="actions">
@@ -59,25 +53,6 @@ const contents = [
     </button>
   </div>
 
-  <nav class="contents" aria-labelledby="contents-title">
-    <svg class="clip" viewBox="0 0 24 48" aria-hidden="true"><path d="M8 14 V36 a5 5 0 0 0 10 0 V8 a7 7 0 0 0 -14 0 V34" /></svg>
-    <p id="contents-title" class="contents-title">Featured projects</p>
-    <ol>
-      {
-        contents.map((c, i) => (
-          <li>
-            <a href={`#project-${c.slug}`}>
-              <span class="n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-              <span class="t">{c.title}</span>
-              <span class="leader" aria-hidden="true" />
-              <span class="w">{c.what}</span>
-              <span class="p note">{c.proof}</span>
-            </a>
-          </li>
-        ))
-      }
-    </ol>
-  </nav>
 </section>
 
 <script>
@@ -212,10 +187,6 @@ const contents = [
 </script>
 
 <style>
-  .hero {
-    padding-bottom: var(--space-6);
-  }
-
   /* The first screen is only the name; everything else starts below it. */
   .cover {
     position: relative;
@@ -383,22 +354,6 @@ const contents = [
   .plane:focus-visible {
     outline: 2px dashed var(--pen-ink);
     outline-offset: 4px;
-  }
-
-  .tagline {
-    max-width: 36rem;
-    margin-top: var(--space-3);
-    font-size: var(--text-lg);
-    line-height: 1.45;
-    color: var(--color-ink-soft);
-  }
-
-  .tagline {
-    max-width: 36rem;
-    margin-top: var(--space-3);
-    font-size: var(--text-lg);
-    line-height: 1.45;
-    color: var(--color-ink-soft);
   }
 
   .pen-hint-below {
@@ -606,110 +561,6 @@ const contents = [
 
     .pen-hint-below {
       display: none;
-    }
-  }
-
-  /* Starts clear of the first screen, so its paperclip doesn't peek in. */
-  .contents {
-    position: relative;
-    margin-top: var(--space-8);
-  }
-
-  .clip {
-    position: absolute;
-    top: -1.4rem;
-    right: 1.5rem;
-    width: 1.35rem;
-    fill: none;
-    stroke: var(--color-faint);
-    stroke-width: 2;
-    stroke-linecap: round;
-    transform: rotate(12deg);
-    transition: transform var(--duration-base) var(--ease-out);
-  }
-
-  .contents:hover .clip {
-    transform: rotate(4deg) translateY(-2px);
-  }
-
-  .contents-title {
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: var(--text-lg);
-    color: var(--color-muted);
-  }
-
-  .contents ol {
-    margin-top: var(--space-2);
-    list-style: none;
-    border-top: var(--border-ink);
-  }
-
-  .contents a {
-    display: grid;
-    grid-template-columns: 2.25rem minmax(0, 1fr);
-    gap: 2px var(--space-3);
-    align-items: baseline;
-    padding-block: var(--space-4);
-    border-bottom: var(--border-hairline);
-    text-decoration: none;
-  }
-
-  .n {
-    grid-row: span 3;
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    color: var(--color-muted);
-  }
-
-  .t {
-    font-family: var(--font-display);
-    font-size: var(--text-xl);
-    line-height: 1.15;
-    transition: color var(--duration-fast) var(--ease-out);
-  }
-
-  .leader {
-    display: none;
-  }
-
-  .w {
-    font-size: var(--text-sm);
-    color: var(--color-ink-soft);
-  }
-
-  .p {
-    font-size: var(--text-2xs);
-  }
-
-  .contents a:hover .t {
-    color: var(--pen-ink);
-  }
-
-  @media (min-width: 56rem) {
-    .contents a {
-      grid-template-columns: 2.25rem auto minmax(2rem, 1fr) auto 11rem;
-      gap: var(--space-3);
-    }
-
-    .n {
-      grid-row: auto;
-    }
-
-    .leader {
-      display: block;
-      align-self: center;
-      height: 0;
-      border-bottom: 2px dotted var(--color-rule-strong);
-      transition: border-color var(--duration-fast) var(--ease-out);
-    }
-
-    .contents a:hover .leader {
-      border-color: var(--pen);
-    }
-
-    .p {
-      text-align: right;
     }
   }
 

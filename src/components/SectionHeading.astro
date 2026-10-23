@@ -21,7 +21,7 @@ const sketches = {
 const sketch = sketches[id as keyof typeof sketches];
 ---
 
-<header class="section-heading">
+<header class="section-heading" data-reveal>
   <p class="kicker">
     <span class="num">Nº {numbers[id] ?? '00'}</span> <span class="what">{kickers[id] ?? id}</span>
     {sketch && <MarginDoodle kind={sketch.kind} side={sketch.side} />}

@@ -84,6 +84,14 @@ for (const button of document.querySelectorAll<HTMLButtonElement>('[data-pen-tog
 
 onFirstView(document.querySelectorAll('.mk'), 'is-drawn', '0px 0px -12% 0px');
 
+if (!reduceMotion.matches && 'IntersectionObserver' in window) {
+  const blocks = document.querySelectorAll('[data-reveal]');
+  // Anything already above the fold (a reload partway down, or a jump to an anchor) starts revealed.
+  for (const el of blocks) if (el.getBoundingClientRect().top < innerHeight) el.classList.add('is-in');
+  root.classList.add('reveal-on');
+  onFirstView(blocks, 'is-in', '0px 0px -8% 0px');
+}
+
 // While the page scrolls, cards passing under the pointer shouldn't lift and drop; hover comes back once scrolling stops.
 if (matchMedia('(hover: hover)').matches) {
   let scrollTimer: number | undefined;
@@ -96,6 +104,58 @@ if (matchMedia('(hover: hover)').matches) {
     },
     { passive: true },
   );
+}
+
+// Home page on desktop: when scrolling stops with the next page more than halfway up the screen, glide the rest of the
+// way so the page sits under the header. Nothing listens to the wheel and nothing is blocked; it only acts once the
+// page is still, and any new scroll simply takes over.
+const pages = [...document.querySelectorAll<HTMLElement>('[data-snap]')];
+const settleScreen = matchMedia('(min-width: 64rem) and (min-height: 42rem)');
+if (pages.length && !reduceMotion.matches) {
+  const header = document.querySelector('.site-header');
+  let lastY = scrollY;
+  let settling = false;
+  let timer: number | undefined;
+
+  const settle = () => {
+    const y = scrollY;
+    const down = y > lastY;
+    lastY = y;
+    if (settling) {
+      settling = false;
+      return;
+    }
+    if (!settleScreen.matches || document.documentElement.classList.contains('hello')) return;
+    const top = header?.getBoundingClientRect().bottom ?? 0;
+    const view = innerHeight - top;
+    const offsets = pages.map((p) => p.getBoundingClientRect().top - top);
+    let i = -1;
+    if (down) i = offsets.findIndex((d) => d > 2 && d <= view * 0.5);
+    else {
+      i = offsets.findIndex((d) => d < -2 && d >= -view * 0.5);
+      // Most of the previous page is back on screen: return to its top, if it fits.
+      if (i < 0) {
+        const next = offsets.findIndex((d) => d >= view * 0.5 && d < view);
+        if (next > 0 && pages[next - 1].offsetHeight <= view) i = next - 1;
+      }
+    }
+    if (i < 0) return;
+    settling = true;
+    scrollTo({ top: y + offsets[i], behavior: 'smooth' });
+  };
+
+  if ('onscrollend' in window) addEventListener('scrollend', settle);
+  else
+    addEventListener(
+      'scroll',
+      () => {
+        clearTimeout(timer);
+        timer = window.setTimeout(settle, 140);
+      },
+      { passive: true },
+    );
+  // Jumps from links land exactly where the anchor says; don't settle those.
+  addEventListener('hashchange', () => (settling = true));
 }
 
 for (const button of document.querySelectorAll<HTMLButtonElement>('[data-copy]')) {

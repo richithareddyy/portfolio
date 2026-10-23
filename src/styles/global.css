@@ -186,7 +186,9 @@ button {
 }
 
 /* Sections carry their spacing as top padding, so pull anchor targets up to land the heading under the header. */
-main > div > section[id]:not(#top):not(#work) {
+#experience,
+#about,
+#contact {
   scroll-margin-top: calc(var(--space-5) - var(--section-gap));
 }
 
@@ -577,4 +579,54 @@ a:focus-visible .ext-arrow {
 
 .chart-card:hover .open {
   text-decoration: underline;
+}
+
+/* Home-page screens: the project index and the opening of the work. Each fills the screen where there is
+   room for it, and grows with its content everywhere else. */
+.page {
+  display: grid;
+  align-content: center;
+  padding-block: var(--space-9);
+}
+
+@media (min-width: 64rem) and (min-height: 42rem) {
+  .page {
+    min-height: calc(100svh - var(--header-height));
+  }
+}
+
+/* Fade-and-rise as blocks scroll into view. The class that hides them is only set by the script that reveals them
+   (interactions.ts), so without it, or with reduced motion, everything is simply there. */
+.reveal-on [data-reveal] {
+  transition: opacity 900ms cubic-bezier(0.22, 1, 0.36, 1), translate 900ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-on [data-reveal]:not(.is-in) {
+  opacity: 0;
+  translate: 0 12px;
+}
+
+/* Notebook pages on desktop: the main sections each fill the screen below the header. Scrolling stays native; phones
+   and short screens keep natural heights. */
+@media (min-width: 64rem) and (min-height: 42rem) {
+  #work .more,
+  #experience,
+  #about,
+  #contact {
+    min-height: calc(100svh - var(--header-height));
+    padding-block: var(--space-9);
+    scroll-margin-top: calc(var(--space-5) * -1);
+  }
+
+  #about,
+  #contact {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  #work .more {
+    align-content: center;
+    margin-top: 0;
+  }
 }
