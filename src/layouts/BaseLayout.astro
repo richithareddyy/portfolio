@@ -90,13 +90,11 @@ const person = {
     {
       isHome && (
         <script is:inline>
-          // First visit to the home page: the doodle says hi before the page appears (see HelloIntro). Decided before first paint.
-          try {
-            if (!localStorage.getItem('hello-seen') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-              document.documentElement.classList.add('hello');
-              localStorage.setItem('hello-seen', '1');
-            }
-          } catch (e) {}
+          // Each visit to the home page: the doodle says hi before the page appears (see HelloIntro). Decided before first
+          // paint. Links to a section skip it, and so does reduced motion.
+          if (!location.hash && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            document.documentElement.classList.add('hello');
+          }
         </script>
       )
     }
