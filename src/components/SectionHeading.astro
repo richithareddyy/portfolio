@@ -70,8 +70,20 @@ const sketch = sketches[id as keyof typeof sketches];
     color: var(--color-muted);
   }
 
+  /* The section number is a ribbon bookmark tucked into the page; it tugs down a little on hover. */
   .num {
-    color: var(--pen-ink);
+    align-self: flex-start;
+    padding: 0.4em 0.65em 0.75em;
+    background: var(--pen-ink);
+    color: var(--color-on-accent);
+    font-weight: 500;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
+    transform: translateY(-0.35em);
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .section-heading:hover .num {
+    transform: translateY(0);
   }
 
   .what::before {

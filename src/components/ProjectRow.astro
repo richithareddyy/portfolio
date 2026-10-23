@@ -82,13 +82,29 @@ const n = String(projects.findIndex((p) => p.slug === project.slug) + 1).padStar
     transition: opacity var(--duration-base) var(--ease-out), transform var(--duration-slow) var(--ease-out);
   }
 
-  .row:hover {
-    z-index: 1;
+  /* Like a page lifting off the desk: on hover, and when keyboard focus is inside the row. */
+  .row {
+    transition: transform var(--duration-base) var(--ease-out);
   }
 
-  .row:hover::before {
+  .row:hover,
+  .row:focus-within {
+    z-index: 1;
+    transform: translateY(-2px);
+  }
+
+  .row:hover::before,
+  .row:focus-within::before {
     opacity: 0.45;
     transform: none;
+    box-shadow: 0 10px 20px -14px rgb(25 25 21 / 0.35);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .row:hover,
+    .row:focus-within {
+      transform: none;
+    }
   }
 
   .n {

@@ -1,6 +1,9 @@
 ---
 import { profile } from '../data/profile';
 import Doodle from './Doodle.astro';
+import HeroScene from './HeroScene.astro';
+
+const phrases = ['building with AI', 'turning ideas into projects', 'always figuring things out'];
 
 const contents = [
   { slug: 'zoom-lens', title: 'ZoomLens', what: 'An AI assistant inside live Zoom meetings', proof: 'Zoom Fellowship project' },
@@ -16,6 +19,8 @@ const contents = [
       <span class="first">Richitha<Doodle kind="star" class="name-star" /><svg class="sparkle one" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1 Q11 9 19 10 Q11 11 10 19 Q9 11 1 10 Q9 9 10 1Z" /></svg></span>
       <span class="last"><svg class="sparkle two" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1 Q11 9 19 10 Q11 11 10 19 Q9 11 1 10 Q9 9 10 1Z" /></svg>Rekula<button type="button" class="pen-dot" data-pen-toggle aria-label="Change the pen color used across the site"></button><span class="pen-hint note" aria-hidden="true">← click the dot to change the pen color</span></span>
     </h1>
+    <p class="phrases" aria-hidden="true" data-phrases={JSON.stringify(phrases)}><span class="phrase is-in">{phrases[0]}</span></p>
+    <p class="visually-hidden">{phrases.join(', ')}.</p>
     <p class="pen-hint-below note" aria-hidden="true">↑ click or tap the dot to change the pen color</p>
 
     <div class="actions">
@@ -34,7 +39,23 @@ const contents = [
       </ul>
     </div>
 
+    <HeroScene />
 
+    <svg class="flight" aria-hidden="true" focusable="false" data-flight>
+      <defs>
+        <mask id="trail-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">
+          <path class="trail-reveal" pathLength="1" data-trail-reveal />
+        </mask>
+      </defs>
+      <path class="pencil-line" pathLength="1" data-pencil-line />
+      <path class="trail" mask="url(#trail-mask)" data-trail />
+    </svg>
+    <button type="button" class="plane" aria-label="Fly the paper airplane again" data-plane>
+      <svg viewBox="0 0 36 24" aria-hidden="true" focusable="false">
+        <path class="plane-body" d="M2 12 L34 2 L24 22 L16 14 Z" />
+        <path d="M16 14 L34 2 M16 14 L14 21 L19 17" />
+      </svg>
+    </button>
   </div>
 
   <nav class="contents" aria-labelledby="contents-title">
@@ -57,6 +78,126 @@ const contents = [
     </ol>
   </nav>
 </section>
+
+<script>
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const cover = document.querySelector<HTMLElement>('.cover')!;
+  let onScreen = true;
+  new IntersectionObserver(([entry]) => (onScreen = entry.isIntersecting)).observe(cover);
+
+  // Phrases under the name: each one is inked in, held, and lifted off before the next.
+  const phraseLine = document.querySelector<HTMLElement>('[data-phrases]');
+  if (phraseLine && !reduce) {
+    const phrases: string[] = JSON.parse(phraseLine.dataset.phrases!);
+    const phrase = phraseLine.querySelector<HTMLElement>('.phrase')!;
+    let i = 0;
+    setInterval(() => {
+      if (!onScreen || document.hidden) return;
+      phrase.classList.add('is-out');
+      setTimeout(() => {
+        i = (i + 1) % phrases.length;
+        phrase.textContent = phrases[i];
+        phrase.classList.remove('is-out', 'is-in');
+        void phrase.offsetWidth;
+        phrase.classList.add('is-in');
+      }, 420);
+    }, 3800);
+  }
+
+  // The paper airplane: a pencil line folds into a plane, which flies along a dotted curve and lands beside the links.
+  const plane = document.querySelector<HTMLButtonElement>('[data-plane]')!;
+  const flight = document.querySelector<SVGSVGElement>('[data-flight]')!;
+  const pencil = flight.querySelector<SVGPathElement>('[data-pencil-line]')!;
+  const trail = flight.querySelector<SVGPathElement>('[data-trail]')!;
+  const reveal = flight.querySelector<SVGPathElement>('[data-trail-reveal]')!;
+  const startMark = document.querySelector<HTMLElement>('[data-plane-start]')!;
+  const landing = document.querySelector<HTMLElement>('.cover .quiet li:last-child')!;
+  let flying = false;
+
+  const local = (el: Element) => {
+    const r = el.getBoundingClientRect();
+    const c = cover.getBoundingClientRect();
+    return { x: r.left - c.left, y: r.top - c.top, w: r.width, h: r.height };
+  };
+  const restPoint = () => {
+    const r = local(landing);
+    return { x: r.x + r.w + 34, y: r.y + r.h / 2 };
+  };
+  const pose = (x: number, y: number, angle: number, scaleY = 1) =>
+    `translate(${x - 18}px, ${y - 12}px) rotate(${angle}deg) scaleY(${scaleY})`;
+  const settle = () => {
+    const p = restPoint();
+    plane.getAnimations().forEach((a) => a.cancel());
+    plane.style.transform = pose(p.x, p.y, -8);
+    plane.style.opacity = '';
+    plane.classList.add('is-ready');
+  };
+
+  async function fly() {
+    if (flying) return;
+    flying = true;
+    flight.setAttribute('viewBox', `0 0 ${cover.clientWidth} ${cover.clientHeight}`);
+    const s0 = local(startMark);
+    const s = { x: s0.x, y: s0.y };
+    const e = restPoint();
+    const low = Math.min(Math.max(s.y, e.y) + 80, cover.clientHeight - 16);
+    const dx = e.x - s.x;
+    const d = `M${s.x} ${s.y} C${s.x + dx * 0.3} ${low} ${s.x + dx * 0.75} ${low} ${e.x} ${e.y}`;
+    trail.setAttribute('d', d);
+    reveal.setAttribute('d', d);
+    pencil.setAttribute('d', `M${s.x - 72} ${s.y} H${s.x}`);
+    flight.classList.add('is-flying');
+    plane.getAnimations().forEach((a) => a.cancel());
+    plane.style.transform = pose(s.x, s.y, 0, 0.06);
+    plane.style.opacity = '0';
+    plane.classList.add('is-ready');
+
+    // 1. A pencil stroke along the rule.
+    await pencil.animate([{ strokeDashoffset: 1, opacity: 1 }, { strokeDashoffset: 0, opacity: 1 }], { duration: 600, easing: 'ease-out', fill: 'forwards' }).finished;
+
+    // 2. It folds up into a plane.
+    pencil.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: 'forwards' });
+    await plane.animate([{ transform: pose(s.x, s.y, 0, 0.06), opacity: 0.5 }, { transform: pose(s.x, s.y, -12), opacity: 1 }], { duration: 420, easing: 'ease-out', fill: 'forwards' }).finished;
+
+    // 3. It flies the dotted curve, nose along the path.
+    const len = trail.getTotalLength();
+    const frames: Keyframe[] = [];
+    for (let i = 0; i <= 40; i++) {
+      const a = trail.getPointAtLength((len * i) / 40);
+      const b = trail.getPointAtLength(Math.min(len, (len * i) / 40 + 1));
+      const angle = (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI;
+      frames.push({ transform: pose(a.x, a.y, i === 40 ? -8 : angle) });
+    }
+    const timing = { duration: 1700, easing: 'cubic-bezier(0.45, 0, 0.2, 1)', fill: 'forwards' as const };
+    reveal.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], timing);
+    await plane.animate(frames, timing).finished;
+
+    // 4. It lands; the trail fades after a moment.
+    settle();
+    await trail.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 900, delay: 700, fill: 'forwards' }).finished;
+    flight.classList.remove('is-flying');
+    trail.getAnimations().forEach((a) => a.cancel());
+    pencil.getAnimations().forEach((a) => a.cancel());
+    reveal.getAnimations().forEach((a) => a.cancel());
+    flying = false;
+  }
+
+  let seen: string | null = null;
+  try {
+    seen = localStorage.getItem('plane-flown');
+    localStorage.setItem('plane-flown', '1');
+  } catch {
+    // Storage can be blocked; the plane then simply flies on each visit.
+  }
+  if (reduce || seen) settle();
+  else setTimeout(fly, 700);
+
+  plane.addEventListener('click', () => {
+    if (reduce) return;
+    fly();
+  });
+  addEventListener('resize', () => !flying && settle(), { passive: true });
+</script>
 
 <style>
   .hero {
@@ -103,6 +244,133 @@ const contents = [
     left: -0.07em;
     width: max(0.5rem, 0.07em);
     opacity: 0.6;
+  }
+
+
+  /* Handwritten phrases under the name. One line is reserved so the page never jumps. */
+  .phrases {
+    min-height: 1.4em;
+    margin-top: var(--space-4);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.3rem, 1rem + 1.1vw, 1.9rem);
+    line-height: 1.4;
+    color: var(--pen-ink);
+    white-space: nowrap;
+  }
+
+  .phrase {
+    display: inline-block;
+    transition: opacity 400ms var(--ease-out), transform 400ms var(--ease-out);
+  }
+
+  .phrase.is-out {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .phrase.is-in {
+      animation: ink-in 900ms var(--ease-out) both;
+    }
+  }
+
+  @keyframes ink-in {
+    from {
+      clip-path: inset(-20% 100% -20% -5%);
+      opacity: 0.4;
+    }
+
+    to {
+      clip-path: inset(-20% -5% -20% -5%);
+      opacity: 1;
+    }
+  }
+
+  /* The flight layer covers the first screen but never takes clicks; only the plane does. */
+  .flight {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .pencil-line {
+    fill: none;
+    stroke: var(--color-faint);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+
+  .trail {
+    fill: none;
+    stroke: var(--pen);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-dasharray: 1.5 7;
+    opacity: 0;
+  }
+
+  .is-flying .trail {
+    opacity: 1;
+  }
+
+  .trail-reveal {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 10;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+
+  .plane {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    width: 36px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    opacity: 0;
+    transform-origin: 50% 50%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .plane.is-ready {
+    opacity: 1;
+  }
+
+  .plane svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    fill: none;
+    stroke: var(--color-ink);
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  .plane .plane-body {
+    fill: var(--color-surface);
+  }
+
+  .plane:hover svg {
+    stroke: var(--pen-ink);
+  }
+
+  .plane:focus-visible {
+    outline: 2px dashed var(--pen-ink);
+    outline-offset: 4px;
   }
 
   .pen-hint-below {
