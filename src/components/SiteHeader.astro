@@ -185,8 +185,8 @@ const nav = [
     position: sticky;
     top: 0;
     z-index: 50;
-    /* Nearly opaque instead of blurred: a backdrop blur has to be redrawn on every scroll frame. */
-    background: color-mix(in srgb, var(--color-bg) 97%, transparent);
+    /* Solid, so text scrolling underneath never shows through. */
+    background: var(--color-bg);
     border-bottom: 1px solid transparent;
     /* Named so page transitions leave the header in place instead of fading it. */
     view-transition-name: site-header;
@@ -226,6 +226,7 @@ const nav = [
     opacity: 0.55;
     transform: scaleX(0);
     transform-origin: left;
+    will-change: transform;
   }
 
   .tick {
@@ -240,6 +241,7 @@ const nav = [
     position: absolute;
     inset: 0;
     transform: translateX(0);
+    will-change: transform;
   }
 
   .rail i {
@@ -280,19 +282,14 @@ const nav = [
     overflow: visible;
   }
 
-  /* Brand colors by default; once a different pen is picked with the dot in the hero, the logo follows it. */
+  /* The logo is drawn in the current pen, so it changes with the dot in the hero. */
   .mark {
-    --logo-bg: #2f6bff;
-    --logo-fg: #ffffff;
+    --logo-bg: var(--pen);
+    --logo-fg: var(--color-on-accent);
     display: block;
     width: 2rem;
     height: 2rem;
     transition: transform var(--duration-base) var(--ease-out);
-  }
-
-  :global([data-pen]) .mark {
-    --logo-bg: var(--pen);
-    --logo-fg: var(--color-on-accent);
   }
 
   .mark rect {

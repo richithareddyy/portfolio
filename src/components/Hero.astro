@@ -3,7 +3,7 @@ import { profile } from '../data/profile';
 import Doodle from './Doodle.astro';
 import HeroScene from './HeroScene.astro';
 
-const phrases = ['building with AI', 'turning ideas into projects', 'always figuring things out'];
+const phrases = ['Data scientist, Zoom Fellow', 'Causal inference and forecasting', 'M.S. Data Science, ASU 2027'];
 
 const contents = [
   { slug: 'zoom-lens', title: 'ZoomLens', what: 'An AI assistant inside live Zoom meetings', proof: 'Zoom Fellowship project' },
@@ -14,20 +14,20 @@ const contents = [
 
 <section class="hero wrap" id="top" aria-labelledby="hero-title">
   <div class="cover">
-    <p class="hello note">hi, I'm</p>
+    <p class="hello note">Hi, I'm</p>
     <h1 id="hero-title" class="name" aria-label="Richitha Rekula">
       <span class="first">Richitha<Doodle kind="star" class="name-star" /><svg class="sparkle one" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1 Q11 9 19 10 Q11 11 10 19 Q9 11 1 10 Q9 9 10 1Z" /></svg></span>
-      <span class="last"><svg class="sparkle two" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1 Q11 9 19 10 Q11 11 10 19 Q9 11 1 10 Q9 9 10 1Z" /></svg>Rekula<button type="button" class="pen-dot" data-pen-toggle aria-label="Change the pen color used across the site"></button><span class="pen-hint note" aria-hidden="true">← click the dot to change the pen color</span></span>
+      <span class="last"><svg class="sparkle two" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1 Q11 9 19 10 Q11 11 10 19 Q9 11 1 10 Q9 9 10 1Z" /></svg>Rekula<button type="button" class="pen-dot" data-pen-toggle aria-label="Change the pen color used across the site"></button><span class="pen-hint note" aria-hidden="true">← Click the dot to change the ink color</span></span>
     </h1>
     <p class="phrases" aria-hidden="true" data-phrases={JSON.stringify(phrases)}><span class="phrase is-in">{phrases[0]}</span></p>
     <p class="visually-hidden">{phrases.join(', ')}.</p>
-    <p class="pen-hint-below note" aria-hidden="true">↑ click or tap the dot to change the pen color</p>
+    <p class="pen-hint-below note" aria-hidden="true">↑ Click or tap the dot to change the ink color</p>
 
     <div class="actions">
       <a class="button primary" href="#work">See the work <span aria-hidden="true">↓</span></a>
       <p class="start note" aria-hidden="true">
         <svg viewBox="0 0 30 30"><path d="M5 28 C 3 18, 8 9, 19 5" pathLength="1" /><path class="head" d="M12 3 L 19 5 L 16 11" pathLength="1" /></svg>
-        start here
+        Start here
       </p>
       <a class="button" href={profile.links.resume} target="_blank" rel="noopener">
         Résumé <span class="ext-arrow" aria-hidden="true">↗</span><span class="visually-hidden"> (PDF, opens in a new tab)</span>
@@ -60,7 +60,7 @@ const contents = [
 
   <nav class="contents" aria-labelledby="contents-title">
     <svg class="clip" viewBox="0 0 24 48" aria-hidden="true"><path d="M8 14 V36 a5 5 0 0 0 10 0 V8 a7 7 0 0 0 -14 0 V34" /></svg>
-    <p id="contents-title" class="contents-title">In this notebook</p>
+    <p id="contents-title" class="contents-title">Featured projects</p>
     <ol>
       {
         contents.map((c, i) => (

@@ -59,7 +59,7 @@ const sections = [
             <p>{project.problem}</p>
             {(project.constraints || project.challenges) && (
               <details class="fold">
-                <summary>constraints and what makes it hard</summary>
+                <summary>Constraints and challenges</summary>
                 <div class="folded">
                   {project.constraints && <BulletList items={project.constraints} />}
                   {project.challenges && <BulletList items={project.challenges} />}
@@ -117,7 +117,7 @@ const sections = [
               </div>
             )}
             <details class="fold">
-              <summary>how it was measured{project.tables?.length ? ', with the full tables' : ''}</summary>
+              <summary>Methodology{project.tables?.length ? ' and full results tables' : ''}</summary>
               <div class="folded">
                 <BulletList items={project.evaluation.method} />
                 {project.tables?.map((t) => <DataTable table={t} />)}

@@ -1,5 +1,5 @@
 ---
-import type { Project } from '../data/projects';
+import { zoomLens, type Project } from '../data/projects';
 import Mark from './Mark.astro';
 import Doodle from './Doodle.astro';
 import ProjectLinks from './ProjectLinks.astro';
@@ -52,7 +52,7 @@ const media = project.slug === 'zoom-lens';
       {
         project.story && (
           <details class="fold">
-            <summary>the full story<span class="visually-hidden"> of {project.title}</span></summary>
+            <summary>Project details<span class="visually-hidden"> of {project.title}</span></summary>
             <dl class="story">
               {project.story.map((beat) => (
                 <div>
@@ -78,6 +78,26 @@ const media = project.slug === 'zoom-lens';
     media && (
       <div class="media">
         <ZoomLensPreview eager={eager} />
+        {zoomLens.demoVideo && (
+          <figure class="demo">
+            <div class="laptop">
+              <div class="screen">
+                <video
+                  src={zoomLens.demoVideo}
+                  poster={zoomLens.demoPoster}
+                  width="1280"
+                  height="832"
+                  controls
+                  playsinline
+                  preload="none"
+                  aria-label="ZoomLens demo: describing a spreadsheet, follow-up questions, and the accessibility features in a live Zoom meeting"
+                />
+              </div>
+              <div class="base" aria-hidden="true"><span class="notch"></span></div>
+            </div>
+            <figcaption>3-minute demo in a live Zoom meeting, with captions. The data shown is fictional.</figcaption>
+          </figure>
+        )}
       </div>
     )
   }
@@ -130,11 +150,6 @@ const media = project.slug === 'zoom-lens';
 
     .flip .text {
       order: 2;
-    }
-
-    .media {
-      position: sticky;
-      top: calc(var(--header-height) + var(--space-6));
     }
 
     /* Without a visual, the problem and the story sit side by side. */
@@ -302,5 +317,73 @@ const media = project.slug === 'zoom-lens';
 
   .media {
     min-width: 0;
+  }
+
+  /* The recorded demo sits under the product site, filling the column beside the text. */
+  .demo {
+    margin: var(--space-7) 0 0;
+  }
+
+  /* An ink-drawn laptop around the recording: a dark bezel with a camera dot, then a cream keyboard base. */
+  .laptop {
+    padding-inline: 6%;
+  }
+
+  .screen {
+    position: relative;
+    padding: 2.4% 2.4% 3.2%;
+    border: 1.5px solid var(--color-ink);
+    border-radius: 14px 14px 4px 4px;
+    background: var(--color-ink);
+  }
+
+  .screen::before {
+    content: '';
+    position: absolute;
+    top: 0.9%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #4a443d;
+    transform: translateX(-50%);
+  }
+
+  .demo video {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 3px;
+    background: var(--color-panel);
+  }
+
+  .base {
+    position: relative;
+    height: clamp(0.7rem, 1.6vw, 1.15rem);
+    margin-inline: -6%;
+    border: 1.5px solid var(--color-ink);
+    border-radius: 2px 2px 16px 16px / 2px 2px 12px 12px;
+    background: var(--color-surface);
+    box-shadow: 0 14px 22px -16px rgb(25 25 21 / 0.45);
+  }
+
+  .notch {
+    position: absolute;
+    top: -1.5px;
+    left: 50%;
+    width: 15%;
+    height: 45%;
+    border: 1.5px solid var(--color-ink);
+    border-top: 0;
+    border-radius: 0 0 8px 8px;
+    background: var(--color-surface-sunken);
+    transform: translateX(-50%);
+  }
+
+  .demo figcaption {
+    margin-top: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-muted);
   }
 </style>

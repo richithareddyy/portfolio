@@ -82,8 +82,8 @@ const person = {
       document.documentElement.classList.add('js');
       try {
         const pen = localStorage.getItem('pen');
-        // Pens that were retired fall back to the default blue.
-        if (['violet', 'rose', 'red', 'forest'].includes(pen)) document.documentElement.dataset.pen = pen;
+        // Pens that were retired fall back to the default rose.
+        if (['blue', 'violet', 'red', 'forest'].includes(pen)) document.documentElement.dataset.pen = pen;
       } catch (e) {}
     </script>
   </head>

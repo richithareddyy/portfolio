@@ -9,7 +9,7 @@ interface Props {
 
 const { id, note } = Astro.props;
 const numbers: Record<string, string> = { work: '01', experience: '02', about: '03', contact: '04' };
-const kickers: Record<string, string> = { work: 'the work', experience: 'where I’ve been', about: 'about me', contact: 'say hello' };
+const kickers: Record<string, string> = { work: 'Selected work', experience: 'Experience', about: 'About', contact: 'Contact' };
 const doodles = { work: 'star', experience: 'trail', about: 'heart', contact: 'plane' } as const;
 const doodle = doodles[id as keyof typeof doodles];
 const sketches = {

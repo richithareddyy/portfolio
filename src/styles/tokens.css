@@ -13,9 +13,9 @@
   --color-pending: #7a5a12;
 
   /* --pen draws marks; --pen-ink is the same hue, dark enough for text (4.5:1+). */
-  --pen: #2563eb;
-  --pen-ink: #1d4ed8;
-  --pen-wash: #dce7ff;
+  --pen: #c2386e;
+  --pen-ink: #a02a5a;
+  --pen-wash: #f8dce7;
 
   /* Older names, kept as aliases so every component follows the pen. */
   --color-accent: var(--pen);
@@ -88,19 +88,19 @@
 @property --pen {
   syntax: '<color>';
   inherits: true;
-  initial-value: #2563eb;
+  initial-value: #c2386e;
 }
 
 @property --pen-ink {
   syntax: '<color>';
   inherits: true;
-  initial-value: #1d4ed8;
+  initial-value: #a02a5a;
 }
 
 @property --pen-wash {
   syntax: '<color>';
   inherits: true;
-  initial-value: #dce7ff;
+  initial-value: #f8dce7;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -112,8 +112,8 @@
   }
 }
 
-/* Pens picked with the dot after the name. Blue is the default. */
+/* Pens picked with the dot after the name. Rose is the default. */
 :root[data-pen='violet'] { --pen: #8343cc; --pen-ink: #6c32ad; --pen-wash: #e9def4; }
-:root[data-pen='rose'] { --pen: #c2386e; --pen-ink: #a02a5a; --pen-wash: #f8dce7; }
+:root[data-pen='blue'] { --pen: #2563eb; --pen-ink: #1d4ed8; --pen-wash: #dce7ff; }
 :root[data-pen='red'] { --pen: #d64527; --pen-ink: #b2341a; --pen-wash: #f9e1d8; }
 :root[data-pen='forest'] { --pen: #25603e; --pen-ink: #1d4d31; --pen-wash: #dbe8dd; }

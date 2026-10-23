@@ -25,6 +25,11 @@ body {
   overflow-x: clip;
 }
 
+/* Set by interactions.ts while the page is scrolling, so hover effects don't flicker under a still pointer. */
+.is-scrolling body {
+  pointer-events: none;
+}
+
 /* Custom controls give their own press feedback, so the grey tap flash on phones is not needed. */
 a,
 button,
