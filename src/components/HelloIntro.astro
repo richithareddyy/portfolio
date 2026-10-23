@@ -1,0 +1,202 @@
+---
+/*
+  First visit only: the doodle of Richitha pops up from the bottom of a blank page, waves and says hi, then flies to
+  her spot in the hero scene as the page appears. Any click, tap, or key skips it. BaseLayout decides before first
+  paint whether it shows (the `hello` class on <html>), so returning visitors and reduced motion never see it.
+*/
+import DoodleMe from './DoodleMe.astro';
+---
+
+<div class="hello" aria-hidden="true" data-hello>
+  <div class="paper"></div>
+  <div class="stage">
+    <p class="say" data-say>Hi, I’m Richitha!</p>
+    <svg class="kid" viewBox="128 100 136 160" focusable="false" data-kid>
+      <DoodleMe clipId="hello-shirt-clip" />
+    </svg>
+  </div>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const hello = document.querySelector<HTMLElement>('[data-hello]');
+
+  if (hello && root.classList.contains('hello')) {
+    const kid = hello.querySelector<SVGSVGElement>('[data-kid]')!;
+    const timers: number[] = [];
+    const at = (ms: number, fn: () => void) => timers.push(window.setTimeout(fn, ms));
+    let done = false;
+
+    const finish = (fast = false) => {
+      if (done) return;
+      done = true;
+      timers.forEach(clearTimeout);
+      hello.classList.add('is-leaving');
+      window.setTimeout(
+        () => {
+          root.classList.remove('hello');
+          hello.remove();
+          document.dispatchEvent(new Event('intro:done'));
+        },
+        fast ? 250 : 120,
+      );
+    };
+
+    // Fly to the doodle in the hero scene: map the same crop of the scene's drawing onto the screen and move there.
+    const flyHome = () => {
+      hello.classList.remove('is-waving');
+      hello.classList.add('is-flying');
+      const art = document.querySelector<SVGSVGElement>('[data-scene-art]');
+      const ctm = art?.getScreenCTM();
+      const from = kid.getBoundingClientRect();
+      let to: { x: number; y: number; w: number } | null = null;
+      if (art && ctm) {
+        const a = new DOMPoint(128, 100).matrixTransform(ctm);
+        const b = new DOMPoint(264, 260).matrixTransform(ctm);
+        if (a.y >= 0 && b.y <= innerHeight) to = { x: a.x, y: a.y, w: b.x - a.x };
+      }
+      const end = to
+        ? `translate(${to.x - from.left}px, ${to.y - from.top}px) scale(${to.w / from.width})`
+        : `translate(0, 40vh) scale(0.4)`;
+      kid.animate([{ transform: 'none', opacity: 1 }, { transform: end, opacity: to ? 1 : 0 }], {
+        duration: 750,
+        easing: 'cubic-bezier(0.6, 0, 0.25, 1)',
+        fill: 'forwards',
+      });
+      at(780, () => finish());
+    };
+
+    at(150, () => hello.classList.add('is-up'));
+    at(800, () => hello.classList.add('is-waving'));
+    at(2300, flyHome);
+
+    const skip = () => finish(true);
+    addEventListener('pointerdown', skip, { once: true });
+    addEventListener('keydown', skip, { once: true });
+    addEventListener('wheel', skip, { once: true, passive: true });
+  }
+</script>
+
+<style>
+  .hello {
+    display: none;
+  }
+
+  :global(html.hello) {
+    overflow: hidden;
+  }
+
+  :global(html.hello) .hello {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: block;
+    /* If the script never runs, the cover gets out of the way on its own. */
+    animation: failsafe 0s 6s forwards;
+  }
+
+  .paper {
+    position: absolute;
+    inset: 0;
+    background: var(--color-bg);
+    transition: opacity 650ms var(--ease-out);
+  }
+
+  .is-flying .paper,
+  .is-leaving .paper {
+    opacity: 0;
+  }
+
+  .is-leaving {
+    opacity: 0;
+    transition: opacity 200ms var(--ease-out);
+  }
+
+  .stage {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: clamp(9rem, 24vw, 15rem);
+    translate: -50% 0;
+  }
+
+  .kid {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    transform-origin: 0 0;
+    translate: 0 110%;
+    transition: translate 600ms cubic-bezier(0.3, 1.45, 0.5, 1);
+  }
+
+  .is-up .kid {
+    translate: 0 -12vh;
+  }
+
+  /* While she waves: the arm comes up, the eyes smile, the speech bubble opens. */
+  .hello :global(.wave-arm),
+  .hello :global(.eyes-happy) {
+    transition: opacity 150ms;
+  }
+
+  .is-waving :global(.arm-right),
+  .is-waving :global(.eyes) {
+    opacity: 0;
+  }
+
+  .is-waving :global(.wave-arm),
+  .is-waving :global(.eyes-happy) {
+    opacity: 1;
+  }
+
+  .is-waving :global(.wave-arm) {
+    animation: wave 0.45s ease-in-out infinite alternate;
+  }
+
+  .say {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 12vh - 2rem);
+    padding: var(--space-2) var(--space-4);
+    border: 1.5px solid var(--color-ink);
+    border-radius: 16px 16px 16px 4px;
+    background: var(--color-surface);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.1rem, 0.9rem + 1vw, 1.6rem);
+    white-space: nowrap;
+    color: var(--color-ink);
+    opacity: 0;
+    transform: translate(-30%, 8px) scale(0.85);
+    transform-origin: left bottom;
+    transition: opacity 250ms var(--ease-out), transform 300ms cubic-bezier(0.3, 1.45, 0.5, 1);
+  }
+
+  .is-waving .say {
+    opacity: 1;
+    transform: translate(-30%, 0) rotate(-3deg);
+  }
+
+  .is-flying .say {
+    opacity: 0;
+    transition-duration: 150ms;
+  }
+
+  @keyframes wave {
+    from {
+      transform: rotate(-12deg);
+    }
+
+    to {
+      transform: rotate(16deg);
+    }
+  }
+
+  @keyframes failsafe {
+    to {
+      visibility: hidden;
+      pointer-events: none;
+    }
+  }
+</style>

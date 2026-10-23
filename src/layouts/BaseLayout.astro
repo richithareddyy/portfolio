@@ -13,7 +13,7 @@ import serifItalic from '@fontsource-variable/newsreader/files/newsreader-latin-
 import sans from '@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2?url';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import NotebookIntro from '../components/NotebookIntro.astro';
+import HelloIntro from '../components/HelloIntro.astro';
 import { profile } from '../data/profile';
 
 interface Props {
@@ -90,11 +90,11 @@ const person = {
     {
       isHome && (
         <script is:inline>
-          // First visit to the home page: start as a closed notebook (see NotebookIntro). Decided before first paint.
+          // First visit to the home page: the doodle says hi before the page appears (see HelloIntro). Decided before first paint.
           try {
-            if (!localStorage.getItem('intro-seen') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-              document.documentElement.classList.add('intro');
-              localStorage.setItem('intro-seen', '1');
+            if (!localStorage.getItem('hello-seen') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+              document.documentElement.classList.add('hello');
+              localStorage.setItem('hello-seen', '1');
             }
           } catch (e) {}
         </script>
@@ -102,7 +102,7 @@ const person = {
     }
   </head>
   <body>
-    {isHome && <NotebookIntro />}
+    {isHome && <HelloIntro />}
     <a class="skip-link" href="#main">Skip to content</a>
     <SiteHeader isHome={isHome} />
     <main id="main" tabindex="-1">

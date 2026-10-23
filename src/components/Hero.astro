@@ -193,8 +193,8 @@ const contents = [
     if (reduce || seen) settle();
     else setTimeout(fly, 700);
   };
-  // On a first visit the notebook cover opens first; the plane waits for it.
-  if (document.documentElement.classList.contains('intro')) document.addEventListener('intro:done', begin, { once: true });
+  // On a first visit the doodle says hi first; the plane waits until she has landed.
+  if (document.documentElement.classList.contains('hello')) document.addEventListener('intro:done', begin, { once: true });
   else begin();
 
   plane.addEventListener('click', () => {

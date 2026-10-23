@@ -1,0 +1,215 @@
+---
+/*
+  The doodle of Richitha: a long layered blowout with a soft side part, a striped shirt in the pen ink, small gold earrings,
+  and a tiny laptop. Drawn in the hero scene's coordinates (it sits on the rule at y 224), so any SVG that shows it
+  crops to roughly 128 100 136 160. Its look lives here; each place that uses it adds its own motion.
+*/
+interface Props {
+  /** Unique per page, for the clip that keeps the shirt stripes inside the shirt. */
+  clipId: string;
+}
+const { clipId } = Astro.props;
+---
+
+  <g class="inky doodle-me">
+    <defs><clipPath id={clipId}><path d="M165 186 C172 180 208 180 215 186 L221 222 L159 222 Z" /></clipPath></defs>
+    <path class="hair hair-back" d="M186 111 C165 110 149 122 147 142 C145 152 141 160 141 170 C141 180 138 186 133 190 C138 191 141 190 143 189 C142 198 141 206 138 213 C136 217 133 219 129 220 C135 222 141 220 145 217 C147 220 150 222 154 222 C154 216 156 212 160 210 L220 210 C224 212 226 216 226 222 C230 222 233 220 235 217 C239 220 245 222 251 220 C247 219 244 217 242 213 C239 206 238 198 237 189 C239 190 242 191 247 190 C242 186 239 180 239 170 C239 160 235 152 234 141 C233 122 215 110 194 111 Z" />
+    <path class="strand" d="M157 150 C153 166 152 180 144 188 M156 192 C151 202 148 210 145 217 M 223 150 C 227 166 228 180 236 188 M 224 192 C 229 202 232 210 235 217" />
+    <path class="shine" d="M164 127 C170 118 180 113 192 113 M150 150 C147 162 146 172 143 182 M148 196 C147 204 145 210 141 216 M 230 150 C 233 162 234 172 237 182 M 232 196 C 233 204 235 210 239 216" />
+    <path class="leg" d="M180 220 C179 231 178 240 176 249 M176 249 C172 250 169 251 167 253" />
+    <path class="leg" d="M200 220 C201 231 202 240 204 249 M204 249 C208 250 211 251 213 253" />
+    <g class="arm arm-left"><path class="sleeve-edge" d="M164 189 C156 197 157 206 165 211" /><path class="sleeve" d="M164 189 C156 197 157 206 165 211" /></g>
+    <g class="arm arm-right"><path class="sleeve-edge" d="M216 189 C224 197 223 206 215 211" /><path class="sleeve" d="M216 189 C224 197 223 206 215 211" /></g>
+    <path class="shirt" d="M165 186 C172 180 208 180 215 186 L221 222 L159 222 Z" />
+    <g clip-path={`url(#${clipId})`}>
+      <path class="stripes" d="M160 180 V224 M165 180 V224 M170 180 V224 M175 180 V224 M180 180 V224 M185 180 V224 M190 180 V224 M195 180 V224 M200 180 V224 M205 180 V224 M210 180 V224 M215 180 V224 M220 180 V224" />
+    </g>
+    <path class="skin" d="M184 168 H196 V184 C193 187 187 187 184 184 Z" />
+    <path class="collar" d="M181 182 L190 192 L199 182" />
+    <ellipse class="skin" cx="190" cy="151" rx="21" ry="23" />
+    <path class="hair hair-front" d="M184 126 C197 122 213 129 214 146 C215 160 213 170 216 178 C218 184 222 188 228 190 C221 191 215 188 212 182 C209 174 209 158 207 146 C205 140 200 135 193 133 C190 132 187 131 184 129 Z" />
+    <path class="hair hair-front" d="M184 127 C174 126 166 134 167 148 C167 162 166 172 164 179 C162 185 158 188 152 190 C159 191 165 188 168 182 C171 174 171 158 171 148 C172 140 177 134 184 130 Z" />
+    <path class="strand" d="M189 128 C201 128 209 135 211 148 C212 162 212 174 218 182 M180 130 C173 135 170 142 170 152 C170 164 169 174 164 182" />
+    <path class="shine" d="M197 127 C206 130 211 137 211.5 147 M176 132 C172 137 169.5 144 169.5 151" />
+    <circle class="earring" cx="170" cy="163" r="1.9" />
+    <path class="brow" d="M178 145 Q182 143 186 145 M194 145 Q198 143 202 145" />
+    <g class="eyes">
+      <ellipse class="eye-dot" cx="182" cy="153" rx="2.5" ry="3.2" />
+      <ellipse class="eye-dot" cx="198" cy="153" rx="2.5" ry="3.2" />
+      <circle class="eye-glint" cx="183" cy="152" r="0.8" />
+      <circle class="eye-glint" cx="199" cy="152" r="0.8" />
+    </g>
+    <path class="eyes-happy" d="M178.5 154 Q182 149.5 185.5 154 M194.5 154 Q198 149.5 201.5 154" />
+    <ellipse class="cheek" cx="176" cy="161" rx="3.6" ry="2.2" />
+    <ellipse class="cheek" cx="204" cy="161" rx="3.6" ry="2.2" />
+    <path class="nose" d="M190 155 Q191.5 159 189.5 160" />
+    <path class="mouth" d="M185.5 164 Q190 168 194.5 164" />
+    <g class="laptop">
+      <path class="paper" d="M162 190 L218 186 L222 214 L164 217 Z" />
+      <circle class="logo" cx="192" cy="202" r="3.2" />
+      <path class="ink" d="M156 217 L226 213 L230 219 L152 222 Z" />
+    </g>
+    <g class="wave-arm"><path class="sleeve-edge" d="M216 188 C228 180 234 170 236 160" /><path class="sleeve" d="M216 188 C228 180 234 170 236 160" /><circle class="skin hand" cx="237" cy="155" r="4.6" /></g>
+  </g>
+
+<style is:global>
+  .doodle-me .ink,
+  .doodle-me .paper,
+  .doodle-me .leg,
+  .doodle-me .wave-arm,
+  .doodle-me .eyes-happy {
+    fill: none;
+    stroke: var(--color-ink);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .doodle-me .paper {
+    fill: var(--color-surface);
+  }
+
+  .doodle-me {
+    --hair: #3f2c21;
+    --hair-back: #221813;
+    --hair-strand: #7a5638;
+    --hair-shine: #c8935e;
+  }
+
+  .doodle-me .hair {
+    fill: var(--hair);
+  }
+
+  .doodle-me .hair-back {
+    fill: var(--hair-back);
+  }
+
+  /* Strands and a little caramel shine so the layers read, not one solid shape. */
+  .doodle-me .strand,
+  .doodle-me .shine {
+    fill: none;
+    stroke-linecap: round;
+  }
+
+  .doodle-me .strand {
+    stroke: var(--hair-strand);
+    stroke-width: 1;
+  }
+
+  .doodle-me .shine {
+    stroke: var(--hair-shine);
+    stroke-width: 1.6;
+    opacity: 0.8;
+  }
+
+  .doodle-me .skin {
+    fill: #c99270;
+    stroke: var(--color-ink);
+    stroke-width: 1.1;
+  }
+
+  .doodle-me .shirt {
+    fill: var(--pen-wash);
+    stroke: var(--color-ink);
+    stroke-width: 1.3;
+  }
+
+  .doodle-me .stripes {
+    fill: none;
+    stroke: var(--pen);
+    stroke-width: 1.1;
+    opacity: 0.5;
+  }
+
+  .doodle-me .collar,
+  .doodle-me .brow {
+    fill: none;
+    stroke: var(--color-ink);
+    stroke-width: 1.3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .doodle-me .earring {
+    fill: #d4a72c;
+    stroke: #8a6a10;
+    stroke-width: 0.6;
+  }
+
+  .doodle-me .eye-dot {
+    fill: var(--color-ink);
+  }
+
+  .doodle-me .eye-glint {
+    fill: #fff;
+  }
+
+  .doodle-me .nose {
+    fill: none;
+    stroke: #8a5a3c;
+    stroke-width: 1.1;
+    stroke-linecap: round;
+  }
+
+  .doodle-me .leg {
+    stroke-width: 4;
+  }
+
+  .doodle-me .sleeve-edge,
+  .doodle-me .sleeve {
+    fill: none;
+    stroke-linecap: round;
+  }
+
+  .doodle-me .sleeve-edge {
+    stroke: var(--color-ink);
+    stroke-width: 8.6;
+  }
+
+  .doodle-me .sleeve {
+    stroke: var(--pen-wash);
+    stroke-width: 6;
+  }
+
+  .doodle-me .eyes,
+  .doodle-me .arm,
+  .doodle-me .wave-arm {
+    transform-box: fill-box;
+  }
+
+  .doodle-me .eyes {
+    transform-origin: center;
+  }
+
+  .doodle-me .eyes-happy {
+    stroke: var(--color-ink);
+    stroke-width: 1.8;
+    opacity: 0;
+  }
+
+  .doodle-me .cheek {
+    fill: #e8846f;
+    opacity: 0.55;
+  }
+
+  .doodle-me .mouth {
+    fill: none;
+    stroke: #6b2f2a;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+
+  .doodle-me .logo {
+    fill: var(--pen);
+  }
+
+  .doodle-me .wave-arm {
+    opacity: 0;
+    transform-origin: 0% 100%;
+  }
+
+  .doodle-me {
+    transform-box: view-box;
+    transform-origin: 190px 224px;
+  }
+</style>
