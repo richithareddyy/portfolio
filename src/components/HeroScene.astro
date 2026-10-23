@@ -13,6 +13,7 @@
         <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="grain" />
         <feDisplacementMap in="SourceGraphic" in2="grain" scale="1.3" />
       </filter>
+      <clipPath id="shirt-clip"><path d="M165 186 C172 180 208 180 215 186 L221 222 L159 222 Z" /></clipPath>
     </defs>
 
     <g class="rules">
@@ -56,34 +57,48 @@
       </g>
 
       <g class="inky">
-        <path class="leg" d="M178 222 C177 232 176 240 174 249 M174 249 C170 250 167 251 166 253" />
-        <path class="leg" d="M202 222 C203 232 204 240 206 249 M206 249 C210 250 213 251 214 253" />
-        <g class="arm arm-left"><path d="M157 190 C150 198 152 206 160 210" /></g>
-        <g class="arm arm-right"><path d="M223 190 C230 198 228 206 220 210" /></g>
-        <path class="body" d="M190 124 C203 144 226 166 226 194 C226 213 211 225 190 225 C169 225 154 213 154 194 C154 166 177 144 190 124 Z" />
-        <path class="shine" d="M171 150 C166 158 164 166 165 173" />
-        <g class="eyes">
-          <ellipse class="eye" cx="178" cy="165" rx="5.5" ry="7" />
-          <ellipse class="eye" cx="202" cy="165" rx="5.5" ry="7" />
-          <circle class="pupil" cx="179" cy="168" r="3" />
-          <circle class="pupil" cx="201" cy="168" r="3" />
+        <path class="hair" d="M190 108 C163 108 148 126 147 150 C146 166 143 178 140 189 C136 195 134 203 139 208 C135 214 141 221 148 218 C150 224 159 225 163 219 L217 219 C221 225 230 224 232 218 C239 221 245 214 241 208 C246 203 244 195 240 189 C237 178 234 166 233 150 C232 126 217 108 190 108 Z" />
+        <path class="strand" d="M157 158 C152 174 151 190 145 205 M164 172 C161 188 160 200 155 214 M223 158 C228 174 229 190 235 205 M216 172 C219 188 220 200 225 214" />
+        <path class="leg" d="M180 220 C179 231 178 240 176 249 M176 249 C172 250 169 251 167 253" />
+        <path class="leg" d="M200 220 C201 231 202 240 204 249 M204 249 C208 250 211 251 213 253" />
+        <g class="arm arm-left"><path class="sleeve-edge" d="M164 189 C156 197 157 206 165 211" /><path class="sleeve" d="M164 189 C156 197 157 206 165 211" /></g>
+        <g class="arm arm-right"><path class="sleeve-edge" d="M216 189 C224 197 223 206 215 211" /><path class="sleeve" d="M216 189 C224 197 223 206 215 211" /></g>
+        <path class="shirt" d="M165 186 C172 180 208 180 215 186 L221 222 L159 222 Z" />
+        <g clip-path="url(#shirt-clip)">
+          <path class="stripes" d="M160 180 V224 M165 180 V224 M170 180 V224 M175 180 V224 M180 180 V224 M185 180 V224 M190 180 V224 M195 180 V224 M200 180 V224 M205 180 V224 M210 180 V224 M215 180 V224 M220 180 V224" />
         </g>
-        <path class="eyes-happy" d="M172 167 Q178 160 184 167 M196 167 Q202 160 208 167" />
-        <ellipse class="cheek" cx="168" cy="178" rx="4.5" ry="2.6" />
-        <ellipse class="cheek" cx="212" cy="178" rx="4.5" ry="2.6" />
-        <path class="mouth" d="M185 178 Q190 183 195 178" />
+        <path class="skin" d="M184 168 H196 V184 C193 187 187 187 184 184 Z" />
+        <path class="collar" d="M181 182 L190 192 L199 182" />
+        <ellipse class="skin" cx="190" cy="151" rx="21" ry="23" />
+        <path class="hair" d="M169 156 C166 134 177 124 190 125 C203 124 214 134 211 156 C209 144 201 136 191 135 L190 132 L189 135 C179 136 171 144 169 156 Z" />
+        <path class="hair" d="M170 146 C165 162 164 178 160 192 C156 198 156 205 161 207 C160 212 166 214 168 208 C170 196 169 176 172 156 Z" />
+        <path class="hair" d="M210 146 C215 162 216 178 220 192 C224 198 224 205 219 207 C220 212 214 214 212 208 C210 196 211 176 208 156 Z" />
+        <path class="strand" d="M180 129 C174 133 170 140 169 149 M200 129 C206 133 210 140 211 149" />
+        <circle class="earring" cx="170" cy="163" r="1.9" />
+        <path class="brow" d="M178 145 Q182 143 186 145 M194 145 Q198 143 202 145" />
+        <g class="eyes">
+          <ellipse class="eye-dot" cx="182" cy="153" rx="2.5" ry="3.2" />
+          <ellipse class="eye-dot" cx="198" cy="153" rx="2.5" ry="3.2" />
+          <circle class="eye-glint" cx="183" cy="152" r="0.8" />
+          <circle class="eye-glint" cx="199" cy="152" r="0.8" />
+        </g>
+        <path class="eyes-happy" d="M178.5 154 Q182 149.5 185.5 154 M194.5 154 Q198 149.5 201.5 154" />
+        <ellipse class="cheek" cx="176" cy="161" rx="3.6" ry="2.2" />
+        <ellipse class="cheek" cx="204" cy="161" rx="3.6" ry="2.2" />
+        <path class="nose" d="M190 155 Q191.5 159 189.5 160" />
+        <path class="mouth" d="M185.5 164 Q190 168 194.5 164" />
         <g class="laptop">
-          <path class="paper" d="M160 186 L218 182 L222 214 L162 217 Z" />
-          <circle class="logo" cx="191" cy="200" r="3.2" />
+          <path class="paper" d="M162 190 L218 186 L222 214 L164 217 Z" />
+          <circle class="logo" cx="192" cy="202" r="3.2" />
           <path class="ink" d="M156 217 L226 213 L230 219 L152 222 Z" />
         </g>
-        <g class="wave-arm"><path d="M223 186 C234 178 240 168 242 158" /><circle cx="243" cy="153" r="4.5" /></g>
+        <g class="wave-arm"><path class="sleeve-edge" d="M216 188 C228 180 234 170 236 160" /><path class="sleeve" d="M216 188 C228 180 234 170 236 160" /><circle class="skin hand" cx="237" cy="155" r="4.6" /></g>
       </g>
 
     </g>
   </svg>
 
-  <button type="button" class="hit hit-inky" data-inky aria-label="Say hi to the ink drop"></button>
+  <button type="button" class="hit hit-inky" data-inky aria-label="Say hi to my doodle"></button>
   <button type="button" class="hit hit-bulb" data-bulb aria-label="Switch on the lightbulb"></button>
   <p class="bubble" role="status" data-bubble><span>hi, welcome to my notebook!</span></p>
   <span class="plane-start" data-plane-start aria-hidden="true"></span>
@@ -172,7 +187,6 @@
 
   .ink,
   .leg,
-  .arm path,
   .wave-arm,
   .eyes-happy,
   .steam,
@@ -249,24 +263,87 @@
     transition: fill var(--duration-base) var(--ease-out);
   }
 
-  .body {
+  /* The character: long dark wavy hair with a center part, a striped shirt in the pen ink, small gold earrings. */
+  .hair {
     fill: var(--color-ink);
   }
 
-  .shine {
+  /* Lighter pencil strands so the hair reads as wavy, not as one solid shape. */
+  .strand {
     fill: none;
-    stroke: var(--color-surface);
-    stroke-width: 2;
+    stroke: #5a4e44;
+    stroke-width: 1;
     stroke-linecap: round;
-    opacity: 0.55;
+    opacity: 0.85;
   }
 
-  .eye {
-    fill: var(--color-surface);
+  .skin {
+    fill: #c99270;
+    stroke: var(--color-ink);
+    stroke-width: 1.1;
   }
 
-  .pupil {
+  .shirt {
+    fill: var(--pen-wash);
+    stroke: var(--color-ink);
+    stroke-width: 1.3;
+  }
+
+  .stripes {
+    fill: none;
+    stroke: var(--pen);
+    stroke-width: 1.1;
+    opacity: 0.5;
+  }
+
+  .collar,
+  .brow {
+    fill: none;
+    stroke: var(--color-ink);
+    stroke-width: 1.3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .earring {
+    fill: #d4a72c;
+    stroke: #8a6a10;
+    stroke-width: 0.6;
+  }
+
+  .eye-dot {
     fill: var(--color-ink);
+  }
+
+  .eye-glint {
+    fill: #fff;
+  }
+
+  .nose {
+    fill: none;
+    stroke: #8a5a3c;
+    stroke-width: 1.1;
+    stroke-linecap: round;
+  }
+
+  .leg {
+    stroke-width: 4;
+  }
+
+  .sleeve-edge,
+  .sleeve {
+    fill: none;
+    stroke-linecap: round;
+  }
+
+  .sleeve-edge {
+    stroke: var(--color-ink);
+    stroke-width: 8.6;
+  }
+
+  .sleeve {
+    stroke: var(--pen-wash);
+    stroke-width: 6;
   }
 
   .eyes,
@@ -280,19 +357,19 @@
   }
 
   .eyes-happy {
-    stroke: var(--color-surface);
-    stroke-width: 2;
+    stroke: var(--color-ink);
+    stroke-width: 1.8;
     opacity: 0;
   }
 
   .cheek {
-    fill: var(--pen-wash);
-    opacity: 0.9;
+    fill: #e8846f;
+    opacity: 0.55;
   }
 
   .mouth {
     fill: none;
-    stroke: var(--color-surface);
+    stroke: #6b2f2a;
     stroke-width: 1.6;
     stroke-linecap: round;
   }
@@ -301,19 +378,9 @@
     fill: var(--pen);
   }
 
-  .arm path {
-    stroke: var(--color-ink);
-    stroke-width: 3.2;
-  }
-
   .wave-arm {
-    stroke-width: 3.2;
     opacity: 0;
     transform-origin: 0% 100%;
-  }
-
-  .wave-arm circle {
-    fill: var(--color-ink);
   }
 
   .inky {
@@ -365,10 +432,10 @@
   }
 
   .hit-inky {
-    left: 37%;
-    top: 40%;
-    width: 24%;
-    height: 46%;
+    left: 33%;
+    top: 35%;
+    width: 30%;
+    height: 50%;
   }
 
   .hit-bulb {
