@@ -21,10 +21,8 @@ export const experience: Role[] = [
     current: true,
     points: [
       'Selected from 200+ applicants for a Zoom-sponsored fellowship at ASU Next Lab.',
-      'Built ZoomLens end to end in Node.js: a Zoom Apps SDK panel, a WebSocket server, and Claude vision prompts that describe or explain whatever is on the shared screen for the one participant who asked, without interrupting the presenter.',
-      'Made privacy a server-side guarantee: each WebSocket session is bound to one participant and a single session-addressed send is the only way out, verified by seven isolation tests against the real server, including ten participants asking at once.',
-      'Integrated Zoom’s Realtime Media Streams with signed webhook validation, an in-memory H.264 buffer that always holds a decodable clip, and on-demand ffmpeg decoding to a still in 25 to 110 ms in testing. Until the account’s feed delivers video, answers use a clearly labeled fallback to the participant’s own display.',
-      'Added Zoom OAuth sign-in with refresh-token rotation, plus per-participant rate limits and daily caps keyed to identity, so a reload cannot reset them.',
+      'Designed and built ZoomLens end to end, an AI assistant inside Zoom that privately explains whatever is on the shared screen to the one participant who asked.',
+      'Owned its privacy guarantee and the prototype’s honest status: answers stay with the person who asked, verified by seven isolation tests including ten participants at once, with a clearly labeled fallback while the meeting feed is unavailable.',
     ],
     tech: ['Node.js', 'WebSockets', 'Zoom Apps SDK', 'Zoom Realtime Media Streams API', 'Zoom OAuth', 'ffmpeg', 'Claude'],
     link: { label: 'ZoomLens case study', href: '/work/zoom-lens' },

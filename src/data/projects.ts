@@ -91,11 +91,7 @@ export const projects: Project[] = [
     story: [
       {
         label: 'The experience',
-        text: 'Open ZoomLens from the Apps panel, press Describe or Explain, or type a question about the shared screen. Only you see the answer, and the presenter is never interrupted.',
-      },
-      {
-        label: 'How it works',
-        text: 'A panel built on the Zoom Apps SDK talks to a Node.js WebSocket server. On each request the server captures one still of the screen, sends it to Claude with instructions for that kind of question, and returns the answer.',
+        text: 'Open ZoomLens from the Zoom Apps panel and ask about the shared screen. Claude answers, only you see it, and the presenter is never interrupted.',
       },
       {
         label: 'The hard part',
@@ -103,7 +99,7 @@ export const projects: Project[] = [
       },
       {
         label: 'Status',
-        text: 'Working prototype in live Zoom meetings. Capture from the meeting’s screen-share stream is built, but that stream does not yet deliver video on the current Zoom account, so for now answers come from the asking participant’s display and say so.',
+        text: 'Working prototype in live Zoom meetings. Meeting-stream capture is built but not yet receiving video on the current account, so answers use the participant’s own display and say so.',
       },
     ],
     site: 'https://zoomlens.vercel.app/',

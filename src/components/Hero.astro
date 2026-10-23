@@ -16,6 +16,7 @@ const phrases = ['Data scientist, Zoom Fellow', 'Causal inference and forecastin
     </h1>
     <p class="phrases" aria-hidden="true" data-phrases={JSON.stringify(phrases)}><span class="phrase is-in">{phrases[0]}</span></p>
     <p class="visually-hidden">{phrases.join(', ')}.</p>
+    <p class="tagline">I build AI tools and study when models can be trusted.</p>
     <p class="pen-hint-below note" aria-hidden="true">↑ tap the dot to paint the page</p>
 
     <div class="actions">
@@ -356,6 +357,15 @@ const phrases = ['Data scientist, Zoom Fellow', 'Causal inference and forecastin
     outline-offset: 4px;
   }
 
+  /* A quieter line under the rotating role: plain text, so the handwritten phrase stays the accent. */
+  .tagline {
+    max-width: 34rem;
+    margin-top: var(--space-2);
+    font-size: var(--text-md);
+    line-height: 1.5;
+    color: var(--color-ink-soft);
+  }
+
   .pen-hint-below {
     margin-top: var(--space-5);
     font-size: var(--text-xs);
@@ -398,11 +408,11 @@ const phrases = ['Data scientist, Zoom Fellow', 'Causal inference and forecastin
     transition: transform var(--duration-base) var(--ease-out), background-color var(--duration-base) var(--ease-out);
   }
 
-  /* Bigger tap target than the dot itself. */
+  /* Bigger tap target than the dot itself, and at least 38px across on phones. */
   .pen-dot::before {
     content: '';
     position: absolute;
-    inset: -0.12em;
+    inset: min(-0.12em, -14px);
   }
 
   .pen-dot:hover {
