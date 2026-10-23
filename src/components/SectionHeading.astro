@@ -1,5 +1,6 @@
 ---
 import Doodle from './Doodle.astro';
+import MarginDoodle from './MarginDoodle.astro';
 
 interface Props {
   id: string;
@@ -11,10 +12,20 @@ const numbers: Record<string, string> = { work: '01', experience: '02', about: '
 const kickers: Record<string, string> = { work: 'the work', experience: 'where I’ve been', about: 'about me', contact: 'say hello' };
 const doodles = { work: 'star', experience: 'trail', about: 'heart', contact: 'plane' } as const;
 const doodle = doodles[id as keyof typeof doodles];
+const sketches = {
+  work: { kind: 'bell', side: 'left' },
+  experience: { kind: 'mug', side: 'right' },
+  about: { kind: 'net', side: 'left' },
+  contact: { kind: 'scatter', side: 'right' },
+} as const;
+const sketch = sketches[id as keyof typeof sketches];
 ---
 
 <header class="section-heading">
-  <p class="kicker"><span class="num">Nº {numbers[id] ?? '00'}</span> <span class="what">{kickers[id] ?? id}</span></p>
+  <p class="kicker">
+    <span class="num">Nº {numbers[id] ?? '00'}</span> <span class="what">{kickers[id] ?? id}</span>
+    {sketch && <MarginDoodle kind={sketch.kind} side={sketch.side} />}
+  </p>
   <h2 id={`${id}-title`}>
     <slot />{doodle && <Doodle kind={doodle} />}
   </h2>
@@ -23,6 +34,7 @@ const doodle = doodles[id as keyof typeof doodles];
 
 <style>
   .section-heading {
+    position: relative;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: var(--space-2) var(--space-8);
