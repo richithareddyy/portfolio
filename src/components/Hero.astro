@@ -17,11 +17,12 @@ const contents = [
     <p class="hello note">Hi, I'm</p>
     <h1 id="hero-title" class="name" aria-label="Richitha Rekula">
       <span class="first">Richitha<Doodle kind="star" class="name-star" /><svg class="sparkle one" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1 Q11 9 19 10 Q11 11 10 19 Q9 11 1 10 Q9 9 10 1Z" /></svg></span>
-      <span class="last"><svg class="sparkle two" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1 Q11 9 19 10 Q11 11 10 19 Q9 11 1 10 Q9 9 10 1Z" /></svg>Rekula<button type="button" class="pen-dot" data-pen-toggle aria-label="Change the pen color used across the site"></button><span class="pen-hint note" aria-hidden="true">← Click the dot to change the ink color</span></span>
+      <span class="last"><svg class="sparkle two" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1 Q11 9 19 10 Q11 11 10 19 Q9 11 1 10 Q9 9 10 1Z" /></svg>Rekula<button type="button" class="pen-dot" data-pen-toggle aria-label="Change the pen color used across the site"></button><span class="pen-hint note" aria-hidden="true">paint the page ↗</span></span>
     </h1>
     <p class="phrases" aria-hidden="true" data-phrases={JSON.stringify(phrases)}><span class="phrase is-in">{phrases[0]}</span></p>
     <p class="visually-hidden">{phrases.join(', ')}.</p>
-    <p class="pen-hint-below note" aria-hidden="true">↑ Click or tap the dot to change the ink color</p>
+    <p class="tagline">I build AI tools and study when models can be trusted.</p>
+    <p class="pen-hint-below note" aria-hidden="true">tap the dot: paint the page ↗</p>
 
     <div class="actions">
       <a class="button primary" href="#work">See the work <span aria-hidden="true">↓</span></a>
@@ -384,11 +385,17 @@ const contents = [
     outline-offset: 4px;
   }
 
+  .tagline {
+    max-width: 36rem;
+    margin-top: var(--space-3);
+    font-size: var(--text-lg);
+    line-height: 1.45;
+    color: var(--color-ink-soft);
+  }
+
   .pen-hint-below {
     margin-top: var(--space-5);
     font-size: var(--text-xs);
-    transform: rotate(-2deg);
-    transform-origin: left;
   }
 
   .hello {
@@ -573,15 +580,12 @@ const contents = [
     position: absolute;
     left: calc(100% + 0.9rem);
     bottom: 0.35em;
-    width: 11rem;
+    white-space: nowrap;
     font-size: var(--text-xs);
     font-style: normal;
     font-weight: 400;
     letter-spacing: 0;
     line-height: 1.4;
-    white-space: normal;
-    transform: rotate(-3deg);
-    transform-origin: left bottom;
   }
 
   @media (min-width: 64rem) {
@@ -589,7 +593,15 @@ const contents = [
       display: block;
     }
 
-    .pen-hint-below {
+    .tagline {
+    max-width: 36rem;
+    margin-top: var(--space-3);
+    font-size: var(--text-lg);
+    line-height: 1.45;
+    color: var(--color-ink-soft);
+  }
+
+  .pen-hint-below {
       display: none;
     }
   }

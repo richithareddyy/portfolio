@@ -1,0 +1,146 @@
+---
+import { gridcastWeek as w } from '../../data/charts';
+
+// Drawn in a 1000 x 300 box that stretches to the card; the labels are HTML so they stay readable at any width.
+const lo = 10;
+const hi = 19;
+const n = w.actual.length;
+const x = (i: number) => ((i / (n - 1)) * 1000).toFixed(1);
+const y = (v: number) => (((hi - v) / (hi - lo)) * 300).toFixed(1);
+const line = (vs: number[]) => vs.map((v, i) => `${i ? 'L' : 'M'}${x(i)} ${y(v)}`).join('');
+const band = (top: number[], bottom: number[]) =>
+  `${line(top)}${bottom.map((v, i) => [i, v] as const).reverse().map(([i, v]) => `L${x(i)} ${y(v)}`).join('')}Z`;
+const ticks = [12, 14, 16, 18];
+const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+---
+
+<a class="chart-card" href="/work/gridcast">
+  <figure>
+    <p class="chart-title">Forecast vs. actual demand <span>LightGBM, first test week of 2024, New England, GW</span></p>
+    <div
+      class="plot"
+      role="img"
+      aria-label={`Hourly demand for January 1 to 7, 2024, between about 12 and 17 GW. The forecast follows the daily peaks, and actual demand stays inside the 95% interval in ${w.hoursInside95} of ${n} hours.`}
+    >
+      <div class="area">
+        <span class="y" aria-hidden="true">{ticks.map((t) => <span style={`top: ${((hi - t) / (hi - lo)) * 100}%`}>{t}</span>)}</span>
+        <svg viewBox="0 0 1000 300" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          {ticks.map((t) => <path class="grid" d={`M0 ${y(t)}H1000`} />)}
+          <path class="band95" d={band(w.hi95, w.lo95)} />
+          <path class="band50" d={band(w.hi50, w.lo50)} />
+          <path class="forecast" d={line(w.forecast)} />
+          <path class="actual" d={line(w.actual)} />
+        </svg>
+      </div>
+      <span class="x" aria-hidden="true">{days.map((d) => <span>{d}</span>)}</span>
+    </div>
+    <p class="legend" aria-hidden="true">
+      <span><i class="key actual"></i>actual</span>
+      <span><i class="key forecast"></i>forecast</span>
+      <span><i class="key band50"></i>50% interval</span>
+      <span><i class="key band95"></i>95% interval</span>
+    </p>
+    <figcaption>
+      The forecast follows each day’s rise and fall, and actual demand stayed inside the 95% interval
+      in {w.hoursInside95} of {n} hours this week. Over the whole test year that was 93.8%, falling to 84.5% during
+      extreme demand.
+    </figcaption>
+    <span class="open">Read the case study <span aria-hidden="true">→</span></span>
+  </figure>
+</a>
+
+<style>
+  .area {
+    position: relative;
+    height: clamp(9rem, 22vw, 13rem);
+    margin-left: 1.75rem;
+  }
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  svg path {
+    vector-effect: non-scaling-stroke;
+  }
+
+  .grid {
+    fill: none;
+    stroke: var(--color-rule);
+    stroke-width: 1;
+  }
+
+  .band95 {
+    fill: var(--pen-wash);
+  }
+
+  .band50 {
+    fill: color-mix(in srgb, var(--pen) 28%, transparent);
+  }
+
+  .forecast,
+  .actual {
+    fill: none;
+    stroke-linejoin: round;
+  }
+
+  .forecast {
+    stroke: var(--pen);
+    stroke-width: 1.6;
+  }
+
+  .actual {
+    stroke: var(--color-ink);
+    stroke-width: 1.3;
+  }
+
+  .y span {
+    position: absolute;
+    right: calc(100% + 0.5rem);
+    translate: 0 -50%;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--color-muted);
+  }
+
+  .x {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin: var(--space-2) 0 0 1.75rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    text-align: center;
+    color: var(--color-muted);
+  }
+
+  .key {
+    display: inline-block;
+    width: 1.1em;
+    margin-right: 0.4em;
+    vertical-align: 0.25em;
+  }
+
+  .key.actual,
+  .key.forecast {
+    height: 0;
+    border-top: 2px solid var(--color-ink);
+  }
+
+  .key.forecast {
+    border-color: var(--pen);
+  }
+
+  .key.band50,
+  .key.band95 {
+    height: 0.7em;
+    vertical-align: -0.05em;
+    background: var(--pen-wash);
+  }
+
+  .key.band50 {
+    background: color-mix(in srgb, var(--pen) 28%, transparent);
+  }
+</style>

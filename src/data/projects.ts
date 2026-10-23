@@ -15,6 +15,7 @@ import causewaySensitivity from '../assets/projects/causeway-sensitivity.png';
 import gridcastModels from '../assets/projects/gridcast-model-comparison.png';
 import gridcastCalibration from '../assets/projects/gridcast-interval-calibration.png';
 import gridcastConditions from '../assets/projects/gridcast-error-conditions.png';
+import gridcastIntervals from '../assets/projects/gridcast-prediction-intervals.png';
 
 export type Link = { label: string; href: string };
 
@@ -50,8 +51,6 @@ export type Project = {
 
   // Featured projects on the homepage
   hook?: string;
-  /** A few short facts shown as a list on the homepage card. */
-  highlights?: string[];
   story?: { label: string; text: string }[];
 
   // Case-study content
@@ -85,16 +84,10 @@ export const projects: Project[] = [
       'Built it end to end in Node.js: the in-meeting panel on the Zoom Apps SDK, a WebSocket server that addresses every answer to the one participant who asked, screen capture and H.264 decoding, and Claude vision prompts for Describe, Explain, questions and follow-ups.',
     result: {
       headline: 'Working prototype in live Zoom meetings',
-      qualifier: 'Captures the participant’s display for now, not the meeting feed',
+      qualifier: 'Meeting-feed capture is built; the demo uses the participant’s display until Zoom delivers that feed',
     },
     tech: ['Node.js', 'Zoom Apps SDK', 'Zoom Realtime Media Streams API', 'WebSockets', 'Claude', 'ffmpeg'],
     hook: 'You join a meeting late, someone is sharing a dense chart, and you would rather not interrupt everyone to ask what it means.',
-    highlights: [
-      'Zoom Fellowship project at ASU Next Lab',
-      'Answers reach only the person who asked',
-      'Privacy enforced on the server, covered by isolation tests',
-      'One still of the screen per question, labeled with its source',
-    ],
     story: [
       {
         label: 'The experience',
@@ -110,7 +103,7 @@ export const projects: Project[] = [
       },
       {
         label: 'Status',
-        text: 'Working prototype in live Zoom meetings. For now it captures the asking participant’s display, not the meeting’s screen-share stream.',
+        text: 'Working prototype in live Zoom meetings. Capture from the meeting’s screen-share stream is built, but that stream does not yet deliver video on the current Zoom account, so for now answers come from the asking participant’s display and say so.',
       },
     ],
     site: 'https://zoomlens.vercel.app/',
@@ -285,6 +278,12 @@ export const projects: Project[] = [
       caption: 'Validation MAE and RMSE for the six models. Figure from the repository.',
     },
     gallery: [
+      {
+        kind: 'image',
+        src: gridcastIntervals,
+        alt: 'LightGBM forecast and actual hourly demand for the first week of 2024, with 50%, 80%, and 95% prediction intervals that contain actual demand in most hours.',
+        caption: 'Forecast, actual demand, and prediction intervals for the first test week.',
+      },
       {
         kind: 'image',
         src: gridcastCalibration,

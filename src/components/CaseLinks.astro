@@ -7,7 +7,7 @@ interface Props {
 }
 const { project } = Astro.props;
 const links = [
-  project.site && { label: 'Product site and interactive demo', href: project.site },
+  project.site && { label: 'Product site, with a guided preview using example answers', href: project.site },
   project.demo && { label: 'Live demo', href: project.demo },
   project.github && { label: 'Source on GitHub', href: project.github },
 ].filter(Boolean) as { label: string; href: string }[];

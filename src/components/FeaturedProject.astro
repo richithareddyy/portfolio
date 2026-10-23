@@ -4,6 +4,8 @@ import Mark from './Mark.astro';
 import Doodle from './Doodle.astro';
 import ProjectLinks from './ProjectLinks.astro';
 import ZoomLensPreview from './ZoomLensPreview.astro';
+import CauseWayChart from './visuals/CauseWayChart.astro';
+import GridCastChart from './visuals/GridCastChart.astro';
 
 interface Props {
   project: Project;
@@ -14,8 +16,9 @@ interface Props {
 const { project, index = 0, eager = false } = Astro.props;
 const href = project.caseStudy ? `/work/${project.slug}` : undefined;
 const flip = index % 2 === 1;
-// Only ZoomLens carries a visual here; the others keep their figures on the case study.
-const media = project.slug === 'zoom-lens';
+// ZoomLens shows its product site and demo; the studies show one chart from their results.
+const Chart = { causeway: CauseWayChart, gridcast: GridCastChart }[project.slug];
+const media = project.slug === 'zoom-lens' || !!Chart;
 ---
 
 <article
@@ -43,13 +46,6 @@ const media = project.slug === 'zoom-lens';
 
     <div class="detail">
       {
-        project.highlights && (
-          <ul class="highlights">
-            {project.highlights.map((h) => <li>{h}</li>)}
-          </ul>
-        )
-      }
-      {
         project.story && (
           <details class="fold">
             <summary>Project details<span class="visually-hidden"> of {project.title}</span></summary>
@@ -61,21 +57,26 @@ const media = project.slug === 'zoom-lens';
                 </div>
               ))}
             </dl>
+            <ul class="stack" aria-label={`${project.title} technologies`}>
+              {project.tech.map((t) => <li>{t}</li>)}
+            </ul>
           </details>
         )
       }
-
-      <ul class="stack" aria-label={`${project.title} technologies`}>
-        {
-          project.tech.map((t) => <li>{t}</li>)
-        }
-      </ul>
       <ProjectLinks project={project} />
     </div>
   </div>
 
   {
-    media && (
+    Chart && (
+      <div class="media">
+        <Chart />
+      </div>
+    )
+  }
+
+  {
+    project.slug === 'zoom-lens' && (
       <div class="media">
         <ZoomLensPreview eager={eager} />
         {zoomLens.demoVideo && (
@@ -260,32 +261,6 @@ const media = project.slug === 'zoom-lens';
     font-family: var(--font-mono);
     font-size: var(--text-xs);
     color: var(--color-muted);
-  }
-
-  .highlights {
-    display: grid;
-    gap: var(--space-2);
-    list-style: none;
-    font-size: var(--text-sm);
-    color: var(--color-ink-soft);
-  }
-
-  .highlights li {
-    position: relative;
-    padding-left: 1.5em;
-  }
-
-  /* A pen tick, like checking items off in the margin. */
-  .highlights li::before {
-    content: '';
-    position: absolute;
-    left: 0.1em;
-    top: 0.3em;
-    width: 0.45em;
-    height: 0.8em;
-    border: solid var(--pen);
-    border-width: 0 2px 2px 0;
-    transform: rotate(40deg);
   }
 
   .story {

@@ -1,0 +1,154 @@
+---
+import { causewayRecovery as data } from '../../data/charts';
+
+const min = 0.6;
+const max = 1.2;
+const at = (v: number) => `${((v - min) / (max - min)) * 100}%`;
+const ticks = [0.6, 0.8, 1.0, 1.2];
+const money = (v: number) => `$${v.toFixed(2)}`;
+const summary = data.rows.map((r) => `${r.name} ${money(r.a)} with every confounder observed, ${money(r.c)} with one hidden`).join('; ');
+---
+
+<a class="chart-card" href="/work/causeway">
+  <figure>
+    <p class="chart-title">Average estimate vs. the randomized answer <span>Mens e-mail, spend per customer</span></p>
+    <div class="plot" role="img" aria-label={`Randomized answer ${money(data.benchmark)}. ${summary}.`}>
+      <div class="rows">
+        <span class="truth" style={`--x: ${(data.benchmark - min) / (max - min)}`} aria-hidden="true"><span>randomized {money(data.benchmark)}</span></span>
+        {
+          data.rows.map((r) => (
+            <div class="row">
+              <span class="name">{r.name}</span>
+              <span class="track">
+                <span class="drift" style={`left: ${at(Math.min(r.a, r.c))}; width: calc(${at(Math.max(r.a, r.c))} - ${at(Math.min(r.a, r.c))})`} />
+                <span class="dot hidden" style={`left: ${at(r.c)}`} />
+                <span class="dot seen" style={`left: ${at(r.a)}`} />
+              </span>
+            </div>
+          ))
+        }
+      </div>
+      <div class="axis" aria-hidden="true">
+        <span class="name"></span>
+        <span class="track">{ticks.map((t) => <span style={`left: ${at(t)}`}>{money(t)}</span>)}</span>
+      </div>
+    </div>
+    <p class="legend" aria-hidden="true">
+      <span><i class="dot seen"></i>every confounder observed</span>
+      <span><i class="dot hidden"></i>one confounder hidden</span>
+    </p>
+    <figcaption>
+      Averaged over 200 constructed samples. With every confounder observed, the adjusted methods land on the randomized
+      answer while the naive comparison is 48% too high. Hide one confounder and they all drift 14 to 19% high.
+    </figcaption>
+    <span class="open">Read the case study <span aria-hidden="true">→</span></span>
+  </figure>
+</a>
+
+<style>
+  .rows {
+    position: relative;
+    display: grid;
+    gap: var(--space-3);
+    padding-top: 1.6rem;
+  }
+
+  .row,
+  .axis {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .name {
+    font-size: var(--text-xs);
+    color: var(--color-ink-soft);
+    line-height: 1.2;
+  }
+
+  .track {
+    position: relative;
+    height: 1rem;
+    margin-inline: 0.5rem;
+  }
+
+  .row .track::before {
+    content: '';
+    position: absolute;
+    inset: 50% 0 auto;
+    border-top: 1px dotted var(--color-rule-strong);
+  }
+
+  /* The randomized answer, drawn as a ruled line through every row. */
+  .truth {
+    position: absolute;
+    top: 1.35rem;
+    bottom: -0.25rem;
+    left: calc(8rem + var(--space-3) + (100% - 8.5rem - var(--space-3)) * var(--x));
+    border-left: 1.5px solid var(--color-ink);
+  }
+
+  .truth > span {
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 0;
+    translate: -50% 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    white-space: nowrap;
+    color: var(--color-ink);
+  }
+
+  .drift {
+    position: absolute;
+    top: calc(50% - 1px);
+    height: 2px;
+    background: var(--pen-wash);
+  }
+
+  .dot {
+    position: absolute;
+    top: 50%;
+    border-radius: 50%;
+    translate: -50% -50%;
+  }
+
+  .dot.seen {
+    width: 0.6rem;
+    height: 0.6rem;
+    background: var(--pen);
+  }
+
+  .dot.hidden {
+    width: 0.95rem;
+    height: 0.95rem;
+    border: 1.5px solid var(--color-ink);
+    background: var(--color-surface);
+  }
+
+  .axis {
+    margin-top: var(--space-2);
+  }
+
+  .axis .track {
+    height: 1.2em;
+  }
+
+  .axis .track span {
+    position: absolute;
+    translate: -50% 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--color-muted);
+  }
+
+  .legend .dot {
+    position: relative;
+    display: inline-block;
+    top: auto;
+    translate: none;
+    margin-right: 0.4em;
+    vertical-align: -0.1em;
+  }
+</style>

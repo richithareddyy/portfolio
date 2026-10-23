@@ -8,19 +8,10 @@ const { project } = Astro.props;
 
 <ul class="links" aria-label={`${project.title} links`}>
   {
-    project.caseStudy && (
-      <li>
-        <a class="arrow-link" href={`/work/${project.slug}`}>
-          Case study<span class="visually-hidden">: {project.title}</span> <span class="arrow" aria-hidden="true">→</span>
-        </a>
-      </li>
-    )
-  }
-  {
     project.slug === 'zoom-lens' && zoomLens.demoVideo && (
       <li>
         <a class="arrow-link" href="/work/zoom-lens#demo">
-          Watch the 3-minute demo <span class="arrow" aria-hidden="true">→</span>
+          Watch demo<span class="visually-hidden"> (3-minute video)</span> <span class="arrow" aria-hidden="true">→</span>
         </a>
       </li>
     )
@@ -29,8 +20,17 @@ const { project } = Astro.props;
     project.site && (
       <li>
         <a class="ext" href={project.site} target="_blank" rel="noopener">
-          Product site<span class="visually-hidden"> for {project.title} (opens in a new tab)</span>
+          Visit product site<span class="visually-hidden"> for {project.title} (opens in a new tab)</span>
           <span class="ext-arrow" aria-hidden="true">↗</span>
+        </a>
+      </li>
+    )
+  }
+  {
+    project.caseStudy && (
+      <li>
+        <a class="arrow-link" href={`/work/${project.slug}`}>
+          Read case study<span class="visually-hidden">: {project.title}</span> <span class="arrow" aria-hidden="true">→</span>
         </a>
       </li>
     )
@@ -39,7 +39,7 @@ const { project } = Astro.props;
     project.demo && (
       <li>
         <a class="ext" href={project.demo} target="_blank" rel="noopener">
-          Live demo<span class="visually-hidden"> of {project.title} (opens in a new tab)</span>
+          Try live demo<span class="visually-hidden"> of {project.title} (opens in a new tab)</span>
           <span class="ext-arrow" aria-hidden="true">↗</span>
         </a>
       </li>
